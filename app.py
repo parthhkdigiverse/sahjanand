@@ -32,11 +32,16 @@ def run_app():
     )
 
     # Start Frontend
-    frontend_process = subprocess.Popen(
-        ["bun", "run", "dev"],
-        cwd=str(Path(__file__).parent / "frontend"),
-        env=os.environ.copy()
-    )
+    try:
+        frontend_process = subprocess.Popen(
+            ["npm", "run", "dev"],
+            cwd=str(Path(__file__).parent / "frontend"),
+            env=os.environ.copy()
+        )
+    except FileNotFoundError:
+        print("❌ Error: 'npm' was not found. Please ensure Node.js is installed.")
+        backend_process.terminate()
+        sys.exit(1)
 
     def signal_handler(sig, frame):
         print("\n🛑 Shutting down applications...")
