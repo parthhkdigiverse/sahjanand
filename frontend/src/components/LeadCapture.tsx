@@ -1,0 +1,145 @@
+import { useState } from "react";
+import { X } from "lucide-react";
+import offerImg from "@/assets/offer.jpg";
+
+export function LeadCapture() {
+  const [open, setOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => {
+      setOpen(false);
+      setSubmitted(false);
+    }, 1800);
+  };
+
+  return (
+    <section className="container-luxe py-24 md:py-32">
+      <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch shadow-luxe overflow-hidden bg-card">
+        {/* LEFT — offer text + CTA */}
+        <div className="relative p-10 md:p-16 lg:p-20 flex flex-col justify-center">
+          <p className="divider-gold mb-6">Welcome Offer</p>
+          <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-5">
+            Get <span className="italic text-gold">10% Off</span>
+            <br />
+            Your First Order
+          </h2>
+          <p className="text-foreground/70 max-w-md mb-10 leading-relaxed">
+            A small thank-you for choosing us. Share your details and we'll
+            send your discount code straight to your inbox.
+          </p>
+          <div>
+            <button
+              onClick={() => setOpen(true)}
+              className="sheen inline-flex items-center gap-3 px-9 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors"
+              style={{
+                backgroundColor: "var(--onyx)",
+                color: "var(--ivory)",
+              }}
+            >
+              Get My Offer →
+            </button>
+            <p className="text-[0.7rem] tracking-wide text-muted-foreground mt-4">
+              Limited time · One per customer
+            </p>
+          </div>
+        </div>
+
+        {/* RIGHT — image */}
+        <div className="relative aspect-[4/5] lg:aspect-auto overflow-hidden bg-secondary">
+          <img
+            src={offerImg}
+            alt="Delicate gold pendant"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+      </div>
+
+      {/* Modal */}
+      {open && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-onyx/70 backdrop-blur-sm animate-fade-up"
+          onClick={() => setOpen(false)}
+          style={{ animationDuration: "0.3s" }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md bg-card text-card-foreground p-10 shadow-luxe animate-fade-up"
+            style={{ animationDelay: "0.1s" }}
+          >
+            <button
+              onClick={() => setOpen(false)}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+            >
+              <X size={18} />
+            </button>
+
+            {submitted ? (
+              <div className="text-center py-8">
+                <div className="text-gold mx-auto mb-4 w-12 h-12 rounded-full border border-gold flex items-center justify-center">
+                  ✓
+                </div>
+                <h3 className="font-serif text-2xl mb-2">Thank you</h3>
+                <p className="text-sm text-muted-foreground">
+                  Your discount code is on its way.
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="divider-gold mb-5">Claim Offer</p>
+                <h3 className="font-serif text-3xl mb-2">Your 10% Discount</h3>
+                <p className="text-sm text-muted-foreground mb-8">
+                  Just a few details and your code is yours.
+                </p>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div>
+                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">
+                      Name
+                    </label>
+                    <input
+                      required
+                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">
+                      Phone
+                    </label>
+                    <input
+                      required
+                      type="tel"
+                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">
+                      Email
+                    </label>
+                    <input
+                      required
+                      type="email"
+                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="sheen w-full mt-6 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors"
+                    style={{
+                      backgroundColor: "var(--onyx)",
+                      color: "var(--ivory)",
+                    }}
+                  >
+                    Send My Code
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
