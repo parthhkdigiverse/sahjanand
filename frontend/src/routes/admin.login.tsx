@@ -76,7 +76,7 @@ function AdminLogin() {
               <Input 
                 id="username" 
                 type="text" 
-                placeholder="Auteur" 
+                placeholder="Admin ID" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required 

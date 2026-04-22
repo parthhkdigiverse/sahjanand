@@ -29,7 +29,7 @@ function AdminDashboard() {
     <div className="space-y-12">
       <header className="flex justify-between items-end">
         <div className="space-y-2">
-          <h1 className="text-4xl font-serif text-onyx tracking-wide">Tableau de Bord</h1>
+          <h1 className="text-4xl font-serif text-onyx tracking-wide">Executive Dashboard</h1>
           <p className="text-onyx/40 font-light uppercase tracking-[0.2em] text-xs">Atelier Performance & Inventory Overview</p>
         </div>
         <div className="text-right">
@@ -60,7 +60,7 @@ function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <Card className="lg:col-span-2 border-none shadow-card h-full">
           <CardHeader className="border-b border-onyx/5 py-6">
-            <CardTitle className="font-serif text-xl text-onyx tracking-wide">Journal des Activités</CardTitle>
+            <CardTitle className="font-serif text-xl text-onyx tracking-wide">System Activity Log</CardTitle>
           </CardHeader>
           <CardContent className="py-10">
             <div className="space-y-8">
@@ -68,12 +68,12 @@ function AdminDashboard() {
                 <div key={i} className="flex gap-6 items-start">
                   <div className="h-2 w-2 mt-2 rounded-full bg-gold" />
                   <div className="space-y-1">
-                    <p className="text-sm text-onyx/70">Nouveau produit <span className="font-medium text-onyx">"Éclat d'Or Ring"</span> ajouté à l'inventaire.</p>
-                    <p className="text-[10px] text-onyx/30 uppercase tracking-widest">Il y a 2 heures — Par Admin</p>
+                    <p className="text-sm text-onyx/70">New product <span className="font-medium text-onyx">"Éclat d'Or Ring"</span> added to inventory.</p>
+                    <p className="text-[10px] text-onyx/30 uppercase tracking-widest">2 hours ago — By Admin</p>
                   </div>
                 </div>
               ))}
-              <p className="text-xs text-gold font-medium uppercase tracking-widest pt-4 cursor-pointer hover:underline">Voir tous les journaux →</p>
+              <p className="text-xs text-gold font-medium uppercase tracking-widest pt-4 cursor-pointer hover:underline">View all system logs →</p>
             </div>
           </CardContent>
         </Card>
@@ -82,13 +82,13 @@ function AdminDashboard() {
           {/* Subtle gold sheen background */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl" />
           <CardHeader className="py-6 border-b border-white/5 relative z-10">
-            <CardTitle className="font-serif text-xl tracking-wide">Actions Rapides</CardTitle>
+            <CardTitle className="font-serif text-xl tracking-wide">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-4 py-8 relative z-10">
             <button className="p-6 glass-dark border border-white/10 rounded-xl hover:border-gold hover:scale-[1.02] transition-all text-left group">
               <div className="flex justify-between items-center">
                 <div className="space-y-1">
-                  <div className="font-serif text-lg group-hover:text-gold transition-colors">Nouveau Produit</div>
+                  <div className="font-serif text-lg group-hover:text-gold transition-colors">New Product</div>
                   <div className="text-[10px] text-ivory/30 uppercase tracking-widest">Inventory Management</div>
                 </div>
                 <Package className="h-5 w-5 text-gold/40 group-hover:text-gold group-hover:rotate-12 transition-all" />
@@ -97,7 +97,7 @@ function AdminDashboard() {
             <button className="p-6 glass-dark border border-white/10 rounded-xl hover:border-gold hover:scale-[1.02] transition-all text-left group">
               <div className="flex justify-between items-center">
                 <div className="space-y-1">
-                  <div className="font-serif text-lg group-hover:text-gold transition-colors">Publier Article</div>
+                  <div className="font-serif text-lg group-hover:text-gold transition-colors">Publish Article</div>
                   <div className="text-[10px] text-ivory/30 uppercase tracking-widest">Journal Editorial</div>
                 </div>
                 <FileText className="h-5 w-5 text-gold/40 group-hover:text-gold group-hover:rotate-12 transition-all" />

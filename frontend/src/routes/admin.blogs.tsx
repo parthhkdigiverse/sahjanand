@@ -92,14 +92,14 @@ function AdminBlogs() {
     <div className="space-y-10 animate-fade-up">
       <div className="flex justify-between items-center bg-white p-8 rounded-2xl shadow-card border border-onyx/5">
         <div className="space-y-1">
-          <h1 className="text-3xl font-serif text-onyx tracking-wide">Journal Editoriale</h1>
+          <h1 className="text-3xl font-serif text-onyx tracking-wide">Journal Archives</h1>
           <p className="text-onyx/40 text-[10px] uppercase tracking-[0.2em]">Crafting and curating your atelier stories</p>
         </div>
         <Button 
           onClick={() => handleOpenDialog()}
           className="bg-onyx text-ivory hover:bg-gold hover:text-onyx h-12 px-8 transition-all duration-500 rounded-lg font-medium tracking-widest uppercase text-xs shadow-luxe sheen"
         >
-          <Plus className="mr-3 h-4 w-4" /> Composer Un Article
+          <Plus className="mr-3 h-4 w-4" /> Compose New Article
         </Button>
       </div>
 

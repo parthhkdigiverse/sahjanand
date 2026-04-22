@@ -92,14 +92,14 @@ function AdminProducts() {
     <div className="space-y-10 animate-fade-up">
       <div className="flex justify-between items-center bg-white p-8 rounded-2xl shadow-card border border-onyx/5">
         <div className="space-y-1">
-          <h1 className="text-3xl font-serif text-onyx tracking-wide">Inventaire des Produits</h1>
+          <h1 className="text-3xl font-serif text-onyx tracking-wide">Product Inventory</h1>
           <p className="text-onyx/40 text-[10px] uppercase tracking-[0.2em]">Curating your fine jewellery collection</p>
         </div>
         <Button 
           onClick={() => handleOpenDialog()}
           className="bg-onyx text-ivory hover:bg-gold hover:text-onyx h-12 px-8 transition-all duration-500 rounded-lg font-medium tracking-widest uppercase text-xs shadow-luxe sheen"
         >
-          <Plus className="mr-3 h-4 w-4" /> Ajouter Un Produit
+          <Plus className="mr-3 h-4 w-4" /> Add New Product
         </Button>
       </div>
 
@@ -114,8 +114,8 @@ function AdminProducts() {
           />
         </div>
         <div className="h-14 px-6 bg-white border border-onyx/5 rounded-xl shadow-card flex items-center gap-2 text-onyx/40 text-xs">
-          <span className="uppercase tracking-widest">Affichage:</span>
-          <span className="font-medium text-onyx">{filteredProducts?.length || 0} Pièces</span>
+          <span className="uppercase tracking-widest">Displaying:</span>
+          <span className="font-medium text-onyx">{filteredProducts?.length || 0} Items</span>
         </div>
       </div>
 
