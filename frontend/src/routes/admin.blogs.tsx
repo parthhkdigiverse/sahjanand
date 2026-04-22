@@ -89,68 +89,84 @@ function AdminBlogs() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-serif text-onyx">Journal Management</h1>
-          <p className="text-muted-foreground mt-1">Write and edit your atelier stories</p>
+    <div className="space-y-10 animate-fade-up">
+      <div className="flex justify-between items-center bg-white p-8 rounded-2xl shadow-card border border-onyx/5">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-serif text-onyx tracking-wide">Journal Archives</h1>
+          <p className="text-onyx/40 text-[10px] uppercase tracking-[0.2em]">Crafting and curating your atelier stories</p>
         </div>
         <Button 
           onClick={() => handleOpenDialog()}
-          className="bg-onyx text-ivory hover:bg-gold hover:text-onyx"
-          style={{ backgroundColor: "var(--onyx)", color: "var(--ivory)" }}
+          className="bg-onyx text-ivory hover:bg-gold hover:text-onyx h-12 px-8 transition-all duration-500 rounded-lg font-medium tracking-widest uppercase text-xs shadow-luxe sheen"
         >
-          <Plus className="mr-2 h-4 w-4" /> New Article
+          <Plus className="mr-3 h-4 w-4" /> Compose New Article
         </Button>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input 
-          className="pl-10 max-w-md" 
-          placeholder="Search articles..." 
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="flex items-center gap-6">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-onyx/20 h-4 w-4 group-focus-within:text-gold transition-colors" />
+          <Input 
+            className="pl-12 h-14 bg-white border-onyx/5 rounded-xl shadow-card placeholder:text-onyx/20 focus-visible:ring-gold/30 transition-all" 
+            placeholder="Search articles by title or category..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="h-14 px-6 bg-white border border-onyx/5 rounded-xl shadow-card flex items-center gap-2 text-onyx/40 text-xs text-nowrap">
+          <span className="uppercase tracking-widest">Total Articles:</span>
+          <span className="font-medium text-onyx">{filteredBlogs?.length || 0}</span>
+        </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow border overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-card border border-onyx/5 overflow-hidden">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+          <TableHeader className="bg-onyx/[0.02]">
+            <TableRow className="hover:bg-transparent border-onyx/5">
+              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Article Title</TableHead>
+              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Category</TableHead>
+              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Publication Date</TableHead>
+              <TableHead className="text-right py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10">
-                  <Loader2 className="animate-spin mx-auto h-8 w-8 text-gold" />
+                <TableCell colSpan={4} className="text-center py-20">
+                  <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="animate-spin h-10 w-10 text-gold/40" />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-onyx/20">Accessing Archives...</span>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : filteredBlogs?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10 text-muted-foreground italic">
-                  No blog posts found.
+                <TableCell colSpan={4} className="text-center py-20 text-onyx/40 italic font-serif">
+                  The journal is currently quiet. Compose your first story.
                 </TableCell>
               </TableRow>
             ) : filteredBlogs?.map((blog) => (
-              <TableRow key={blog.slug}>
-                <TableCell className="font-medium">{blog.title}</TableCell>
-                <TableCell>{blog.category}</TableCell>
-                <TableCell>{blog.date}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(blog)}>
+              <TableRow key={blog.slug} className="group hover:bg-ivory/20 transition-colors border-onyx/5">
+                <TableCell className="py-6 px-8">
+                  <div className="font-serif text-lg text-onyx">{blog.title}</div>
+                  <div className="text-[10px] text-onyx/30 uppercase tracking-widest mt-1">Slug: {blog.slug}</div>
+                </TableCell>
+                <TableCell className="py-6 px-8 uppercase tracking-widest text-[10px] text-onyx/60">{blog.category}</TableCell>
+                <TableCell className="py-6 px-8 italic font-serif text-onyx/50">{blog.date}</TableCell>
+                <TableCell className="text-right py-6 px-8">
+                  <div className="flex justify-end gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleOpenDialog(blog)}
+                      className="hover:bg-onyx hover:text-ivory rounded-full transition-all"
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
                       onClick={() => {
                         if(confirm("Are you sure you want to delete this article?")) {
                           deleteMutation.mutate(blog.slug);

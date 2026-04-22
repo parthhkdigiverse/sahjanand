@@ -1,4 +1,4 @@
-import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, createRootRoute, HeadContent, Scripts, useLocation } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import appCss from "../styles.css?url";
@@ -74,13 +74,16 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith('/admin');
+
   return (
     <>
-      <Navbar />
+      {!isAdmin && <Navbar />}
       <main>
         <Outlet />
       </main>
-      <Footer />
+      {!isAdmin && <Footer />}
     </>
   );
 }

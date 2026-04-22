@@ -1,7 +1,15 @@
 import asyncio
 import motor.motor_asyncio
 import os
+import dns.resolver
 from dotenv import load_dotenv
+
+# Fix for "cannot open /etc/resolv.conf" on some restricted environments
+try:
+    dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
+    dns.resolver.default_resolver.nameservers = ['8.8.8.8', '8.8.4.4', '1.1.1.1']
+except Exception:
+    pass
 
 # Load .env from project root
 load_dotenv(os.path.join(os.path.dirname(__file__), '../../.env'))
