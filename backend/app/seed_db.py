@@ -163,6 +163,72 @@ BLOGS = [
     }
 ]
 
+REVIEWS = [
+    {
+        "name": "Anaya Mehra",
+        "initial": "A",
+        "rating": 5,
+        "text": "Beautiful ring, beautiful packaging, beautiful service. Every detail felt special."
+    },
+    {
+        "name": "Vikram Shah",
+        "initial": "V",
+        "rating": 5,
+        "text": "Bought the emerald ring for my wife's birthday. The team helped me choose remotely. Top quality."
+    },
+    {
+        "name": "Priya Iyer",
+        "initial": "P",
+        "rating": 5,
+        "text": "I've owned pieces from bigger brands. The finish on my bangle is in another league."
+    },
+    {
+        "name": "Karan Bhatia",
+        "initial": "K",
+        "rating": 5,
+        "text": "Simple, elegant, perfect. My studs go with everything. Already planning my next buy."
+    },
+    {
+        "name": "Riya Chopra",
+        "initial": "R",
+        "rating": 5,
+        "text": "Their team spent two hours helping me choose. No pressure, just real knowledge."
+    }
+]
+
+TESTIMONIALS = [
+    {
+        "image": "/assets/insta-2.jpg",
+        "name": "Mira & Aarav",
+        "quote": "The perfect ring for our day."
+    },
+    {
+        "image": "/assets/insta-3.jpg",
+        "name": "Diya Kapoor",
+        "quote": "Every gift from Aurum feels special."
+    },
+    {
+        "image": "/assets/insta-5.jpg",
+        "name": "Aarti S.",
+        "quote": "I wear my rings daily. They still look new."
+    },
+    {
+        "image": "/assets/insta-6.jpg",
+        "name": "Nisha Verma",
+        "quote": "A truly memorable shopping experience."
+    },
+    {
+        "image": "/assets/insta-2.jpg",
+        "name": "Riya & Karan",
+        "quote": "Heirloom quality. Worth every rupee."
+    },
+    {
+        "image": "/assets/insta-3.jpg",
+        "name": "Sana Malik",
+        "quote": "The detailing is simply breathtaking."
+    }
+]
+
 async def seed():
     client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
     db = client.get_default_database()
@@ -170,12 +236,20 @@ async def seed():
     print("Clearing existing data...")
     await db.products.delete_many({})
     await db.blogs.delete_many({})
+    await db.reviews.delete_many({})
+    await db.testimonials.delete_many({})
     
     print(f"Seeding {len(PRODUCTS)} products...")
     await db.products.insert_many(PRODUCTS)
     
     print(f"Seeding {len(BLOGS)} blogs...")
     await db.blogs.insert_many(BLOGS)
+
+    print(f"Seeding {len(REVIEWS)} reviews...")
+    await db.reviews.insert_many(REVIEWS)
+
+    print(f"Seeding {len(TESTIMONIALS)} testimonials...")
+    await db.testimonials.insert_many(TESTIMONIALS)
     
     print("Seeding complete!")
     client.close()

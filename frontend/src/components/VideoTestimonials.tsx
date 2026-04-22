@@ -2,21 +2,15 @@ import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
-import insta2 from "@/assets/insta-2.jpg";
-import insta3 from "@/assets/insta-3.jpg";
-import insta5 from "@/assets/insta-5.jpg";
-import insta6 from "@/assets/insta-6.jpg";
-
-const testimonials = [
-  { image: insta2, name: "Mira & Aarav", quote: "The perfect ring for our day." },
-  { image: insta3, name: "Diya Kapoor", quote: "Every gift from Aurum feels special." },
-  { image: insta5, name: "Aarti S.", quote: "I wear my rings daily. They still look new." },
-  { image: insta6, name: "Nisha Verma", quote: "A truly memorable shopping experience." },
-  { image: insta2, name: "Riya & Karan", quote: "Heirloom quality. Worth every rupee." },
-  { image: insta3, name: "Sana Malik", quote: "The detailing is simply breathtaking." },
-];
+import { useQuery } from "@tanstack/react-query";
+import { fetchTestimonials } from "@/lib/api";
 
 export function VideoTestimonials() {
+  const { data: testimonials = [], isLoading } = useQuery({
+    queryKey: ["testimonials"],
+    queryFn: fetchTestimonials,
+  });
+  
   const [open, setOpen] = useState<number | null>(null);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" }, [
     Autoplay({ delay: 1500, stopOnInteraction: false, stopOnMouseEnter: true }),

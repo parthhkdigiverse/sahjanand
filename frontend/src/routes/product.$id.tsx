@@ -52,6 +52,7 @@ function ProductPage() {
 
   const galleryImages = product.images?.length > 0 ? product.images : [product.image];
   
+
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
     if (r) {
@@ -62,10 +63,6 @@ function ProductPage() {
       });
     }
   };
-
-  const related = products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4);
-  const fallback = products.filter((p) => p.id !== product.id).slice(0, 4);
-  const relatedFinal = related.length >= 2 ? related : fallback;
 
   return (
     <>
