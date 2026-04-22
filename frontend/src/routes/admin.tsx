@@ -109,28 +109,6 @@ function AdminLayout() {
 
       {/* Main Content Area */}
       <div className={`flex-1 transition-all duration-500 ${isSidebarOpen ? "ml-64" : "ml-20"} min-h-screen flex flex-col`}>
-        {/* Top Header */}
-        <header className="h-20 glass flex items-center justify-between px-10 sticky top-0 z-40 border-b border-onyx/5">
-          <div className="flex items-center gap-4 animate-fade-up">
-            <span className="text-onyx/40 font-serif lowercase italic">admin</span>
-            <span className="text-onyx/20">/</span>
-            <span className="text-onyx font-medium tracking-wide uppercase text-xs">{currentPath}</span>
-          </div>
-          
-          <div className="flex items-center gap-6">
-            <div className="h-8 w-px bg-onyx/10" />
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <div className="text-sm font-medium text-onyx">Directeur</div>
-                <div className="text-[10px] text-onyx/50 uppercase tracking-widest">Administrator</div>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center text-gold font-serif">
-                A
-              </div>
-            </div>
-          </div>
-        </header>
-
         <main className="p-10 flex-1 animate-fade-up">
           <div className="max-w-7xl mx-auto">
             <Outlet />
