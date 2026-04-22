@@ -63,6 +63,26 @@ export async function fetchBlog(slug: string): Promise<BlogPost> {
   return res.json();
 }
 
+export type ContactInquiry = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  type: "GENERAL" | "PRODUCT";
+  product_id?: string;
+  product_name?: string;
+};
+
+export async function submitContact(data: ContactInquiry) {
+  const res = await fetch(`${API_BASE}/contacts/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to submit inquiry");
+  return res.json();
+}
+
 export async function fetchReviews(): Promise<Review[]> {
   const res = await fetch(`${API_BASE}/reviews/`);
   if (!res.ok) throw new Error("Failed to fetch reviews");

@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts } from "@/lib/api";
+import { useState } from "react";
+import { X, ZoomIn } from "lucide-react";
 
 export const Route = createFileRoute("/gallery")({
   component: GalleryPage,
@@ -23,6 +25,8 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProducts,
@@ -53,15 +57,18 @@ function GalleryPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           {/* Main Large Image */}
           {featured[0] && (
-            <div className="relative group overflow-hidden bg-white aspect-square md:aspect-auto md:row-span-2">
+            <div 
+              onClick={() => setSelectedImage(featured[0].image)}
+              className="relative group overflow-hidden bg-white aspect-square md:aspect-auto md:row-span-2 cursor-pointer"
+            >
               <img
                 src={featured[0].image}
                 alt={featured[0].name}
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-2 px-4 border border-white/40 backdrop-blur-sm">
-                  View
+              <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-2 px-4 border border-white/40 backdrop-blur-sm flex items-center gap-2">
+                  <ZoomIn size={14} /> View Details
                 </span>
               </div>
             </div>
@@ -72,16 +79,17 @@ function GalleryPage() {
             {featured.slice(1).map((p) => (
               <div
                 key={p.id}
-                className="relative group overflow-hidden bg-white aspect-square shadow-sm"
+                onClick={() => setSelectedImage(p.image)}
+                className="relative group overflow-hidden bg-white aspect-square shadow-sm cursor-pointer"
               >
                 <img
                   src={p.image}
                   alt={p.name}
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                  <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-2 px-4 border border-white/40 backdrop-blur-sm">
-                    View
+                <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-1.5 px-3 border border-white/40 backdrop-blur-sm flex items-center gap-2">
+                    <ZoomIn size={12} /> View
                   </span>
                 </div>
               </div>
@@ -95,16 +103,17 @@ function GalleryPage() {
             {remaining.map((p) => (
               <div
                 key={p.id}
-                className="relative group overflow-hidden bg-white aspect-square shadow-sm"
+                onClick={() => setSelectedImage(p.image)}
+                className="relative group overflow-hidden bg-white aspect-square shadow-sm cursor-pointer"
               >
                 <img
                   src={p.image}
                   alt={p.name}
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                  <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-2 px-4 border border-white/40 backdrop-blur-sm">
-                    View
+                <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-1.5 px-3 border border-white/40 backdrop-blur-sm flex items-center gap-2">
+                    <ZoomIn size={12} /> View
                   </span>
                 </div>
               </div>
@@ -112,6 +121,37 @@ function GalleryPage() {
           </div>
         )}
       </div>
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[110] bg-onyx/95 backdrop-blur-md flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button 
+            className="absolute top-8 right-8 text-white/60 hover:text-gold transition-colors p-2"
+            onClick={() => setSelectedImage(null)}
+          >
+            <X size={32} strokeWidth={1} />
+          </button>
+          
+          <div 
+            className="relative max-w-7xl max-h-full overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={selectedImage} 
+              alt="Detailed View" 
+              className="max-w-full max-h-[85vh] md:max-h-[90vh] object-contain border border-white/5"
+            />
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-onyx/80 to-transparent">
+              <p className="text-[10px] tracking-[0.4em] text-white/40 uppercase text-center font-bold">
+                Maison Aurum · High Jewellery
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

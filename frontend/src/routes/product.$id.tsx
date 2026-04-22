@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { fetchProduct, fetchProducts, type Product } from "@/lib/api";
 import { ProductCard } from "@/components/FeaturedProducts";
-import { Check, MessageCircle, ArrowLeft } from "lucide-react";
+import { InquiryModal } from "@/components/InquiryModal";
+import { Check, MessageCircle, ArrowLeft, X } from "lucide-react";
 
 export const Route = createFileRoute("/product/$id")({
   component: ProductPage,
@@ -16,6 +17,8 @@ function ProductPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 });
+  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -84,6 +87,7 @@ function ProductPage() {
                 className="relative aspect-square bg-secondary overflow-hidden shadow-sm mb-6 cursor-zoom-in"
                 onMouseMove={onMove}
                 onMouseLeave={() => setZoom((z) => ({ ...z, active: false }))}
+                onClick={() => setIsLightboxOpen(true)}
               >
                 <img
                   src={galleryImages[activeImage]}
@@ -149,6 +153,7 @@ function ProductPage() {
 
               <div className="flex flex-col sm:flex-row gap-4 mb-10">
                 <button
+                  onClick={() => setIsInquiryOpen(true)}
                   className="flex-1 bg-gray-900 text-white py-4 px-8 text-[11px] tracking-[0.2em] font-bold uppercase transition-all hover:bg-gold hover:text-white"
                 >
                   Enquire Now
@@ -159,6 +164,12 @@ function ProductPage() {
                   <MessageCircle size={16} /> WhatsApp Inquiry
                 </button>
               </div>
+
+              <InquiryModal 
+                product={product} 
+                isOpen={isInquiryOpen} 
+                onClose={() => setIsInquiryOpen(false)} 
+              />
 
               {/* Atelier Promise Box */}
               <div className="bg-[#FAF9F6] border-l-[3px] border-gold p-6 lg:p-8">
@@ -187,6 +198,41 @@ function ProductPage() {
           </div>
         </div>
       </section>
+      <InquiryModal 
+        product={product} 
+        isOpen={isInquiryOpen} 
+        onClose={() => setIsInquiryOpen(false)} 
+      />
+
+      {isLightboxOpen && (
+        <div 
+          className="fixed inset-0 z-[110] bg-onyx/95 backdrop-blur-md flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          <button 
+            className="absolute top-8 right-8 text-white/60 hover:text-gold transition-colors p-2"
+            onClick={() => setIsLightboxOpen(false)}
+          >
+            <X size={32} strokeWidth={1} />
+          </button>
+          
+          <div 
+            className="relative max-w-7xl max-h-full overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={galleryImages[activeImage]} 
+              alt={product.name} 
+              className="max-w-full max-h-[85vh] md:max-h-[90vh] object-contain border border-white/5"
+            />
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-onyx/80 to-transparent">
+              <p className="text-[10px] tracking-[0.4em] text-white/40 uppercase text-center font-bold">
+                Maison Aurum · Atelier Series
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
