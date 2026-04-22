@@ -44,50 +44,73 @@ function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-serif text-center uppercase tracking-widest text-onyx">Admin Access</CardTitle>
-          <CardDescription className="text-center">
-            Enter your credentials to manage the atelier
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-onyx">
+      {/* Cinematic Background */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1573408339371-2ed3644fcf6e?q=80&w=2670&auto=format&fit=crop" 
+          alt="Luxury background" 
+          className="w-full h-full object-cover opacity-40 scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-tr from-onyx via-onyx/80 to-transparent" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-lg px-6 animate-fade-up">
+        <div className="text-center mb-12">
+          <div className="inline-block p-4 mb-4">
+            <span className="font-serif text-5xl tracking-[0.4em] text-gold block mb-2">MAISON</span>
+            <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-gold to-transparent opacity-50" />
+            <span className="text-[10px] uppercase tracking-[0.8em] text-ivory/40 mt-4 block">Atelier Management</span>
+          </div>
+        </div>
+
+        <div className="glass-dark p-12 rounded-2xl shadow-luxe border border-white/5 space-y-8">
+          <div className="space-y-2 text-center">
+            <h2 className="text-ivory font-serif text-2xl tracking-wide">Secure Access</h2>
+            <p className="text-ivory/40 text-sm font-light uppercase tracking-widest">Entry portal for authorized personnel</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-ivory/60 text-[10px] uppercase tracking-widest ml-1">Identifier</Label>
               <Input 
                 id="username" 
                 type="text" 
-                placeholder="Admin" 
+                placeholder="Auteur" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required 
+                className="bg-white/5 border-white/10 text-ivory placeholder:text-ivory/10 h-14 rounded-lg focus-visible:ring-gold/50 focus-visible:border-gold/50 transition-all"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-ivory/60 text-[10px] uppercase tracking-widest ml-1">Access Key</Label>
               <Input 
                 id="password" 
                 type="password" 
                 value={password}
+                placeholder="••••••••"
                 onChange={(e) => setPassword(e.target.value)}
                 required 
+                className="bg-white/5 border-white/10 text-ivory placeholder:text-ivory/10 h-14 rounded-lg focus-visible:ring-gold/50 focus-visible:border-gold/50 transition-all"
               />
             </div>
-          </CardContent>
-          <CardFooter>
+
             <Button 
               type="submit" 
-              className="w-full bg-onyx text-ivory hover:bg-gold hover:text-onyx transition-all duration-300"
+              className="w-full h-14 bg-gold text-onyx hover:bg-gold-soft transition-all duration-500 rounded-lg font-medium tracking-widest uppercase text-xs shadow-luxe group overflow-hidden relative"
               disabled={isLoading}
-              style={{ backgroundColor: "var(--onyx)", color: "var(--ivory)" }}
             >
-              {isLoading ? "Authenticating..." : "Sign In"}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent animate-shimmer" />
+              <span className="relative z-10">{isLoading ? "Validating..." : "Enter Workspace"}</span>
             </Button>
-          </CardFooter>
-        </form>
-      </Card>
+          </form>
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-ivory/20 text-[10px] uppercase tracking-[0.3em]">© 2026 Maison Aurum — Confidential System</p>
+        </div>
+      </div>
     </div>
   );
 }
