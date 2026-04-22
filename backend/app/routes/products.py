@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Depends
 from typing import List
 from ..models.product import Product, ProductCreate
 from ..database import get_database
 from bson import ObjectId
+from ..auth import get_current_admin
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -32,9 +33,45 @@ async def get_product(id: str):
     return product
 
 @router.post("/", response_model=Product)
-async def create_product(product: ProductCreate = Body(...)):
+async def create_product(product: ProductCreate = Body(...), admin: str = Depends(get_current_admin)):
     db = get_database()
     product_dict = product.dict()
     result = await db.products.insert_one(product_dict)
     product_dict["_id"] = str(result.inserted_id)
     return product_dict
+
+@router.put("/{id}", response_model=Product)
+async def update_product(id: str, product_data: ProductCreate = Body(...), admin: str = Depends(get_current_admin)):
+    db = get_database()
+    
+    # Try to find by custom id first, then ObjectId
+    query = {"id": id}
+    if ObjectId.is_valid(id):
+        query = {"$or": [{"id": id}, {"_id": ObjectId(id)}]}
+        
+    result = await db.products.find_one_and_update(
+        query,
+        {"$set": product_data.dict()},
+        return_document=True
+    )
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="Product not found")
+        
+    result["_id"] = str(result["_id"])
+    return result
+
+@router.delete("/{id}")
+async def delete_product(id: str, admin: str = Depends(get_current_admin)):
+    db = get_database()
+    
+    query = {"id": id}
+    if ObjectId.is_valid(id):
+        query = {"$or": [{"id": id}, {"_id": ObjectId(id)}]}
+        
+    result = await db.products.delete_one(query)
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+        
+    return {"message": "Product deleted successfully"}
