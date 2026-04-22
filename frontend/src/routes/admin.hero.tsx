@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit2, Trash2, Loader2, ArrowUp, ArrowDown, Camera } from "lucide-react";
-import { fetchHeroSlides, createHeroSlide, updateHeroSlide, deleteHeroSlide, HeroSlide } from "@/lib/api";
+import { fetchHeroSlides, HeroSlide } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -40,11 +40,20 @@ function AdminHero() {
 
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
-      const token = localStorage.getItem("token") || "";
       if (editingSlide) {
-        return updateHeroSlide(editingSlide._id, data, token);
+        const res = await authenticatedFetch(`http://localhost:8001/api/hero/${editingSlide._id}`, {
+          method: "PUT",
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error("Failed to update slide");
+        return res.json();
       } else {
-        return createHeroSlide(data, token);
+        const res = await authenticatedFetch("http://localhost:8001/api/hero/", {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error("Failed to create slide");
+        return res.json();
       }
     },
     onSuccess: () => {
@@ -58,13 +67,17 @@ function AdminHero() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const token = localStorage.getItem("token") || "";
-      return deleteHeroSlide(id, token);
+      const res = await authenticatedFetch(`http://localhost:8001/api/hero/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete slide");
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hero-slides"] });
       toast.success("Slide deleted");
     },
+    onError: () => toast.error("Error deleting slide"),
   });
 
   const resetForm = () => {
@@ -103,14 +116,16 @@ function AdminHero() {
     try {
       const res = await authenticatedFetch("http://localhost:8001/api/uploads/", {
         method: "POST",
-        body: fileData
+        body: fileData,
       });
       if (res.ok) {
         const result = await res.json();
         const imageUrl = result.urls[0];
-        setFormData({ ...formData, image: imageUrl });
+        setFormData(prev => ({ ...prev, image: imageUrl }));
         setImagePreview(imageUrl);
         toast.success("Image uploaded");
+      } else {
+        toast.error("Upload failed");
       }
     } catch (err) {
       toast.error("Upload failed");

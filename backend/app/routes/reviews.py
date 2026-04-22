@@ -7,21 +7,25 @@ from ..auth import get_current_admin
 
 router = APIRouter(prefix="/reviews", tags=["reviews"])
 
-@router.get("/", response_model=List[Review])
+def serialize_review(doc: dict) -> dict:
+    doc["_id"] = str(doc["_id"])
+    return doc
+
+@router.get("/", response_model=List[Review], response_model_by_alias=True)
 async def get_reviews():
     db = get_database()
     reviews = await db.reviews.find().to_list(1000)
-    return reviews
+    return [serialize_review(r) for r in reviews]
 
-@router.post("/", response_model=Review)
+@router.post("/", response_model=Review, response_model_by_alias=True)
 async def create_review(review: ReviewCreate = Body(...), admin: str = Depends(get_current_admin)):
     db = get_database()
     review_dict = review.model_dump()
     result = await db.reviews.insert_one(review_dict)
-    review_dict["_id"] = str(result.inserted_id)
-    return review_dict
+    created = await db.reviews.find_one({"_id": result.inserted_id})
+    return serialize_review(created)
 
-@router.put("/{id}", response_model=Review)
+@router.put("/{id}", response_model=Review, response_model_by_alias=True)
 async def update_review(id: str, review: ReviewUpdate = Body(...), admin: str = Depends(get_current_admin)):
     db = get_database()
     if not ObjectId.is_valid(id):
@@ -31,14 +35,16 @@ async def update_review(id: str, review: ReviewUpdate = Body(...), admin: str = 
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")
 
-    result = await db.reviews.update_one({"_id": ObjectId(id)}, {"$set": update_data})
+    updated = await db.reviews.find_one_and_update(
+        {"_id": ObjectId(id)},
+        {"$set": update_data},
+        return_document=True
+    )
     
-    if result.matched_count == 0:
+    if updated is None:
         raise HTTPException(status_code=404, detail="Review not found")
         
-    updated_review = await db.reviews.find_one({"_id": ObjectId(id)})
-    updated_review["_id"] = str(updated_review["_id"])
-    return updated_review
+    return serialize_review(updated)
 
 @router.delete("/{id}")
 async def delete_review(id: str, admin: str = Depends(get_current_admin)):

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Star, Loader2, Edit2, Plus } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
-import { fetchReviews, fetchSettings, updateSettings } from "@/lib/api";
+import { fetchReviews, fetchSettings } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -60,8 +60,13 @@ function AdminReviews() {
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (updatedSettings: typeof settingsData) => {
-      const token = localStorage.getItem("token") || "";
-      return updateSettings(updatedSettings, token);
+      const fullSettings = { ...settings, ...updatedSettings };
+      const res = await authenticatedFetch("http://localhost:8001/api/settings/", {
+        method: "PUT",
+        body: JSON.stringify(fullSettings),
+      });
+      if (!res.ok) throw new Error("Failed to update settings");
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });

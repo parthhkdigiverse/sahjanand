@@ -10,10 +10,14 @@ export const authService = {
 export async function authenticatedFetch(url: string, options: RequestInit = {}) {
   const token = authService.getToken();
   
-  const headers = {
-    ...options.headers,
-    'Content-Type': 'application/json',
+  // Only set Content-Type to JSON when the body is NOT FormData.
+  // If it's FormData, the browser sets Content-Type with the correct multipart boundary automatically.
+  const isFormData = options.body instanceof FormData;
+
+  const headers: Record<string, string> = {
+    ...(options.headers as Record<string, string>),
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
   };
 
   const response = await fetch(url, { ...options, headers });

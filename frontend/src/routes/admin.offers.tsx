@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Loader2, Download, Mail, Phone, User, Calendar, Plus, Camera } from "lucide-react";
-import { fetchSettings, updateSettings, fetchOfferLeads, deleteOfferLead, SiteSettings } from "@/lib/api";
+import { fetchSettings, SiteSettings } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -56,34 +56,44 @@ function AdminOffers() {
 
   const { data: leads, isLoading: leadsLoading } = useQuery({
     queryKey: ["offer-leads"],
-    queryFn: () => {
-      const token = localStorage.getItem("token") || "";
-      return fetchOfferLeads(token);
+    queryFn: async () => {
+      const res = await authenticatedFetch("http://localhost:8001/api/offer-leads/");
+      if (!res.ok) throw new Error("Failed to fetch leads");
+      return res.json();
     },
   });
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (updated: any) => {
-      const token = localStorage.getItem("token") || "";
       // We need to provide ALL settings fields to avoid clearing others
       const fullSettings = { ...settings, ...updated };
-      return updateSettings(fullSettings, token);
+      const res = await authenticatedFetch("http://localhost:8001/api/settings/", {
+        method: "PUT",
+        body: JSON.stringify(fullSettings),
+      });
+      if (!res.ok) throw new Error("Failed to update settings");
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
       toast.success("Offer section updated");
     },
+    onError: () => toast.error("Error updating settings"),
   });
 
   const deleteLeadMutation = useMutation({
     mutationFn: async (id: string) => {
-      const token = localStorage.getItem("token") || "";
-      return deleteOfferLead(id, token);
+      const res = await authenticatedFetch(`http://localhost:8001/api/offer-leads/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete lead");
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["offer-leads"] });
       toast.success("Lead removed");
     },
+    onError: () => toast.error("Error removing lead"),
   });
 
   const handleImageUpload = async (file: File) => {
@@ -93,14 +103,16 @@ function AdminOffers() {
     try {
       const res = await authenticatedFetch("http://localhost:8001/api/uploads/", {
         method: "POST",
-        body: fileData
+        body: fileData,
       });
       if (res.ok) {
         const result = await res.json();
         const imageUrl = result.urls[0];
-        setSettingsData({ ...settingsData, offer_image: imageUrl });
+        setSettingsData(prev => ({ ...prev, offer_image: imageUrl }));
         setImagePreview(imageUrl);
         toast.success("Image uploaded");
+      } else {
+        toast.error("Upload failed");
       }
     } catch (err) {
       toast.error("Upload failed");
@@ -222,6 +234,86 @@ function AdminOffers() {
               {updateSettingsMutation.isPending ? "Updating..." : "Save Offer Settings"}
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Leads Table */}
+      <Card className="border-gold/20 shadow-luxe">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="font-serif">Collected Leads</CardTitle>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportLeads}
+            className="gap-2 border-gold/30 hover:border-gold"
+          >
+            <Download className="h-4 w-4" /> Export CSV
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {leadsLoading ? (
+            <div className="flex justify-center py-10"><Loader2 className="animate-spin h-8 w-8 text-gold" /></div>
+          ) : !leads || leads.length === 0 ? (
+            <div className="text-center py-10 text-muted-foreground">No leads collected yet.</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Offer Code</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {leads.map((lead) => (
+                  <TableRow key={lead._id}>
+                    <TableCell className="text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(lead.created_at).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <User className="h-3 w-3 text-gold" />
+                        {lead.name}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-3 w-3 text-gold" />
+                        {lead.email}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-3 w-3 text-gold" />
+                        {lead.phone}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="bg-gold/10 text-gold text-xs font-medium px-2 py-1 rounded">{lead.offer_code}</span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={() => {
+                          if (confirm("Delete this lead?")) deleteLeadMutation.mutate(lead._id);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

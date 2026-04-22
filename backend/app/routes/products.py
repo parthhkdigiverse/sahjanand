@@ -35,7 +35,7 @@ async def get_product(id: str):
 @router.post("/", response_model=Product)
 async def create_product(product: ProductCreate = Body(...), admin: str = Depends(get_current_admin)):
     db = get_database()
-    product_dict = product.dict()
+    product_dict = product.model_dump()
     result = await db.products.insert_one(product_dict)
     product_dict["_id"] = str(result.inserted_id)
     return product_dict
@@ -51,7 +51,7 @@ async def update_product(id: str, product_data: ProductCreate = Body(...), admin
         
     result = await db.products.find_one_and_update(
         query,
-        {"$set": product_data.dict()},
+        {"$set": product_data.model_dump()},
         return_document=True
     )
     

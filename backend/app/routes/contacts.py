@@ -8,20 +8,24 @@ from ..auth import get_current_admin
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
-@router.get("/", response_model=List[Contact])
+def serialize_contact(doc: dict) -> dict:
+    doc["_id"] = str(doc["_id"])
+    return doc
+
+@router.get("/", response_model=List[Contact], response_model_by_alias=True)
 async def get_contacts(admin: str = Depends(get_current_admin)):
     db = get_database()
     contacts = await db.contacts.find().sort("created_at", -1).to_list(1000)
-    return contacts
+    return [serialize_contact(c) for c in contacts]
 
-@router.post("/", response_model=Contact)
+@router.post("/", response_model=Contact, response_model_by_alias=True)
 async def create_contact(contact: ContactCreate = Body(...)):
     db = get_database()
     contact_dict = contact.model_dump()
     contact_dict["created_at"] = datetime.utcnow()
     result = await db.contacts.insert_one(contact_dict)
-    contact_dict["_id"] = str(result.inserted_id)
-    return contact_dict
+    created = await db.contacts.find_one({"_id": result.inserted_id})
+    return serialize_contact(created)
 
 @router.delete("/{id}")
 async def delete_contact(id: str, admin: str = Depends(get_current_admin)):

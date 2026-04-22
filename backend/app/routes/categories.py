@@ -33,7 +33,7 @@ async def get_category(id: str):
 @router.post("/", response_model=Category)
 async def create_category(category: CategoryCreate = Body(...), admin: str = Depends(get_current_admin)):
     db = get_database()
-    category_dict = category.dict()
+    category_dict = category.model_dump()
     
     # Check if category with this id already exists
     existing = await db.categories.find_one({"id": category.id})
@@ -52,7 +52,7 @@ async def update_category(id: str, category_data: CategoryUpdate = Body(...), ad
     if ObjectId.is_valid(id):
         query = {"$or": [{"id": id}, {"_id": ObjectId(id)}]}
         
-    update_data = {k: v for k, v in category_data.dict().items() if v is not None}
+    update_data = {k: v for k, v in category_data.model_dump().items() if v is not None}
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")
 
