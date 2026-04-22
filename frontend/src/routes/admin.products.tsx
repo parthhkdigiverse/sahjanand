@@ -37,15 +37,15 @@ function AdminProducts() {
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["products"],
-    queryFn: () => fetch("http://localhost:8003/api/products/").then(res => res.json())
+    queryFn: () => fetch("http://localhost:8001/api/products/").then(res => res.json())
   });
 
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
       const isEdit = !!editingProduct;
       const url = isEdit 
-        ? `http://localhost:8003/api/products/${editingProduct.id}` 
-        : `http://localhost:8003/api/products/`;
+        ? `http://localhost:8001/api/products/${editingProduct.id}` 
+        : `http://localhost:8001/api/products/`;
       
       const res = await authenticatedFetch(url, {
         method: isEdit ? "PUT" : "POST",
@@ -66,7 +66,7 @@ function AdminProducts() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8003/api/products/${id}`, {
+      const res = await authenticatedFetch(`http://localhost:8001/api/products/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");

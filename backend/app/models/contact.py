@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from typing import Optional, Literal
 from bson import ObjectId
 from datetime import datetime
 
@@ -8,6 +8,9 @@ class ContactBase(BaseModel):
     email: EmailStr
     subject: str
     message: str
+    type: Literal["GENERAL", "PRODUCT"] = "GENERAL"
+    product_id: Optional[str] = None
+    product_name: Optional[str] = None
 
 class ContactCreate(ContactBase):
     pass

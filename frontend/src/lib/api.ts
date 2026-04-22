@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8003/api";
+const API_BASE = "http://localhost:8001/api";
 
 export type Product = {
   id: string;
@@ -60,6 +60,26 @@ export async function fetchBlogs(): Promise<BlogPost[]> {
 export async function fetchBlog(slug: string): Promise<BlogPost> {
   const res = await fetch(`${API_BASE}/blogs/${slug}`);
   if (!res.ok) throw new Error("Failed to fetch blog");
+  return res.json();
+}
+
+export type ContactInquiry = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  type: "GENERAL" | "PRODUCT";
+  product_id?: string;
+  product_name?: string;
+};
+
+export async function submitContact(data: ContactInquiry) {
+  const res = await fetch(`${API_BASE}/contacts/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to submit inquiry");
   return res.json();
 }
 
