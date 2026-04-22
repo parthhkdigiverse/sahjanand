@@ -37,15 +37,15 @@ function AdminBlogs() {
 
   const { data: blogs, isLoading } = useQuery<BlogPost[]>({
     queryKey: ["blogs"],
-    queryFn: () => fetch("http://localhost:8002/api/blogs/").then(res => res.json())
+    queryFn: () => fetch("http://localhost:8003/api/blogs/").then(res => res.json())
   });
 
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
       const isEdit = !!editingBlog;
       const url = isEdit 
-        ? `http://localhost:8002/api/blogs/${editingBlog.slug}` 
-        : `http://localhost:8002/api/blogs/`;
+        ? `http://localhost:8003/api/blogs/${editingBlog.slug}` 
+        : `http://localhost:8003/api/blogs/`;
       
       const res = await authenticatedFetch(url, {
         method: isEdit ? "PUT" : "POST",
@@ -66,7 +66,7 @@ function AdminBlogs() {
 
   const deleteMutation = useMutation({
     mutationFn: async (slug: string) => {
-      const res = await authenticatedFetch(`http://localhost:8002/api/blogs/${slug}`, {
+      const res = await authenticatedFetch(`http://localhost:8003/api/blogs/${slug}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");

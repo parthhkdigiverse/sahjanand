@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8002/api";
+const API_BASE = "http://localhost:8003/api";
 
 export type Product = {
   id: string;
