@@ -2,41 +2,15 @@ import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Star, BadgeCheck, ChevronLeft, ChevronRight } from "lucide-react";
-
-const reviews = [
-  {
-    name: "Anaya Mehra",
-    initial: "A",
-    rating: 5,
-    text: "Beautiful ring, beautiful packaging, beautiful service. Every detail felt special.",
-  },
-  {
-    name: "Vikram Shah",
-    initial: "V",
-    rating: 5,
-    text: "Bought the emerald ring for my wife's birthday. The team helped me choose remotely. Top quality.",
-  },
-  {
-    name: "Priya Iyer",
-    initial: "P",
-    rating: 5,
-    text: "I've owned pieces from bigger brands. The finish on my bangle is in another league.",
-  },
-  {
-    name: "Karan Bhatia",
-    initial: "K",
-    rating: 5,
-    text: "Simple, elegant, perfect. My studs go with everything. Already planning my next buy.",
-  },
-  {
-    name: "Riya Chopra",
-    initial: "R",
-    rating: 5,
-    text: "Their team spent two hours helping me choose. No pressure, just real knowledge.",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { fetchReviews } from "@/lib/api";
 
 export function GoogleReviews() {
+  const { data: reviews = [], isLoading } = useQuery({
+    queryKey: ["reviews"],
+    queryFn: fetchReviews,
+  });
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" }, [
     Autoplay({ delay: 4500 }),
   ]);

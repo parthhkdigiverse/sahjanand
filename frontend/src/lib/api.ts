@@ -25,6 +25,20 @@ export type BlogPost = {
   content: string[];
 };
 
+export type Review = {
+  name: string;
+  initial: string;
+  rating: number;
+  text: string;
+};
+
+export type Testimonial = {
+  image: string;
+  name: string;
+  quote: string;
+  video_url?: string;
+};
+
 export async function fetchProducts(): Promise<Product[]> {
   const res = await fetch(`${API_BASE}/products/`);
   if (!res.ok) throw new Error("Failed to fetch products");
@@ -46,5 +60,17 @@ export async function fetchBlogs(): Promise<BlogPost[]> {
 export async function fetchBlog(slug: string): Promise<BlogPost> {
   const res = await fetch(`${API_BASE}/blogs/${slug}`);
   if (!res.ok) throw new Error("Failed to fetch blog");
+  return res.json();
+}
+
+export async function fetchReviews(): Promise<Review[]> {
+  const res = await fetch(`${API_BASE}/reviews/`);
+  if (!res.ok) throw new Error("Failed to fetch reviews");
+  return res.json();
+}
+
+export async function fetchTestimonials(): Promise<Testimonial[]> {
+  const res = await fetch(`${API_BASE}/testimonials/`);
+  if (!res.ok) throw new Error("Failed to fetch testimonials");
   return res.json();
 }
