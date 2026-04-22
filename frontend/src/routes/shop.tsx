@@ -39,11 +39,18 @@ function Shop() {
       (p) =>
         (cat === "All" || p.category === cat) &&
         (metal === "All" || p.metal === metal) &&
-        p.price <= maxPrice
+        (p.price === "REQUEST" || p.price <= maxPrice)
     );
-    if (sort === "price-asc") list = [...list].sort((a, b) => a.price - b.price);
-    if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
-    if (sort === "newest") list = [...list].reverse();
+
+    const getPrice = (p: Product) => (p.price === "REQUEST" ? Infinity : p.price);
+
+    if (sort === "price-asc") {
+      list = [...list].sort((a, b) => getPrice(a) - getPrice(b));
+    } else if (sort === "price-desc") {
+      list = [...list].sort((a, b) => getPrice(b) - getPrice(a));
+    } else if (sort === "newest") {
+      list = [...list].reverse();
+    }
     return list;
   }, [cat, metal, maxPrice, sort]);
 
