@@ -1,18 +1,39 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import offerImg from "@/assets/offer.jpg";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { fetchSettings, submitOfferLead } from "@/lib/api";
+import { toast } from "sonner";
 
 export function LeadCapture() {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
+
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
+
+  const leadMutation = useMutation({
+    mutationFn: submitOfferLead,
+    onSuccess: () => {
+      setSubmitted(true);
+      setTimeout(() => {
+        setOpen(false);
+        setSubmitted(false);
+        setFormData({ name: "", email: "", phone: "" });
+      }, 2500);
+    },
+    onError: () => toast.error("Something went wrong. Please try again."),
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setOpen(false);
-      setSubmitted(false);
-    }, 1800);
+    leadMutation.mutate({
+      ...formData,
+      offer_code: "WELCOME10"
+    });
   };
 
   return (
@@ -20,15 +41,16 @@ export function LeadCapture() {
       <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch shadow-luxe overflow-hidden bg-card">
         {/* LEFT — offer text + CTA */}
         <div className="relative p-10 md:p-16 lg:p-20 flex flex-col justify-center">
-          <p className="divider-gold mb-6">Welcome Offer</p>
+          <p className="divider-gold mb-6">{settings?.offer_subheading || "Welcome Offer"}</p>
           <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-5">
-            Get <span className="italic text-gold">10% Off</span>
-            <br />
-            Your First Order
+            {settings?.offer_heading ? (
+              <div dangerouslySetInnerHTML={{ __html: settings.offer_heading.replace("Off", '<span class="italic text-gold">Off</span>') }} />
+            ) : (
+              <>Get <span className="italic text-gold">10% Off</span><br />Your First Order</>
+            )}
           </h2>
           <p className="text-foreground/70 max-w-md mb-10 leading-relaxed">
-            A small thank-you for choosing us. Share your details and we'll
-            send your discount code straight to your inbox.
+            {settings?.offer_description || "A small thank-you for choosing us. Share your details and we'll send your discount code straight to your inbox."}
           </p>
           <div>
             <button
@@ -50,8 +72,8 @@ export function LeadCapture() {
         {/* RIGHT — image */}
         <div className="relative aspect-[4/5] lg:aspect-auto overflow-hidden bg-secondary">
           <img
-            src={offerImg}
-            alt="Delicate gold pendant"
+            src={settings?.offer_image || offerImg}
+            alt="Offer"
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
           />
@@ -89,10 +111,10 @@ export function LeadCapture() {
               </div>
             ) : (
               <>
-                <p className="divider-gold mb-5">Claim Offer</p>
-                <h3 className="font-serif text-3xl mb-2">Your 10% Discount</h3>
+                <p className="divider-gold mb-5">{settings?.popup_eyebrow || "Claim Offer"}</p>
+                <h3 className="font-serif text-3xl mb-2">{settings?.popup_heading || "Your 10% Discount"}</h3>
                 <p className="text-sm text-muted-foreground mb-8">
-                  Just a few details and your code is yours.
+                  {settings?.popup_description || "Just a few details and your code is yours."}
                 </p>
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
@@ -101,6 +123,8 @@ export function LeadCapture() {
                     </label>
                     <input
                       required
+                      value={formData.name}
+                      onChange={e => setFormData({...formData, name: e.target.value})}
                       className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
                     />
                   </div>
@@ -111,6 +135,8 @@ export function LeadCapture() {
                     <input
                       required
                       type="tel"
+                      value={formData.phone}
+                      onChange={e => setFormData({...formData, phone: e.target.value})}
                       className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
                     />
                   </div>
@@ -121,18 +147,21 @@ export function LeadCapture() {
                     <input
                       required
                       type="email"
+                      value={formData.email}
+                      onChange={e => setFormData({...formData, email: e.target.value})}
                       className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="sheen w-full mt-6 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors"
+                    disabled={leadMutation.isPending}
+                    className="sheen w-full mt-6 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors disabled:opacity-50"
                     style={{
                       backgroundColor: "var(--onyx)",
                       color: "var(--ivory)",
                     }}
                   >
-                    Send My Code
+                    {leadMutation.isPending ? "Sending..." : (settings?.popup_button_text || "Send My Code")}
                   </button>
                 </form>
               </>

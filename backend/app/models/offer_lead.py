@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, Any
 from bson import ObjectId
 from pydantic_core import core_schema
+from datetime import datetime
 
 class PyObjectId(ObjectId):
     @classmethod
@@ -28,24 +29,17 @@ class PyObjectId(ObjectId):
             raise ValueError("Invalid objectid")
         return ObjectId(v)
 
-class ReviewBase(BaseModel):
+class OfferLeadBase(BaseModel):
     name: str
-    image: Optional[str] = None
-    initial: Optional[str] = None
-    rating: int = Field(5, ge=1, le=5)
-    text: str
+    email: str
+    phone: str
+    offer_code: str = "WELCOME10"
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-class ReviewCreate(ReviewBase):
+class OfferLeadCreate(OfferLeadBase):
     pass
 
-class ReviewUpdate(BaseModel):
-    name: Optional[str] = None
-    image: Optional[str] = None
-    initial: Optional[str] = None
-    rating: Optional[int] = Field(None, ge=1, le=5)
-    text: Optional[str] = None
-
-class Review(ReviewBase):
+class OfferLead(OfferLeadBase):
     mongo_id: Optional[PyObjectId] = Field(None, alias="_id")
     
     model_config = ConfigDict(

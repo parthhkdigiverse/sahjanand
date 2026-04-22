@@ -32,7 +32,6 @@ class PyObjectId(ObjectId):
 class ProductBase(BaseModel):
     id: str = Field(..., description="The unique slug/identifier used in frontend routes")
     name: str
-    price: Union[float, str] = Field(..., description="Supports numerical price or the string 'REQUEST'")
     category: str
     metal: str
     image: str
@@ -41,6 +40,7 @@ class ProductBase(BaseModel):
     material: str
     description: str
     features: List[str] = []
+    featured: bool = False
 
 class ProductCreate(ProductBase):
     pass

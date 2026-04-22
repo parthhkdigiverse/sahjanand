@@ -3,7 +3,6 @@ const API_BASE = "http://localhost:8001/api";
 export type Product = {
   id: string;
   name: string;
-  price: number | "REQUEST";
   category: string;
   metal: string;
   image: string;
@@ -12,6 +11,7 @@ export type Product = {
   material: string;
   description: string;
   features?: string[];
+  featured?: boolean;
 };
 
 export type BlogPost = {
@@ -26,8 +26,9 @@ export type BlogPost = {
 };
 
 export type Review = {
+  id: string;
   name: string;
-  initial: string;
+  image: string;
   rating: number;
   text: string;
 };
@@ -37,6 +38,32 @@ export type Testimonial = {
   name: string;
   quote: string;
   video_url?: string;
+};
+
+export interface Category {
+  id: string;
+  name: string;
+  image?: string;
+};
+
+export type HeroSlide = {
+  _id: string;
+  image: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  link_text: string;
+  link_url: string;
+  order: number;
+};
+
+export type OfferLead = {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  offer_code: string;
+  created_at: string;
 };
 
 export async function fetchProducts(): Promise<Product[]> {
@@ -92,5 +119,108 @@ export async function fetchReviews(): Promise<Review[]> {
 export async function fetchTestimonials(): Promise<Testimonial[]> {
   const res = await fetch(`${API_BASE}/testimonials/`);
   if (!res.ok) throw new Error("Failed to fetch testimonials");
+  return res.json();
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+  const res = await fetch(`${API_BASE}/categories/`);
+  if (!res.ok) throw new Error("Failed to fetch categories");
+  return res.json();
+}
+
+export type SiteSettings = {
+  reviews_heading: string;
+  reviews_subheading: string;
+  offer_heading: string;
+  offer_subheading: string;
+  offer_description: string;
+  offer_image?: string;
+  popup_eyebrow: string;
+  popup_heading: string;
+  popup_description: string;
+  popup_button_text: string;
+};
+
+export async function fetchSettings(): Promise<SiteSettings> {
+  const res = await fetch(`${API_BASE}/settings/`);
+  if (!res.ok) throw new Error("Failed to fetch settings");
+  return res.json();
+}
+
+export async function updateSettings(data: SiteSettings, token: string) {
+  const res = await fetch(`${API_BASE}/settings/`, {
+    method: "PUT",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update settings");
+  return res.json();
+}
+
+// Hero Slides
+export async function fetchHeroSlides(): Promise<HeroSlide[]> {
+  const res = await fetch(`${API_BASE}/hero/`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function createHeroSlide(data: Omit<HeroSlide, "_id">, token: string) {
+  const res = await fetch(`${API_BASE}/hero/`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updateHeroSlide(id: string, data: Partial<HeroSlide>, token: string) {
+  const res = await fetch(`${API_BASE}/hero/${id}`, {
+    method: "PUT",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteHeroSlide(id: string, token: string) {
+  const res = await fetch(`${API_BASE}/hero/${id}`, {
+    method: "DELETE",
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+// Offer Leads
+export async function fetchOfferLeads(token: string): Promise<OfferLead[]> {
+  const res = await fetch(`${API_BASE}/offer-leads/`, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function submitOfferLead(data: Omit<OfferLead, "_id" | "created_at">) {
+  const res = await fetch(`${API_BASE}/offer-leads/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteOfferLead(id: string, token: string) {
+  const res = await fetch(`${API_BASE}/offer-leads/${id}`, {
+    method: "DELETE",
+    headers: { "Authorization": `Bearer ${token}` }
+  });
   return res.json();
 }

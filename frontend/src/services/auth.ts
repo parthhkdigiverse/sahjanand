@@ -1,10 +1,10 @@
 export const STORAGE_KEY = 'maison_aurum_admin_token';
 
 export const authService = {
-  getToken: () => localStorage.getItem(STORAGE_KEY),
-  setToken: (token: string) => localStorage.setItem(STORAGE_KEY, token),
-  logout: () => localStorage.removeItem(STORAGE_KEY),
-  isAuthenticated: () => !!localStorage.getItem(STORAGE_KEY),
+  getToken: () => typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null,
+  setToken: (token: string) => typeof window !== 'undefined' && localStorage.setItem(STORAGE_KEY, token),
+  logout: () => typeof window !== 'undefined' && localStorage.removeItem(STORAGE_KEY),
+  isAuthenticated: () => typeof window !== 'undefined' ? !!localStorage.getItem(STORAGE_KEY) : false,
 };
 
 export async function authenticatedFetch(url: string, options: RequestInit = {}) {

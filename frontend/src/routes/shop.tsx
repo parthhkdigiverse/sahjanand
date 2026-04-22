@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, fetchProducts, type Product } from "@/lib/api";
+import { fetchProduct, fetchProducts, fetchCategories, type Product, type Category } from "@/lib/api";
 import { ProductCard } from "@/components/FeaturedProducts";
 import { ChevronDown } from "lucide-react";
 
@@ -20,12 +20,9 @@ export const Route = createFileRoute("/shop")({
   component: Shop,
 });
 
-const categories = ["All", "Rings", "Necklaces", "Earrings", "Bracelets"] as const;
 const metals = ["All", "Gold", "Diamond", "Silver"] as const;
 const sortOptions = [
   { v: "featured", label: "Featured" },
-  { v: "price-asc", label: "Price · Low to High" },
-  { v: "price-desc", label: "Price · High to Low" },
   { v: "newest", label: "Newest" },
 ] as const;
 
@@ -35,7 +32,16 @@ function Shop() {
     queryFn: fetchProducts,
   });
 
-  const [cat, setCat] = useState<(typeof categories)[number]>("All");
+  const { data: dbCategories = [], isLoading: catsLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+
+  const categories = useMemo(() => {
+    return ["All", ...dbCategories.map(c => c.name)];
+  }, [dbCategories]);
+
+  const [cat, setCat] = useState<string>("All");
   const [metal, setMetal] = useState<(typeof metals)[number]>("All");
   const [maxPrice, setMaxPrice] = useState(350000);
   const [sort, setSort] = useState<(typeof sortOptions)[number]["v"]>("featured");
@@ -44,21 +50,14 @@ function Shop() {
     let list = products.filter(
       (p: any) =>
         (cat === "All" || p.category === cat) &&
-        (metal === "All" || p.metal === metal) &&
-        (p.price === "REQUEST" || p.price <= maxPrice)
+        (metal === "All" || p.metal === metal)
     );
 
-    const getPrice = (p: any) => (p.price === "REQUEST" ? Infinity : p.price);
-
-    if (sort === "price-asc") {
-      list = [...list].sort((a, b) => getPrice(a) - getPrice(b));
-    } else if (sort === "price-desc") {
-      list = [...list].sort((a, b) => getPrice(b) - getPrice(a));
-    } else if (sort === "newest") {
+    if (sort === "newest") {
       list = [...list].reverse();
     }
     return list;
-  }, [products, cat, metal, maxPrice, sort]);
+  }, [products, cat, metal, sort]);
 
   return (
     <>
@@ -77,9 +76,14 @@ function Shop() {
           <aside className="space-y-10 lg:sticky lg:top-28 lg:self-start">
             <div>
               <h3 className="text-xs tracking-luxe text-gold mb-5">Category</h3>
-              <ul className="space-y-3">
-                {categories.map((c) => (
-                  <li key={c}>
+              {catsLoading ? (
+                <div className="space-y-3 animate-pulse">
+                  {[1,2,3,4].map(i => <div key={i} className="h-4 bg-gray-200 rounded w-1/2" />)}
+                </div>
+              ) : (
+                <ul className="space-y-3">
+                  {categories.map((c) => (
+                    <li key={c}>
                     <button
                       onClick={() => setCat(c)}
                       className={`text-sm transition-colors ${
@@ -92,6 +96,7 @@ function Shop() {
                   </li>
                 ))}
               </ul>
+              )}
             </div>
 
             <div>

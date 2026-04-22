@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Star, Loader2, Edit2, Plus } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
+import { fetchReviews, fetchSettings, updateSettings } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -35,9 +36,38 @@ function AdminReviews() {
     text: "",
   });
 
+  const [settingsData, setSettingsData] = useState({
+    reviews_heading: "",
+    reviews_subheading: "",
+  });
+
   const { data: reviews, isLoading } = useQuery<Review[]>({
     queryKey: ["reviews"],
-    queryFn: () => fetch("http://localhost:8001/api/reviews/").then(res => res.json())
+    queryFn: fetchReviews
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: async () => {
+      const data = await fetchSettings();
+      setSettingsData({
+        reviews_heading: data.reviews_heading || "",
+        reviews_subheading: data.reviews_subheading || "",
+      });
+      return data;
+    }
+  });
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (updatedSettings: typeof settingsData) => {
+      const token = localStorage.getItem("token") || "";
+      return updateSettings(updatedSettings, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+      toast.success("Section settings updated");
+    },
+    onError: () => toast.error("Error updating settings")
   });
 
   const createMutation = useMutation({
@@ -111,7 +141,7 @@ function AdminReviews() {
     setEditingReview(review);
     setFormData({
       name: review.name,
-      initial: review.initial,
+      initial: review.initial || "",
       rating: review.rating,
       text: review.text,
     });
@@ -139,6 +169,43 @@ function AdminReviews() {
         </Button>
       </div>
 
+      <Card className="bg-onyx/5 border-gold/20">
+        <CardHeader>
+          <CardTitle className="text-lg font-serif">Section Header Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="rev_heading">Section Heading</Label>
+              <Input 
+                id="rev_heading" 
+                value={settingsData.reviews_heading} 
+                onChange={(e) => setSettingsData({...settingsData, reviews_heading: e.target.value})}
+                placeholder="What Our Customers Say"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="rev_subheading">Section Subheading</Label>
+              <Input 
+                id="rev_subheading" 
+                value={settingsData.reviews_subheading} 
+                onChange={(e) => setSettingsData({...settingsData, reviews_subheading: e.target.value})}
+                placeholder="4.9 / 5 · Verified by Google · 2,400+ reviews"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button 
+              onClick={() => updateSettingsMutation.mutate(settingsData)} 
+              disabled={updateSettingsMutation.isPending}
+              className="bg-onyx text-white hover:bg-onyx/90"
+            >
+              {updateSettingsMutation.isPending ? "Updating..." : "Update Header Settings"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
         <DialogContent>
           <DialogHeader>
@@ -165,16 +232,16 @@ function AdminReviews() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="rating">Rating (1-5)</Label>
-              <Input 
-                id="rating" 
-                type="number" 
-                min="1" 
-                max="5"
-                value={formData.rating} 
-                onChange={(e) => setFormData({...formData, rating: parseInt(e.target.value)})} 
-                required 
-              />
+              <Label>Rating</Label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star 
+                    key={star} 
+                    className={`h-8 w-8 cursor-pointer transition-all ${star <= formData.rating ? "fill-gold text-gold scale-110" : "text-gray-300"}`}
+                    onClick={() => setFormData({...formData, rating: star})}
+                  />
+                ))}
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="text">Review Text</Label>
@@ -210,7 +277,7 @@ function AdminReviews() {
           <Card key={review._id} className="overflow-hidden border-l-4 border-l-gold">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xl font-serif flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gold/20 text-gold flex items-center justify-center text-sm font-bold">
+                <div className="w-10 h-10 rounded-full bg-gold/20 text-gold flex items-center justify-center text-sm font-bold">
                   {review.initial || review.name.charAt(0)}
                 </div>
                 {review.name}

@@ -237,6 +237,33 @@ TESTIMONIALS = [
     }
 ]
 
+CATEGORIES = [
+    {
+        "id": "rings",
+        "name": "Rings",
+        "description": "Timeless solitaire and halo rings crafted with precision.",
+        "image": "/assets/aurelia-halo-ring.png"
+    },
+    {
+        "id": "necklaces",
+        "name": "Necklaces",
+        "description": "Elegant pendants and layered chains for every occasion.",
+        "image": "/assets/esmeralda-emerald-pendant.png"
+    },
+    {
+        "id": "earrings",
+        "name": "Earrings",
+        "description": "From classic studs to hoops, designed for daily luxury.",
+        "image": "/assets/celeste-star-earrings.png"
+    },
+    {
+        "id": "bracelets",
+        "name": "Bracelets",
+        "description": "Minimalist bangles and diamond tennis bracelets.",
+        "image": "/assets/gold-bangle-1.png"
+    }
+]
+
 async def seed():
     client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
     db = client.get_default_database()
@@ -246,6 +273,7 @@ async def seed():
     await db.blogs.delete_many({})
     await db.reviews.delete_many({})
     await db.testimonials.delete_many({})
+    await db.categories.delete_many({})
     
     print(f"Seeding {len(PRODUCTS)} products...")
     await db.products.insert_many(PRODUCTS)
@@ -258,6 +286,9 @@ async def seed():
 
     print(f"Seeding {len(TESTIMONIALS)} testimonials...")
     await db.testimonials.insert_many(TESTIMONIALS)
+    
+    print(f"Seeding {len(CATEGORIES)} categories...")
+    await db.categories.insert_many(CATEGORIES)
     
     print("Seeding complete!")
     client.close()

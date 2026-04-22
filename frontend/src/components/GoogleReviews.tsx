@@ -3,12 +3,17 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Star, BadgeCheck, ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchReviews } from "@/lib/api";
+import { fetchReviews, fetchSettings } from "@/lib/api";
 
 export function GoogleReviews() {
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ["reviews"],
     queryFn: fetchReviews,
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
   });
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" }, [
@@ -29,10 +34,12 @@ export function GoogleReviews() {
       <div className="container-luxe">
         <div className="text-center mb-14">
           <p className="divider-gold mb-5">Reviews</p>
-          <h2 className="font-serif text-4xl md:text-5xl mb-3">What Our Customers Say</h2>
+          <h2 className="font-serif text-4xl md:text-5xl mb-3">
+            {settings?.reviews_heading || "What Our Customers Say"}
+          </h2>
           <p className="text-sm text-muted-foreground inline-flex items-center gap-2 mt-2">
             <BadgeCheck size={14} className="text-gold" />
-            4.9 / 5 · Verified by Google · 2,400+ reviews
+            {settings?.reviews_subheading || "4.9 / 5 · Verified by Google · 2,400+ reviews"}
           </p>
         </div>
 
@@ -50,7 +57,7 @@ export function GoogleReviews() {
                         className="h-12 w-12 rounded-full gradient-gold flex items-center justify-center font-serif text-xl text-onyx"
                         style={{ color: "var(--onyx)" }}
                       >
-                        {r.initial}
+                        {r.initial || r.name.charAt(0)}
                       </div>
                       <div>
                         <p className="font-medium text-sm">{r.name}</p>

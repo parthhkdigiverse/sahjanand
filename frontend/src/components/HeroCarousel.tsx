@@ -1,33 +1,30 @@
 import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { Link } from "@tanstack/react-router";
+import { fetchHeroSlides, HeroSlide } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import hero1 from "@/assets/hero-1.jpg";
-import hero2 from "@/assets/hero-2.jpg";
-import hero3 from "@/assets/hero-3.jpg";
-
-const slides = [
-  {
-    image: hero1,
-    eyebrow: "New Collection",
-    title: "Timeless Elegance",
-    subtitle: "Beautifully crafted jewellery for every occasion.",
-  },
-  {
-    image: hero2,
-    eyebrow: "Bridal",
-    title: "Made to Last Forever",
-    subtitle: "Hand-finished gold pieces, designed to be passed down.",
-  },
-  {
-    image: hero3,
-    eyebrow: "New Arrivals",
-    title: "Pure & Refined",
-    subtitle: "Pearls and gold, in their most graceful form.",
-  },
-];
 
 export function HeroCarousel() {
+  const { data: slides = [] } = useQuery({
+    queryKey: ["hero-slides"],
+    queryFn: fetchHeroSlides,
+  });
+
+  // Fallback slides if DB is empty
+  const defaultSlides = [
+    {
+      image: hero1,
+      eyebrow: "New Collection",
+      title: "Timeless Elegance",
+      subtitle: "Beautifully crafted jewellery for every occasion.",
+      link_text: "Shop Now",
+      link_url: "/shop"
+    }
+  ];
+
+  const activeSlides = slides.length > 0 ? slides : defaultSlides;
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 5500, stopOnInteraction: false }),
   ]);
@@ -50,7 +47,7 @@ export function HeroCarousel() {
     >
       <div className="h-full" ref={emblaRef}>
         <div className="flex h-full">
-          {slides.map((s, i) => (
+          {activeSlides.map((s, i) => (
             <div key={i} className="relative h-full w-full flex-[0_0_100%]">
               <img
                 src={s.image}
@@ -86,13 +83,13 @@ export function HeroCarousel() {
                     >
                       {s.subtitle}
                     </p>
-                    <Link
-                      to="/shop"
+                    <a
+                      href={(s as any).link_url || "/shop"}
                       className="sheen inline-flex items-center gap-3 px-9 py-4 bg-gold text-onyx text-xs tracking-luxe hover:bg-ivory transition-colors animate-fade-up"
                       style={{ animationDelay: "0.5s", color: "var(--onyx)" }}
                     >
-                      Shop Now →
-                    </Link>
+                      {(s as any).link_text || "Shop Now"} →
+                    </a>
                   </div>
                 </div>
               </div>
@@ -102,7 +99,7 @@ export function HeroCarousel() {
       </div>
 
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
-        {slides.map((_, i) => (
+        {activeSlides.map((_, i) => (
           <button
             key={i}
             onClick={() => emblaApi?.scrollTo(i)}

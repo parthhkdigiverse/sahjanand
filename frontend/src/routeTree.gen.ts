@@ -24,8 +24,11 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminTestimonialsRouteImport } from './routes/admin.testimonials'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminOffersRouteImport } from './routes/admin.offers'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminHeroRouteImport } from './routes/admin.hero'
 import { Route as AdminContactsRouteImport } from './routes/admin.contacts'
+import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminBlogsRouteImport } from './routes/admin.blogs'
 
 const ShopRoute = ShopRouteImport.update({
@@ -103,14 +106,29 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOffersRoute = AdminOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminHeroRoute = AdminHeroRouteImport.update({
+  id: '/hero',
+  path: '/hero',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminContactsRoute = AdminContactsRouteImport.update({
   id: '/contacts',
   path: '/contacts',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminBlogsRoute = AdminBlogsRouteImport.update({
@@ -128,8 +146,11 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/shop': typeof ShopRoute
   '/admin/blogs': typeof AdminBlogsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contacts': typeof AdminContactsRoute
+  '/admin/hero': typeof AdminHeroRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/offers': typeof AdminOffersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
@@ -146,8 +167,11 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/shop': typeof ShopRoute
   '/admin/blogs': typeof AdminBlogsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contacts': typeof AdminContactsRoute
+  '/admin/hero': typeof AdminHeroRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/offers': typeof AdminOffersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
@@ -167,8 +191,11 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/shop': typeof ShopRoute
   '/admin/blogs': typeof AdminBlogsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contacts': typeof AdminContactsRoute
+  '/admin/hero': typeof AdminHeroRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/offers': typeof AdminOffersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
@@ -189,8 +216,11 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/shop'
     | '/admin/blogs'
+    | '/admin/categories'
     | '/admin/contacts'
+    | '/admin/hero'
     | '/admin/login'
+    | '/admin/offers'
     | '/admin/products'
     | '/admin/reviews'
     | '/admin/testimonials'
@@ -207,8 +237,11 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/shop'
     | '/admin/blogs'
+    | '/admin/categories'
     | '/admin/contacts'
+    | '/admin/hero'
     | '/admin/login'
+    | '/admin/offers'
     | '/admin/products'
     | '/admin/reviews'
     | '/admin/testimonials'
@@ -227,8 +260,11 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/shop'
     | '/admin/blogs'
+    | '/admin/categories'
     | '/admin/contacts'
+    | '/admin/hero'
     | '/admin/login'
+    | '/admin/offers'
     | '/admin/products'
     | '/admin/reviews'
     | '/admin/testimonials'
@@ -358,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/offers': {
+      id: '/admin/offers'
+      path: '/offers'
+      fullPath: '/admin/offers'
+      preLoaderRoute: typeof AdminOffersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -365,11 +408,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/hero': {
+      id: '/admin/hero'
+      path: '/hero'
+      fullPath: '/admin/hero'
+      preLoaderRoute: typeof AdminHeroRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/contacts': {
       id: '/admin/contacts'
       path: '/contacts'
       fullPath: '/admin/contacts'
       preLoaderRoute: typeof AdminContactsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/blogs': {
@@ -384,8 +441,11 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminBlogsRoute: typeof AdminBlogsRoute
+  AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminContactsRoute: typeof AdminContactsRoute
+  AdminHeroRoute: typeof AdminHeroRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminOffersRoute: typeof AdminOffersRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminTestimonialsRoute: typeof AdminTestimonialsRoute
@@ -394,8 +454,11 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBlogsRoute: AdminBlogsRoute,
+  AdminCategoriesRoute: AdminCategoriesRoute,
   AdminContactsRoute: AdminContactsRoute,
+  AdminHeroRoute: AdminHeroRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminOffersRoute: AdminOffersRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminTestimonialsRoute: AdminTestimonialsRoute,

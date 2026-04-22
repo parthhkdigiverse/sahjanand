@@ -28,24 +28,28 @@ class PyObjectId(ObjectId):
             raise ValueError("Invalid objectid")
         return ObjectId(v)
 
-class ReviewBase(BaseModel):
-    name: str
-    image: Optional[str] = None
-    initial: Optional[str] = None
-    rating: int = Field(5, ge=1, le=5)
-    text: str
+class HeroSlideBase(BaseModel):
+    image: str
+    eyebrow: str
+    title: str
+    subtitle: str
+    link_text: str = "Shop Now"
+    link_url: str = "/shop"
+    order: int = 0
 
-class ReviewCreate(ReviewBase):
+class HeroSlideCreate(HeroSlideBase):
     pass
 
-class ReviewUpdate(BaseModel):
-    name: Optional[str] = None
+class HeroSlideUpdate(BaseModel):
     image: Optional[str] = None
-    initial: Optional[str] = None
-    rating: Optional[int] = Field(None, ge=1, le=5)
-    text: Optional[str] = None
+    eyebrow: Optional[str] = None
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    link_text: Optional[str] = None
+    link_url: Optional[str] = None
+    order: Optional[int] = None
 
-class Review(ReviewBase):
+class HeroSlide(HeroSlideBase):
     mongo_id: Optional[PyObjectId] = Field(None, alias="_id")
     
     model_config = ConfigDict(

@@ -1,9 +1,23 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from .database import connect_to_mongo, close_mongo_connection
 from .config import settings
-from .routes import products, blogs, contacts, reviews, testimonials, auth
+from .routes import (
+    products, 
+    blogs, 
+    contacts, 
+    auth, 
+    settings as settings_route, 
+    reviews, 
+    testimonials, 
+    categories,
+    hero,
+    offer_leads,
+    uploads
+)
+import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -34,7 +48,16 @@ app.include_router(contacts.router, prefix="/api")
 app.include_router(reviews.router, prefix="/api")
 app.include_router(testimonials.router, prefix="/api")
 app.include_router(auth.router, prefix="/api")
+app.include_router(categories.router, prefix="/api")
+app.include_router(uploads.router, prefix="/api")
+app.include_router(settings_route.router, prefix="/api")
+app.include_router(hero.router, prefix="/api/hero", tags=["Hero"])
+app.include_router(offer_leads.router, prefix="/api/offer-leads", tags=["Offer Leads"])
 
+# Mount uploads directory to serve static files
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 @app.get("/")
 async def root():
     return {"message": "Welcome to Sahjanand API", "status": "online"}

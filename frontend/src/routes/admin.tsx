@@ -10,7 +10,8 @@ import {
   Menu,
   X,
   Star,
-  Quote
+  Quote,
+  FolderTree
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -22,6 +23,11 @@ function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!authService.isAuthenticated() && location.pathname !== "/admin/login") {
@@ -34,6 +40,10 @@ function AdminLayout() {
     navigate({ to: "/admin/login" });
   };
 
+  if (!hasMounted) {
+    return null;
+  }
+
   if (location.pathname === "/admin/login") {
     return <Outlet />;
   }
@@ -44,9 +54,12 @@ function AdminLayout() {
 
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
+    { label: "Hero Slides", icon: LayoutDashboard, href: "/admin/hero" },
+    { label: "Categories", icon: FolderTree, href: "/admin/categories" },
     { label: "Products", icon: Package, href: "/admin/products" },
     { label: "Blogs", icon: FileText, href: "/admin/blogs" },
     { label: "Inquiries", icon: MessageSquare, href: "/admin/contacts" },
+    { label: "Offers & Leads", icon: MessageSquare, href: "/admin/offers" },
     { label: "Reviews", icon: Star, href: "/admin/reviews" },
     { label: "Testimonials", icon: Quote, href: "/admin/testimonials" },
   ];

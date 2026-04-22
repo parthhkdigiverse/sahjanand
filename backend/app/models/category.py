@@ -28,26 +28,22 @@ class PyObjectId(ObjectId):
             raise ValueError("Invalid objectid")
         return ObjectId(v)
 
-class ReviewBase(BaseModel):
+class CategoryBase(BaseModel):
+    id: str = Field(..., description="The unique slug/identifier for the category")
     name: str
     image: Optional[str] = None
-    initial: Optional[str] = None
-    rating: int = Field(5, ge=1, le=5)
-    text: str
 
-class ReviewCreate(ReviewBase):
+class CategoryCreate(CategoryBase):
     pass
 
-class ReviewUpdate(BaseModel):
+class CategoryUpdate(BaseModel):
+    id: Optional[str] = None
     name: Optional[str] = None
     image: Optional[str] = None
-    initial: Optional[str] = None
-    rating: Optional[int] = Field(None, ge=1, le=5)
-    text: Optional[str] = None
 
-class Review(ReviewBase):
+class Category(CategoryBase):
     mongo_id: Optional[PyObjectId] = Field(None, alias="_id")
-    
+
     model_config = ConfigDict(
         populate_by_name=True,
         arbitrary_types_allowed=True,
