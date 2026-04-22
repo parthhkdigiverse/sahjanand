@@ -1,39 +1,40 @@
 import { Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
-import { products, formatINR, type Product } from "@/lib/products";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProducts, type Product } from "@/lib/api";
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   return (
     <Link
       to="/product/$id"
       params={{ id: product.id }}
-      className="group block animate-fade-up"
+      className="group block animate-fade-up bg-white"
       style={{ animationDelay: `${index * 0.06}s` }}
     >
-      <div className="relative aspect-square overflow-hidden bg-secondary mb-6">
+      <div className="relative aspect-square overflow-hidden bg-[#F9F8F6]">
         <img
           src={product.image}
           alt={product.name}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
         />
         {/* Category Tag overlay */}
-        <div className="absolute top-5 left-5 bg-white/95 backdrop-blur-sm px-4 py-2 shadow-sm">
-          <p className="text-[10px] tracking-[0.2em] font-bold text-gray-800 uppercase">
+        <div className="absolute top-4 left-4 bg-white/95 px-3 py-1.5 shadow-sm">
+          <p className="text-[9px] tracking-[0.2em] font-bold text-gray-800 uppercase">
             {product.category}
           </p>
         </div>
       </div>
       
-      <div className="text-center px-4">
-        <h3 className="font-serif text-xl md:text-2xl mb-2 text-gray-800">
+      <div className="text-center py-8 px-4">
+        <h3 className="font-serif text-lg md:text-xl mb-3 text-gray-900">
           {product.name}
         </h3>
-        <p className="text-[11px] tracking-[0.2em] font-bold text-gold mb-4 uppercase">
-          {product.price === "REQUEST" ? "Price on Request" : formatINR(product.price as number)}
+        <p className="text-[10px] tracking-[0.3em] font-bold text-[#C5A059] mb-6 uppercase">
+          PRICE ON REQUEST
         </p>
-        <div className="inline-flex items-center text-[10px] tracking-[0.2em] font-bold text-gray-500 group-hover:text-gold transition-colors duration-300 uppercase">
-          View Details <span className="ml-2">→</span>
+        <div className="flex items-center justify-center text-[11px] tracking-[0.2em] font-medium text-gray-500 uppercase">
+          View Details <span className="ml-2 text-xs">→</span>
         </div>
       </div>
     </Link>
@@ -41,7 +42,15 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
 }
 
 export function FeaturedProducts() {
-  const featured = products.slice(0, 3);
+  const { data: products, isLoading } = useQuery({
+    queryKey: ["featured-products"],
+    queryFn: fetchProducts,
+  });
+
+  const featured = products?.filter((p: any) => 
+    ["aurelia-halo-ring", "esmeralda-emerald-pendant", "celeste-star-earrings"].includes(p.id)
+  ) || [];
+
   return (
     <section className="bg-secondary/20 py-24 md:py-32">
       <div className="container-luxe max-w-7xl">
@@ -56,11 +65,19 @@ export function FeaturedProducts() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
-          {featured.map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse bg-white aspect-square rounded shadow-sm" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
+            {featured.map((p: any, i: number) => (
+              <ProductCard key={p.id} product={p} index={i} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { products } from "@/lib/products";
+import { createFileRoute } from '@tanstack/react-router'
+import { useQuery } from "@tanstack/react-query";
+import { fetchProducts } from "@/lib/api";
 
 export const Route = createFileRoute("/gallery")({
   component: GalleryPage,
@@ -22,37 +23,94 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+  });
+
+  if (isLoading) return <div className="py-40 text-center animate-pulse text-gold uppercase tracking-[0.3em] text-xs">Curating Gallery...</div>;
+
+  const featured = products.slice(0, 5);
+  const remaining = products.slice(5);
+
   return (
-    <main className="pt-32 pb-24">
+    <main className="pt-32 pb-24 md:pt-40 md:pb-32 bg-[#F9F8F6]">
       <div className="container-luxe">
-        <header className="text-center mb-16">
-          <p className="text-xs tracking-luxe text-gold mb-4">OUR GALLERY</p>
-          <h1 className="font-serif text-4xl md:text-5xl text-foreground">
-            A Visual Journey
+        <header className="text-center mb-16 md:mb-24">
+          <p className="text-[10px] tracking-[0.4em] text-gold uppercase mb-6 font-bold">
+            Atelier Gallery
+          </p>
+          <h1 className="font-serif text-5xl md:text-7xl text-gray-900 mb-8">
+            Moments of Brilliance
           </h1>
-          <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
-            Every piece tells a story. Browse our handcrafted creations.
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mb-10" />
+          <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto leading-relaxed">
+            A visual journey through our atelier and the craft behind each creation.
           </p>
         </header>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {products.map((p) => (
-            <figure
-              key={p.id}
-              className="group relative overflow-hidden bg-muted aspect-square"
-            >
+        {/* Featured Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+          {/* Main Large Image */}
+          {featured[0] && (
+            <div className="relative group overflow-hidden bg-white aspect-square md:aspect-auto md:row-span-2">
               <img
-                src={p.image}
-                alt={p.name}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                src={featured[0].image}
+                alt={featured[0].name}
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <figcaption className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4">
-                <span className="text-ivory text-sm font-serif">{p.name}</span>
-              </figcaption>
-            </figure>
-          ))}
+              <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-2 px-4 border border-white/40 backdrop-blur-sm">
+                  View
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* 2x2 Supporting Grid */}
+          <div className="grid grid-cols-2 gap-4 lg:gap-6">
+            {featured.slice(1).map((p) => (
+              <div
+                key={p.id}
+                className="relative group overflow-hidden bg-white aspect-square shadow-sm"
+              >
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-2 px-4 border border-white/40 backdrop-blur-sm">
+                    View
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* Remaining Gallery Items */}
+        {remaining.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 mt-4 lg:mt-6">
+            {remaining.map((p) => (
+              <div
+                key={p.id}
+                className="relative group overflow-hidden bg-white aspect-square shadow-sm"
+              >
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <span className="text-white text-[10px] tracking-[0.5em] font-bold uppercase py-2 px-4 border border-white/40 backdrop-blur-sm">
+                    View
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

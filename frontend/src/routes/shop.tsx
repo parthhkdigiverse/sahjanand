@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { products, type Product } from "@/lib/products";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProduct, fetchProducts, type Product } from "@/lib/api";
 import { ProductCard } from "@/components/FeaturedProducts";
 import { ChevronDown } from "lucide-react";
 
@@ -29,20 +30,25 @@ const sortOptions = [
 ] as const;
 
 function Shop() {
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+  });
+
   const [cat, setCat] = useState<(typeof categories)[number]>("All");
   const [metal, setMetal] = useState<(typeof metals)[number]>("All");
   const [maxPrice, setMaxPrice] = useState(350000);
   const [sort, setSort] = useState<(typeof sortOptions)[number]["v"]>("featured");
 
-  const filtered: Product[] = useMemo(() => {
+  const filtered = useMemo(() => {
     let list = products.filter(
-      (p) =>
+      (p: any) =>
         (cat === "All" || p.category === cat) &&
         (metal === "All" || p.metal === metal) &&
         (p.price === "REQUEST" || p.price <= maxPrice)
     );
 
-    const getPrice = (p: Product) => (p.price === "REQUEST" ? Infinity : p.price);
+    const getPrice = (p: any) => (p.price === "REQUEST" ? Infinity : p.price);
 
     if (sort === "price-asc") {
       list = [...list].sort((a, b) => getPrice(a) - getPrice(b));
@@ -52,7 +58,7 @@ function Shop() {
       list = [...list].reverse();
     }
     return list;
-  }, [cat, metal, maxPrice, sort]);
+  }, [products, cat, metal, maxPrice, sort]);
 
   return (
     <>
@@ -106,49 +112,24 @@ function Shop() {
               </ul>
             </div>
 
-            <div>
-              <h3 className="text-xs tracking-luxe text-gold mb-5">
-                Price · up to ₹{maxPrice.toLocaleString("en-IN")}
-              </h3>
-              <input
-                type="range"
-                min={20000}
-                max={350000}
-                step={5000}
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="w-full accent-[var(--gold)]"
-              />
-              <div className="flex justify-between text-[0.65rem] tracking-wide text-muted-foreground mt-2">
-                <span>₹20K</span>
-                <span>₹3.5L</span>
-              </div>
-            </div>
+            {/* Price Filter hidden at user request */}
           </aside>
 
           <div>
-            <div className="flex items-center justify-between mb-8 pb-5 border-b border-border">
-              <p className="text-sm text-muted-foreground">{filtered.length} pieces</p>
-              <div className="relative">
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as (typeof sortOptions)[number]["v"])}
-                  className="appearance-none bg-transparent border border-border pl-4 pr-10 py-2 text-sm focus:border-gold outline-none cursor-pointer"
-                >
-                  {sortOptions.map((o) => (
-                    <option key={o.v} value={o.v}>
-                      Sort: {o.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+            <div className="flex items-center justify-between mb-10 pb-6 border-b border-gray-100">
+              <p className="text-sm text-gray-500 font-medium">Showing {filtered.length} pieces</p>
             </div>
 
-            {filtered.length === 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="animate-pulse bg-white aspect-square rounded shadow-sm" />
+                ))}
+              </div>
+            ) : filtered.length === 0 ? (
               <p className="text-center py-20 text-muted-foreground">No pieces match your filters.</p>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                 {filtered.map((p, i) => (
                   <ProductCard key={p.id} product={p} index={i} />
                 ))}

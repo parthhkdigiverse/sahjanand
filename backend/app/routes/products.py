@@ -9,19 +9,26 @@ router = APIRouter(prefix="/products", tags=["products"])
 @router.get("/", response_model=List[Product])
 async def get_products():
     db = get_database()
-    products = await db.products.find().to_list(1000)
+    cursor = db.products.find()
+    products = await cursor.to_list(1000)
     return products
 
 @router.get("/{id}", response_model=Product)
 async def get_product(id: str):
     db = get_database()
-    product = await db.products.find_one({"_id": id})
-    if not product:
-        # Try finding by slug if ID is not ObjectId
-        product = await db.products.find_one({"id": id})
+    # Try finding by our custom ID (slug) first
+    product = await db.products.find_one({"id": id})
     
     if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
+        # Fallback to Mongo _id if it's a valid ObjectId
+        try:
+            if ObjectId.is_valid(id):
+                product = await db.products.find_one({"_id": ObjectId(id)})
+        except:
+            pass
+            
+    if not product:
+        raise HTTPException(status_code=404, detail=f"Product with ID '{id}' not found")
     return product
 
 @router.post("/", response_model=Product)

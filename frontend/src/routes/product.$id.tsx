@@ -1,43 +1,56 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
-import { products, formatINR } from "@/lib/products";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { fetchProduct, fetchProducts, type Product } from "@/lib/api";
 import { ProductCard } from "@/components/FeaturedProducts";
 import { Check, MessageCircle, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/product/$id")({
-  loader: ({ params }) => {
-    const product = products.find((p) => p.id === params.id);
-    if (!product) throw notFound();
-    return { product };
-  },
-  head: ({ loaderData }) => {
-    const p = loaderData?.product;
-    return {
-      meta: [
-        { title: p ? `${p.name} — Maison Aurum` : "Product — Maison Aurum" },
-        { name: "description", content: p?.description ?? "" },
-        { property: "og:title", content: p?.name ?? "Maison Aurum" },
-        { property: "og:description", content: p?.description ?? "" },
-        ...(p ? [{ property: "og:image", content: p.image }] : []),
-      ],
-    };
-  },
-  notFoundComponent: () => (
-    <div className="container-luxe py-40 text-center">
-      <h1 className="font-serif text-4xl mb-4">Product not found</h1>
-      <Link to="/shop" className="text-gold tracking-luxe text-xs">
-        ← Back to Shop
-      </Link>
-    </div>
-  ),
   component: ProductPage,
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const [product, setProduct] = useState<any>(null);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 });
-  const galleryImages = product.images || [product.image];
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setIsLoading(true);
+        const [p, all] = await Promise.all([fetchProduct(id), fetchProducts()]);
+        setProduct(p);
+        
+        const related = all.filter((item: any) => item.id !== p.id && item.category === p.category).slice(0, 4);
+        setRelatedProducts(related.length >= 2 ? related : all.filter((item: any) => item.id !== p.id).slice(0, 4));
+        
+        setError(null);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+    window.scrollTo(0, 0);
+  }, [id]);
+
+  if (isLoading) return <div className="py-40 text-center animate-pulse text-gold">Loading Excellence...</div>;
+  if (error || !product) {
+    return (
+      <div className="container-luxe py-40 text-center">
+        <h1 className="font-serif text-4xl mb-4">Product not found</h1>
+        <Link to="/shop" className="text-gold tracking-luxe text-xs">
+          ← Back to Shop
+        </Link>
+      </div>
+    );
+  }
+
+  const galleryImages = product.images?.length > 0 ? product.images : [product.image];
   
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -118,9 +131,7 @@ function ProductPage() {
               <h1 className="font-serif text-4xl lg:text-5xl lg:leading-tight mb-4 text-gray-900">
                 {product.name}
               </h1>
-              <p className="text-sm tracking-[0.2em] font-bold text-gold uppercase mb-8">
-                {product.price === "REQUEST" ? "Price on Request" : formatINR(product.price as number)}
-              </p>
+              {/* Price hidden at user request */}
 
               <div className="space-y-6 mb-10">
                 <p className="text-gray-600 leading-relaxed max-w-xl">
@@ -173,7 +184,7 @@ function ProductPage() {
             <h2 className="font-serif text-4xl">Related Pieces</h2>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
-            {relatedFinal.map((p, i) => (
+            {relatedProducts.map((p, i) => (
               <ProductCard key={p.id} product={p} index={i} />
             ))}
           </div>
