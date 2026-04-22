@@ -8,7 +8,9 @@ import {
   MessageSquare, 
   LogOut,
   Menu,
-  X
+  X,
+  Star,
+  Quote
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -45,6 +47,8 @@ function AdminLayout() {
     { label: "Products", icon: Package, href: "/admin/products" },
     { label: "Blogs", icon: FileText, href: "/admin/blogs" },
     { label: "Inquiries", icon: MessageSquare, href: "/admin/contacts" },
+    { label: "Reviews", icon: Star, href: "/admin/reviews" },
+    { label: "Testimonials", icon: Quote, href: "/admin/testimonials" },
   ];
 
   return (

@@ -37,6 +37,12 @@ class ReviewBase(BaseModel):
 class ReviewCreate(ReviewBase):
     pass
 
+class ReviewUpdate(BaseModel):
+    name: Optional[str] = None
+    initial: Optional[str] = None
+    rating: Optional[int] = Field(None, ge=1, le=5)
+    text: Optional[str] = None
+
 class Review(ReviewBase):
     mongo_id: Optional[PyObjectId] = Field(None, alias="_id")
     
