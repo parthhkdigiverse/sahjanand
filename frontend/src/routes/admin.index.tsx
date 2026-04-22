@@ -10,12 +10,12 @@ export const Route = createFileRoute("/admin/")({
 function AdminDashboard() {
   const { data: products } = useQuery({
     queryKey: ["products"],
-    queryFn: () => fetch("http://localhost:8002/api/products/").then(res => res.json())
+    queryFn: () => fetch("http://localhost:8001/api/products/").then(res => res.json())
   });
 
   const { data: blogs } = useQuery({
     queryKey: ["blogs"],
-    queryFn: () => fetch("http://localhost:8002/api/blogs/").then(res => res.json())
+    queryFn: () => fetch("http://localhost:8001/api/blogs/").then(res => res.json())
   });
 
   // Contacts will need auth, handle gracefully for now

@@ -33,12 +33,12 @@ function AdminContacts() {
 
   const { data: inquiries, isLoading } = useQuery<Inquiry[]>({
     queryKey: ["contacts"],
-    queryFn: () => authenticatedFetch("http://localhost:8002/api/contacts/").then(res => res.json())
+    queryFn: () => authenticatedFetch("http://localhost:8001/api/contacts/").then(res => res.json())
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8002/api/contacts/${id}`, {
+      const res = await authenticatedFetch(`http://localhost:8001/api/contacts/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");
