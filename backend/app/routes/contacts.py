@@ -1,9 +1,18 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends, HTTPException
+from typing import List
 from ..models.contact import Contact, ContactCreate
 from ..database import get_database
 from datetime import datetime
+from bson import ObjectId
+from ..auth import get_current_admin
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
+
+@router.get("/", response_model=List[Contact])
+async def get_contacts(admin: str = Depends(get_current_admin)):
+    db = get_database()
+    contacts = await db.contacts.find().sort("created_at", -1).to_list(1000)
+    return contacts
 
 @router.post("/", response_model=Contact)
 async def create_contact(contact: ContactCreate = Body(...)):
@@ -13,3 +22,15 @@ async def create_contact(contact: ContactCreate = Body(...)):
     result = await db.contacts.insert_one(contact_dict)
     contact_dict["_id"] = str(result.inserted_id)
     return contact_dict
+
+@router.delete("/{id}")
+async def delete_contact(id: str, admin: str = Depends(get_current_admin)):
+    db = get_database()
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+        
+    result = await db.contacts.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Inquiry not found")
+        
+    return {"message": "Inquiry deleted successfully"}
