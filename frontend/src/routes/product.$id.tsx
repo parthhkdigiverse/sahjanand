@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { products, formatINR } from "@/lib/products";
 import { ProductCard } from "@/components/FeaturedProducts";
-import { Heart, ShoppingBag, Truck, Shield, RefreshCcw } from "lucide-react";
+import { Check, MessageCircle, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ params }) => {
@@ -35,15 +35,19 @@ export const Route = createFileRoute("/product/$id")({
 
 function ProductPage() {
   const { product } = Route.useLoaderData();
+  const [activeImage, setActiveImage] = useState(0);
   const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 });
-
+  const galleryImages = product.images || [product.image];
+  
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
-    setZoom({
-      active: true,
-      x: ((e.clientX - r.left) / r.width) * 100,
-      y: ((e.clientY - r.top) / r.height) * 100,
-    });
+    if (r) {
+      setZoom({
+        active: true,
+        x: ((e.clientX - r.left) / r.width) * 100,
+        y: ((e.clientY - r.top) / r.height) * 100,
+      });
+    }
   };
 
   const related = products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4);
@@ -52,102 +56,110 @@ function ProductPage() {
 
   return (
     <>
-      <section className="pt-32 pb-16">
+      <section className="pt-32 pb-16 lg:pt-36 lg:pb-24">
         <div className="container-luxe">
-          <nav className="text-xs tracking-wide text-muted-foreground mb-8 flex items-center gap-2">
-            <Link to="/" className="hover:text-gold">Home</Link>
-            <span>/</span>
-            <Link to="/shop" className="hover:text-gold">Shop</Link>
-            <span>/</span>
-            <span className="text-foreground">{product.name}</span>
-          </nav>
+          {/* Back Button */}
+          <Link 
+            to="/shop" 
+            className="inline-flex items-center gap-2 text-[10px] tracking-[0.3em] font-bold text-gray-400 hover:text-gold transition-colors mb-12 uppercase group"
+          >
+            <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
+            Back to Shop
+          </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-            <div>
-              <div
-                className="relative aspect-[4/5] bg-secondary overflow-hidden cursor-zoom-in"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
+            {/* Image & Gallery Column */}
+            <div className="animate-fade-in">
+              <div 
+                className="relative aspect-square bg-secondary overflow-hidden shadow-sm mb-6 cursor-zoom-in"
                 onMouseMove={onMove}
                 onMouseLeave={() => setZoom((z) => ({ ...z, active: false }))}
               >
                 <img
-                  src={product.image}
+                  src={galleryImages[activeImage]}
                   alt={product.name}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300"
+                  className="h-full w-full object-cover transition-transform duration-200 ease-out"
                   style={{
-                    transform: zoom.active ? "scale(2)" : "scale(1)",
+                    transform: zoom.active ? "scale(2.5)" : "scale(1)",
                     transformOrigin: `${zoom.x}% ${zoom.y}%`,
                   }}
                 />
               </div>
-              <div className="grid grid-cols-4 gap-3 mt-4">
-                {[product.image, product.image, product.image, product.image].map((src, i) => (
-                  <button
-                    key={i}
-                    className={`aspect-square overflow-hidden bg-secondary border ${
-                      i === 0 ? "border-gold" : "border-transparent hover:border-border"
-                    }`}
-                  >
-                    <img src={src} alt="" className="h-full w-full object-cover" />
-                  </button>
-                ))}
-              </div>
+              
+              {/* Thumbnail Gallery */}
+              {galleryImages.length > 1 && (
+                <div className="flex gap-5 mt-8">
+                  {galleryImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImage(idx)}
+                      className={`relative aspect-square w-24 lg:w-32 overflow-hidden transition-all duration-300 ${
+                        activeImage === idx 
+                        ? "border-[3px] border-gold ring-offset-2" 
+                        : "border-[3px] border-transparent hover:border-gray-200"
+                      }`}
+                    >
+                      <img 
+                        src={img} 
+                        alt="" 
+                        className="h-full w-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="lg:pt-4">
-              <p className="text-xs tracking-luxe text-gold mb-4">{product.category}</p>
-              <h1 className="font-serif text-4xl md:text-5xl leading-tight mb-4">{product.name}</h1>
-              <p className="font-serif text-3xl mb-6">{formatINR(product.price)}</p>
-              <p className="text-foreground/70 leading-relaxed mb-8">{product.description}</p>
+            {/* Info Column */}
+            <div className="animate-fade-up">
+              <p className="text-[10px] tracking-[0.4em] text-gray-500 uppercase mb-4 font-bold">
+                {product.category}
+              </p>
+              <h1 className="font-serif text-4xl lg:text-5xl lg:leading-tight mb-4 text-gray-900">
+                {product.name}
+              </h1>
+              <p className="text-sm tracking-[0.2em] font-bold text-gold uppercase mb-8">
+                {product.price === "REQUEST" ? "Price on Request" : formatINR(product.price as number)}
+              </p>
 
-              <div className="border-y border-border py-6 space-y-3 mb-8">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground tracking-wide">Material</span>
-                  <span>{product.material}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground tracking-wide">Weight</span>
-                  <span>{product.weight}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground tracking-wide">Hallmark</span>
-                  <span className="text-gold">BIS Certified ✓</span>
-                </div>
+              <div className="space-y-6 mb-10">
+                <p className="text-gray-600 leading-relaxed max-w-xl">
+                  {product.description}
+                </p>
+
+                {product.features && (
+                  <ul className="space-y-3 pt-2">
+                    {product.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center gap-3 text-sm text-gray-700">
+                        <Check size={14} className="text-gold" strokeWidth={3} />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-4 mb-10">
                 <button
-                  className="sheen flex-1 inline-flex items-center justify-center gap-2 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors"
-                  style={{ backgroundColor: "var(--onyx)", color: "var(--ivory)" }}
+                  className="flex-1 bg-gray-900 text-white py-4 px-8 text-[11px] tracking-[0.2em] font-bold uppercase transition-all hover:bg-gold hover:text-white"
                 >
-                  <ShoppingBag size={15} /> Add to Cart
+                  Enquire Now
                 </button>
                 <button
-                  className="sheen flex-1 inline-flex items-center justify-center gap-2 py-4 bg-gold text-onyx text-xs tracking-luxe hover:bg-onyx hover:text-ivory transition-colors"
-                  style={{ color: "var(--onyx)" }}
+                  className="flex-1 bg-white border border-gray-300 text-gray-800 py-4 px-8 text-[11px] tracking-[0.2em] font-bold uppercase transition-all hover:bg-gray-50 flex items-center justify-center gap-2"
                 >
-                  Buy Now →
-                </button>
-                <button
-                  aria-label="Wishlist"
-                  className="h-12 w-12 border border-border flex items-center justify-center hover:border-gold hover:text-gold transition-colors"
-                >
-                  <Heart size={16} />
+                  <MessageCircle size={16} /> WhatsApp Inquiry
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mt-10 pt-8 border-t border-border text-center">
-                <div>
-                  <Truck className="mx-auto text-gold mb-2" size={18} />
-                  <p className="text-[0.65rem] tracking-luxe text-muted-foreground">Free Shipping</p>
-                </div>
-                <div>
-                  <Shield className="mx-auto text-gold mb-2" size={18} />
-                  <p className="text-[0.65rem] tracking-luxe text-muted-foreground">Lifetime Warranty</p>
-                </div>
-                <div>
-                  <RefreshCcw className="mx-auto text-gold mb-2" size={18} />
-                  <p className="text-[0.65rem] tracking-luxe text-muted-foreground">15-Day Returns</p>
-                </div>
+              {/* Atelier Promise Box */}
+              <div className="bg-[#FAF9F6] border-l-[3px] border-gold p-6 lg:p-8">
+                <p className="text-[9px] tracking-[0.3em] font-bold text-gold uppercase mb-2">
+                  Atelier Promise
+                </p>
+                <p className="text-xs text-gray-600 leading-relaxed italic text-balance">
+                  Every piece is hallmarked, certified and accompanied by a lifetime care service.
+                </p>
               </div>
             </div>
           </div>

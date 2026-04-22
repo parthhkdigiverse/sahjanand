@@ -34,9 +34,10 @@ def run_app():
     # Start Frontend
     try:
         frontend_process = subprocess.Popen(
-            ["npm", "run", "dev"],
+            ["npm", "run", "dev", "--", "--port", frontend_port],
             cwd=str(Path(__file__).parent / "frontend"),
-            env=os.environ.copy()
+            env=os.environ.copy(),
+            shell=True
         )
     except FileNotFoundError:
         print("❌ Error: 'npm' was not found. Please ensure Node.js is installed.")
