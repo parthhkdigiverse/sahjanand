@@ -93,18 +93,18 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-ivory/70 mb-8 font-sans">
               <li className="flex items-start gap-2">
                 <MapPin size={14} className="mt-1 text-gold shrink-0" />
-                <span>{s.contact_address}</span>
+                <span>14 Marine Drive, Mumbai · 400001, India</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone size={14} className="text-gold shrink-0" />
-                <a href={`tel:${s.contact_phone}`} className="hover:text-gold transition-colors">
-                  {s.contact_phone}
+                <a href="tel:+912240000000" className="hover:text-gold transition-colors">
+                  +91 22 4000 0000
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={14} className="text-gold shrink-0" />
-                <a href={`mailto:${s.contact_email}`} className="hover:text-gold transition-colors">
-                  {s.contact_email}
+                <a href="mailto:hello@maisonaurum.com" className="hover:text-gold transition-colors">
+                  hello@maisonaurum.com
                 </a>
               </li>
             </ul>
