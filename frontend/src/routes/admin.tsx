@@ -13,6 +13,7 @@ import {
   Quote,
   Instagram,
   FolderTree,
+  Camera,
   Settings as SettingsIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
