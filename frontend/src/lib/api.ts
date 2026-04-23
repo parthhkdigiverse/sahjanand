@@ -176,6 +176,12 @@ export type SiteSettings = {
   popup_heading: string;
   popup_description: string;
   popup_button_text: string;
+  // Gold Price Settings
+  gold_price_source: 'manual' | 'api';
+  manual_price_24k: number;
+  manual_price_22k: number;
+  manual_price_18k: number;
+  gold_price_api_key?: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {
@@ -265,5 +271,20 @@ export async function deleteOfferLead(id: string, token: string) {
 export async function fetchInstagramPosts(): Promise<InstagramPost[]> {
   const res = await fetch(`${API_BASE}/instagram/`);
   if (!res.ok) return [];
+  return res.json();
+}
+
+// Gold Prices
+export type GoldPriceResponse = {
+  price_24k: number;
+  price_22k: number;
+  price_18k: number;
+  change: number;
+  source: string;
+};
+
+export async function fetchGoldPrices(): Promise<GoldPriceResponse> {
+  const res = await fetch(`${API_BASE}/gold-prices/`);
+  if (!res.ok) throw new Error("Failed to fetch gold prices");
   return res.json();
 }

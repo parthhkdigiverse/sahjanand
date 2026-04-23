@@ -1,33 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { TrendingUp, TrendingDown, Sparkles, ShieldCheck } from "lucide-react";
-
-const rates = [
-  {
-    karat: "18K",
-    price: 5840,
-    change: 1.2,
-    dir: "up" as const,
-    purity: "75.0%",
-    note: "Daily wear",
-  },
-  {
-    karat: "22K",
-    price: 7140,
-    change: -0.4,
-    dir: "down" as const,
-    purity: "91.6%",
-    note: "Bridal favourite",
-    featured: true,
-  },
-  {
-    karat: "24K",
-    price: 7780,
-    change: 0.8,
-    dir: "up" as const,
-    purity: "99.9%",
-    note: "Pure investment",
-  },
-];
+import { TrendingUp, TrendingDown, Sparkles, ShieldCheck, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchGoldPrices } from "@/lib/api";
 
 function useCountUp(target: number, duration = 1200, start = false) {
   const [value, setValue] = useState(0);
@@ -50,6 +24,12 @@ function useCountUp(target: number, duration = 1200, start = false) {
 export function GoldRates() {
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
+
+  const { data: priceData, isLoading } = useQuery({
+    queryKey: ["gold-prices"],
+    queryFn: fetchGoldPrices,
+    refetchInterval: 1000 * 60 * 30, // Refetch every 30 mins
+  });
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -74,9 +54,36 @@ export function GoldRates() {
     month: "long",
   });
 
+  const rates = priceData ? [
+    {
+      karat: "18K",
+      price: priceData.price_18k,
+      change: priceData.change,
+      dir: priceData.change >= 0 ? "up" as const : "down" as const,
+      purity: "75.0%",
+      note: "Daily wear",
+    },
+    {
+      karat: "22K",
+      price: priceData.price_22k,
+      change: priceData.change,
+      dir: priceData.change >= 0 ? "up" as const : "down" as const,
+      purity: "91.6%",
+      note: "Bridal favourite",
+      featured: true,
+    },
+    {
+      karat: "24K",
+      price: priceData.price_24k,
+      change: priceData.change,
+      dir: priceData.change >= 0 ? "up" as const : "down" as const,
+      purity: "99.9%",
+      note: "Pure investment",
+    },
+  ] : [];
+
   return (
     <section ref={sectionRef} className="relative overflow-hidden py-24 md:py-32">
-      {/* Ambient background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] gradient-gold opacity-[0.06] blur-[120px] rounded-full" />
         <div className="absolute bottom-1/4 right-1/4 w-[24rem] h-[24rem] gradient-gold opacity-[0.05] blur-[120px] rounded-full" />
@@ -94,15 +101,22 @@ export function GoldRates() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {rates.map((r, i) => (
-            <RateCard key={r.karat} rate={r} index={i} inView={inView} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <Loader2 className="animate-spin h-10 w-10 text-gold/40" />
+            <span className="text-[10px] uppercase tracking-[0.3em] text-onyx/20">Accessing Market...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {rates.map((r, i) => (
+              <RateCard key={r.karat} rate={r} index={i} inView={inView} />
+            ))}
+          </div>
+        )}
 
         <p className="text-center text-xs tracking-luxe text-muted-foreground mt-12 inline-flex items-center gap-2 w-full justify-center">
           <ShieldCheck size={13} className="text-gold" />
-          BIS Hallmark Certified · Rates revised daily at 10:00 AM IST
+          BIS Hallmark Certified · Rates revised daily {priceData?.source === 'api' ? 'automatically' : 'at 10:00 AM IST'}
         </p>
       </div>
     </section>
@@ -114,7 +128,7 @@ function RateCard({
   index,
   inView,
 }: {
-  rate: (typeof rates)[number];
+  rate: any;
   index: number;
   inView: boolean;
 }) {
@@ -126,7 +140,6 @@ function RateCard({
       className="group relative animate-fade-up"
       style={{ animationDelay: `${index * 0.12}s` }}
     >
-      {/* Gold border glow on hover */}
       <div className="absolute -inset-px gradient-gold opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
 
       <div
@@ -143,10 +156,8 @@ function RateCard({
           </div>
         )}
 
-        {/* Decorative corner */}
         <div className="absolute top-0 right-0 w-32 h-32 gradient-gold opacity-[0.08] blur-3xl pointer-events-none transition-opacity duration-500 group-hover:opacity-20" />
 
-        {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>
             <p className="font-serif text-6xl leading-none">
@@ -170,7 +181,6 @@ function RateCard({
           </div>
         </div>
 
-        {/* Price */}
         <div className="flex items-baseline gap-2">
           <span className="text-base text-muted-foreground">₹</span>
           <span className="font-serif text-5xl md:text-6xl tracking-tight tabular-nums">
@@ -181,7 +191,6 @@ function RateCard({
 
         <p className="text-xs text-muted-foreground mt-3 italic">{rate.note}</p>
 
-        {/* Footer */}
         <div className="mt-10 pt-6 border-t border-border flex items-center justify-between text-xs">
           <span className="text-muted-foreground tracking-wide flex items-center gap-1.5">
             <ShieldCheck size={12} className="text-gold" />
