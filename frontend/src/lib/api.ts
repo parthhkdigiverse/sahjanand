@@ -206,10 +206,6 @@ export async function updateGallerySettings(data: GallerySettings, token: string
 }
 
 export type SiteSettings = {
-  reviews_heading: string;
-  reviews_subheading: string;
-  offer_heading: string;
-  offer_subheading: string;
   offer_description: string;
   offer_image?: string;
   popup_eyebrow: string;
@@ -411,6 +407,20 @@ export type AboutData = {
   cta_link: string;
 };
 
+export type ContactPageData = {
+  hero_image?: string;
+  hero_eyebrow: string;
+  hero_heading: string;
+  hero_description: string;
+  boutique_address_line1: string;
+  boutique_address_line2: string;
+  concierge_phone: string;
+  inquiries_email: string;
+  opening_hours_line1: string;
+  opening_hours_line2: string;
+  map_embed_url: string;
+};
+
 export async function fetchAboutData(): Promise<AboutData> {
   const res = await fetch(`${API_BASE}/about/`);
   if (!res.ok) throw new Error("Failed to fetch about data");
@@ -427,6 +437,25 @@ export async function updateAboutData(data: AboutData, token: string) {
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to update about data");
+  return res.json();
+}
+
+export async function fetchContactPageData(): Promise<ContactPageData> {
+  const res = await fetch(`${API_BASE}/contact-page/`);
+  if (!res.ok) throw new Error("Failed to fetch contact page data");
+  return res.json();
+}
+
+export async function updateContactPageData(data: ContactPageData, token: string) {
+  const res = await fetch(`${API_BASE}/contact-page/`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update contact page data");
   return res.json();
 }
 

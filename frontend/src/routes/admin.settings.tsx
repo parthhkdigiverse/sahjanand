@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { authService } from "@/services/auth";
-import { Loader2, Save, Coins, Edit3, Share2 } from "lucide-react";
+import { Loader2, Save, Coins, Share2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -129,59 +129,6 @@ function AdminSettings() {
           </CardContent>
         </Card>
 
-        {/* Reviews Section Configuration */}
-        <Card className="border-none shadow-card overflow-hidden">
-          <CardHeader className="bg-onyx/[0.02] border-b border-onyx/5">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gold/10 rounded-lg">
-                <Edit3 className="h-5 w-5 text-gold" />
-              </div>
-              <div>
-                <CardTitle className="font-serif text-xl">Review & Offer Copy</CardTitle>
-                <CardDescription className="text-[10px] uppercase tracking-widest">Headlines & Subheadings</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Reviews Heading</Label>
-                <Input 
-                  value={formData.reviews_heading || ""}
-                  onChange={(e) => setFormData({...formData, reviews_heading: e.target.value})}
-                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Reviews Subheading</Label>
-                <Input 
-                  value={formData.reviews_subheading || ""}
-                  onChange={(e) => setFormData({...formData, reviews_subheading: e.target.value})}
-                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
-                />
-              </div>
-            </div>
-            <hr className="border-onyx/5" />
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Offer Heading</Label>
-                <Input 
-                  value={formData.offer_heading || ""}
-                  onChange={(e) => setFormData({...formData, offer_heading: e.target.value})}
-                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Offer Subheading</Label>
-                <Input 
-                  value={formData.offer_subheading || ""}
-                  onChange={(e) => setFormData({...formData, offer_subheading: e.target.value})}
-                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Contact & Footer Information */}
         <Card className="border-none shadow-card overflow-hidden md:col-span-2">

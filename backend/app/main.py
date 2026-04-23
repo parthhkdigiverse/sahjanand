@@ -21,7 +21,8 @@ from .routes import (
     offers,
     about,
     gallery,
-    policies as policies_route
+    policies as policies_route,
+    contact_page
 )
 import os
 
@@ -65,6 +66,7 @@ app.include_router(offers.router, prefix="/api/offers", tags=["Offers"])
 app.include_router(about.router, prefix="/api", tags=["About"])
 app.include_router(gallery.router, prefix="/api", tags=["Gallery"])
 app.include_router(policies_route.router, prefix="/api")
+app.include_router(contact_page.router, prefix="/api")
 
 # Mount uploads directory to serve static files
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")

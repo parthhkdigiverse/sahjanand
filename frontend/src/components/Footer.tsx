@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Instagram, Facebook, Twitter, Youtube, MapPin, Phone, Mail } from "lucide-react";
-import { fetchPolicies, fetchSettings } from "@/lib/api";
+import { fetchPolicies, fetchSettings, fetchContactPageData } from "@/lib/api";
 
 const exploreLinks = [
   { to: "/gallery", label: "Gallery" },
@@ -21,10 +21,12 @@ export function Footer() {
     queryFn: fetchSettings,
   });
 
-  const s = settings || {
-    contact_address: "14 Marine Drive, Mumbai · 400001, India",
-    contact_phone: "+91 22 4000 0000",
-    contact_email: "hello@maisonaurum.com",
+  const { data: contactData } = useQuery({
+    queryKey: ["contact-page"],
+    queryFn: fetchContactPageData,
+  });
+
+  const socialLinks = settings || {
     instagram_url: "#",
     facebook_url: "#",
     twitter_url: "#",
@@ -47,10 +49,10 @@ export function Footer() {
               Fine jewellery, made by hand. Designed to be loved for a lifetime.
             </p>
             <div className="flex gap-4 text-ivory/70">
-              <a href={s.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-gold transition-colors"><Instagram size={18} /></a>
-              <a href={s.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-gold transition-colors"><Facebook size={18} /></a>
-              <a href={s.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="hover:text-gold transition-colors"><Twitter size={18} /></a>
-              <a href={s.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:text-gold transition-colors"><Youtube size={18} /></a>
+              <a href={socialLinks.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-gold transition-colors"><Instagram size={18} /></a>
+              <a href={socialLinks.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-gold transition-colors"><Facebook size={18} /></a>
+              <a href={socialLinks.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="hover:text-gold transition-colors"><Twitter size={18} /></a>
+              <a href={socialLinks.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:text-gold transition-colors"><Youtube size={18} /></a>
             </div>
           </div>
 
@@ -93,18 +95,22 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-ivory/70 mb-8 font-sans">
               <li className="flex items-start gap-2">
                 <MapPin size={14} className="mt-1 text-gold shrink-0" />
-                <span>14 Marine Drive, Mumbai · 400001, India</span>
+                <span>
+                  {contactData?.boutique_address_line1 || ""}
+                  <br />
+                  {contactData?.boutique_address_line2 || ""}
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone size={14} className="text-gold shrink-0" />
-                <a href="tel:+912240000000" className="hover:text-gold transition-colors">
-                  +91 22 4000 0000
+                <a href={`tel:${contactData?.concierge_phone || ""}`} className="hover:text-gold transition-colors">
+                  {contactData?.concierge_phone || ""}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={14} className="text-gold shrink-0" />
-                <a href="mailto:hello@maisonaurum.com" className="hover:text-gold transition-colors">
-                  hello@maisonaurum.com
+                <a href={`mailto:${contactData?.inquiries_email || ""}`} className="hover:text-gold transition-colors">
+                  {contactData?.inquiries_email || ""}
                 </a>
               </li>
             </ul>

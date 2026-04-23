@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
-import { submitContact } from "@/lib/api";
-import heroFallback from "@/assets/hero-3.jpg";
+import { submitContact, fetchContactPageData, getImageUrl } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2, MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -21,6 +21,11 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Contact() {
+  const { data: contactData, isLoading } = useQuery({
+    queryKey: ["contact-page"],
+    queryFn: fetchContactPageData,
+  });
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -45,6 +50,17 @@ function Contact() {
         type: "GENERAL"
       });
       setSent(true);
+      // Automatically show the form again after 5 seconds
+      setTimeout(() => {
+        setSent(false);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          date: "",
+          message: ""
+        });
+      }, 5000);
     } catch (err) {
       console.error(err);
       alert("Failed to send message. Please try again.");
@@ -53,29 +69,74 @@ function Contact() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-ivory/30 gap-6">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-2 border-gold/10 border-t-gold animate-spin" />
+          <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gold animate-pulse" size={24} />
+        </div>
+        <p className="text-[10px] uppercase tracking-[0.4em] text-onyx/30 font-bold animate-pulse">Entering the Atelier</p>
+      </div>
+    );
+  }
+
+  const boutiqueDetails = [
+    { 
+      icon: MapPin, 
+      t: "The Boutique", 
+      l: [
+        contactData?.boutique_address_line1 || "", 
+        contactData?.boutique_address_line2 || ""
+      ].filter(Boolean)
+    },
+    { 
+      icon: Phone, 
+      t: "Concierge", 
+      l: [contactData?.concierge_phone || ""].filter(Boolean)
+    },
+    { 
+      icon: Mail, 
+      t: "Inquiries", 
+      l: [contactData?.inquiries_email || ""].filter(Boolean)
+    },
+    { 
+      icon: Clock, 
+      t: "Opening Hours", 
+      l: [
+        contactData?.opening_hours_line1 || "", 
+        contactData?.opening_hours_line2 || ""
+      ].filter(Boolean)
+    },
+  ];
+
   return (
     <div className="bg-ivory/30 min-h-screen">
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0">
-          <img 
-            src={heroFallback} 
-            alt="Maison Aurum Atelier" 
-            className="w-full h-full object-cover"
-          />
+          {contactData?.hero_image && (
+            <img 
+              src={getImageUrl(contactData.hero_image)} 
+              alt="Maison Aurum Atelier" 
+              className="w-full h-full object-cover"
+            />
+          )}
           <div className="absolute inset-0 bg-onyx/60" />
         </div>
         
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <p className="text-gold uppercase tracking-[0.3em] text-xs font-bold mb-6 flex items-center justify-center gap-4">
             <span className="w-12 h-px bg-gold/50"></span>
-            Private Viewing
+            {contactData?.hero_eyebrow || ""}
             <span className="w-12 h-px bg-gold/50"></span>
           </p>
           <h1 className="font-serif text-5xl md:text-7xl text-ivory mb-6 leading-tight">
-            Experience the <br className="hidden md:block" /> Art of Craft
+            {contactData?.hero_heading ? (
+              <div dangerouslySetInnerHTML={{ __html: contactData.hero_heading.replace("Experience", '<span class="italic text-gold">Experience</span>') }} />
+            ) : null}
           </h1>
           <p className="text-ivory/70 max-w-xl mx-auto font-light text-sm md:text-base">
-            Schedule a private consultation at our Mumbai boutique. Discover our collections with dedicated assistance from our master jewelers.
+            {contactData?.hero_description || ""}
           </p>
         </div>
       </section>
@@ -86,12 +147,7 @@ function Contact() {
             <div>
               <h2 className="font-serif text-3xl md:text-4xl text-onyx mb-10">Our Atelier</h2>
               <div className="space-y-8">
-                {[
-                  { icon: MapPin, t: "The Boutique", l: ["14 Marine Drive", "Colaba, Mumbai 400001"] },
-                  { icon: Phone, t: "Concierge", l: ["+91 22 4000 0000"] },
-                  { icon: Mail, t: "Inquiries", l: ["hello@maisonaurum.com"] },
-                  { icon: Clock, t: "Opening Hours", l: ["Tue – Sat · 11:00 – 19:00", "Sun & Mon · Private Appointments Only"] },
-                ].map(({ icon: Icon, t, l }, idx) => (
+                {boutiqueDetails.map(({ icon: Icon, t, l }, idx) => (
                   <div key={idx} className="flex gap-6 group">
                     <div className="h-14 w-14 rounded-full border border-gold/30 bg-white shadow-sm flex items-center justify-center text-gold flex-none group-hover:scale-110 group-hover:border-gold transition-all duration-500">
                       <Icon strokeWidth={1.5} size={24} />
@@ -109,7 +165,7 @@ function Contact() {
 
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-luxe bg-onyx/5">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3774.215577626993!2d72.82298781538337!3d18.921389787176527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7d1e89ce4b87f%3A0xc3ec5bf4d28dc124!2sMarine%20Drive!5e0!3m2!1sen!2sin!4v1682348572883!5m2!1sen!2sin"
+                src={contactData?.map_embed_url || ""}
                 width="100%"
                 height="100%"
                 style={{ border: 0, filter: "grayscale(0.2) contrast(1.05)" }}
@@ -135,7 +191,10 @@ function Contact() {
                     Thank you for reaching out. A dedicated concierge will contact you shortly to confirm your appointment.
                   </p>
                   <button 
-                    onClick={() => setSent(false)}
+                    onClick={() => {
+                      setSent(false);
+                      setFormData({ name: "", email: "", phone: "", date: "", message: "" });
+                    }}
                     className="text-xs uppercase tracking-widest font-bold text-gold hover:text-onyx transition-colors border-b border-gold hover:border-onyx pb-1"
                   >
                     Book Another
