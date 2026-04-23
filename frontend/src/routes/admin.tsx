@@ -100,7 +100,8 @@ function AdminLayout() {
                 exit={{ opacity: 0 }}
                 className="flex flex-col"
               >
-                <span className="font-serif text-xl tracking-[0.2em] text-gold uppercase">MAISON</span>
+                <span className="text-[10px] text-gold/60 tracking-[0.4em] font-black leading-none mb-1 uppercase">SHREE</span>
+                <span className="font-serif text-lg tracking-wide text-ivory">Sahajanand <span className="text-gold italic">Jewellers</span></span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -160,25 +161,18 @@ function AdminLayout() {
       {/* Main Content Area */}
       <div className={`flex-1 flex flex-col transition-all duration-500 ${isSidebarOpen ? "ml-[280px]" : "ml-[88px]"}`}>
         {/* Global Header */}
-        <header className="h-20 sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-onyx/5 px-8 flex items-center justify-between">
+        <header className="h-16 sticky top-0 z-40 bg-white/60 backdrop-blur-xl border-b border-onyx/5 px-8 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-onyx/40 mb-0.5">
-                <span>Admin</span>
-                <ChevronRight size={10} />
-                <span className="text-gold font-bold">{currentPathLabel}</span>
-              </div>
-              <h2 className="font-serif text-2xl text-onyx">{currentPathLabel}</h2>
+            <div className="flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-onyx/30">
+              <span className="hover:text-gold transition-colors cursor-default">Admin</span>
+              <ChevronRight size={8} className="text-gold/40" />
+              <span className="text-gold font-black">{currentPathLabel}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-gold to-gold-deep border-2 border-white shadow-lg flex items-center justify-center text-onyx font-serif text-lg font-bold">
-                  A
-                </div>
-              </div>
+          <div className="flex items-center gap-4">
+            <div className="text-[9px] uppercase tracking-[0.2em] text-onyx/20 font-bold hidden sm:block">
+              Sahajanand Jewellers Executive Suite
             </div>
           </div>
         </header>

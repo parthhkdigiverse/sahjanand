@@ -131,7 +131,7 @@ function AdminLogin() {
         </motion.div>
 
         <div className="mt-12 text-center">
-          <p className="text-ivory/10 text-[9px] uppercase tracking-[0.5em]">© 2026 Maison Aurum</p>
+          <p className="text-ivory/10 text-[9px] uppercase tracking-[0.5em]">© 2026 Sahajanand Jewellers</p>
         </div>
       </div>
     </div>

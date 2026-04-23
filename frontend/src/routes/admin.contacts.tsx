@@ -103,11 +103,11 @@ function AdminContacts() {
       className="space-y-6"
     >
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4 flex-1 max-w-xl">
+        <div className="flex items-center gap-3 flex-1 max-w-md">
           <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-onyx/20 h-4 w-4 group-focus-within:text-gold transition-colors" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-onyx/20 h-3.5 w-3.5 group-focus-within:text-gold transition-colors" />
             <input 
-              className="w-full h-12 pl-12 pr-4 bg-white border border-onyx/5 rounded-xl shadow-sm placeholder:text-onyx/20 outline-none focus:border-gold/30 transition-all text-sm font-medium" 
+              className="w-full h-10 pl-10 pr-4 bg-white border border-onyx/5 rounded-lg shadow-sm placeholder:text-onyx/20 outline-none focus:border-gold/30 transition-all text-xs font-medium" 
               placeholder="Search..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -116,17 +116,17 @@ function AdminContacts() {
         </div>
       </div>
 
-      <Tabs defaultValue="inquiries" onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-white p-1 h-12 rounded-xl border border-onyx/5 shadow-sm w-full sm:w-auto flex items-stretch">
+      <Tabs defaultValue="inquiries" onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="bg-white p-1 h-10 rounded-lg border border-onyx/5 shadow-sm w-full sm:w-auto flex items-stretch">
           <TabsTrigger
             value="inquiries"
-            className="px-8 flex-1 sm:flex-none rounded-lg data-[state=active]:bg-onyx data-[state=active]:text-gold text-[10px] uppercase tracking-widest transition-all font-bold"
+            className="px-6 flex-1 sm:flex-none rounded-md data-[state=active]:bg-onyx data-[state=active]:text-gold text-[9px] uppercase tracking-widest transition-all font-bold"
           >
             Inquiries ({inquiries?.length ?? 0})
           </TabsTrigger>
           <TabsTrigger
             value="leads"
-            className="px-8 flex-1 sm:flex-none rounded-lg data-[state=active]:bg-onyx data-[state=active]:text-gold text-[10px] uppercase tracking-widest transition-all font-bold"
+            className="px-6 flex-1 sm:flex-none rounded-md data-[state=active]:bg-onyx data-[state=active]:text-gold text-[9px] uppercase tracking-widest transition-all font-bold"
           >
             Offers & Leads ({leads?.length ?? 0})
           </TabsTrigger>
@@ -144,93 +144,82 @@ function AdminContacts() {
               <p className="font-serif text-onyx/30 italic">No inquiries found.</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              <AnimatePresence mode="popLayout">
-                {filteredInquiries.map((inquiry, idx) => (
-                  <motion.div
-                    key={inquiry._id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <Card className="rounded-3xl border-onyx/5 shadow-sm hover:shadow-md transition-all group overflow-hidden">
-                      <div className="flex flex-col sm:flex-row min-h-[200px]">
-                        <div className={`w-full sm:w-2 ${inquiry.type === "PRODUCT" ? "bg-gold" : "bg-onyx/10"}`} />
-                        <div className="flex-1 p-6 sm:p-8">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <span className={`text-[9px] uppercase tracking-widest font-black ${inquiry.type === "PRODUCT" ? "text-gold" : "text-onyx/40"}`}>
-                                  {inquiry.type === "PRODUCT" ? "Product Inquiry" : "General Inquiry"}
-                                </span>
-                                <span className="text-[9px] text-onyx/20">•</span>
-                                <span className="text-[9px] uppercase tracking-widest text-onyx/40 font-bold">
-                                  {new Date(inquiry.created_at).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}
-                                </span>
-                              </div>
-                              <h3 className="text-xl font-serif text-onyx">
-                                {inquiry.subject.replace("Product Inquiry: ", "")}
-                              </h3>
-                            </div>
+            <div className="bg-white rounded-2xl border border-onyx/5 shadow-sm overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-onyx/[0.02] border-b border-onyx/5">
+                  <tr>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Type</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Customer</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Subject & Message</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Received</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-onyx/5">
+                  <AnimatePresence mode="popLayout">
+                    {filteredInquiries.map((inquiry, idx) => (
+                      <motion.tr
+                        key={inquiry._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="hover:bg-ivory/20 transition-colors group"
+                      >
+                        <td className="py-5 px-6 align-top">
+                          <span className={`text-[8px] px-2 py-0.5 rounded-full uppercase tracking-widest font-black ${inquiry.type === "PRODUCT" ? "bg-gold/10 text-gold" : "bg-onyx/5 text-onyx/40"}`}>
+                            {inquiry.type === "PRODUCT" ? "Product" : "General"}
+                          </span>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-onyx">{inquiry.name}</span>
+                            <span className="text-[10px] text-onyx/40 font-medium">{inquiry.email}</span>
+                            {inquiry.phone && <span className="text-[10px] text-onyx/30 mt-1">{inquiry.phone}</span>}
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <div className="max-w-md">
+                            <h4 className="text-sm font-serif text-onyx font-bold mb-1 line-clamp-1">
+                              {inquiry.subject.replace("Product Inquiry: ", "")}
+                            </h4>
+                            <p className="text-xs text-onyx/50 line-clamp-2 leading-relaxed">
+                              "{inquiry.message}"
+                            </p>
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <span className="text-[10px] text-onyx/40 font-bold uppercase tracking-widest">
+                            {new Date(inquiry.created_at).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </span>
+                        </td>
+                        <td className="py-5 px-6 align-top text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <a
+                              href={`mailto:${inquiry.email}?subject=Re: ${encodeURIComponent(inquiry.subject)}`}
+                              className="h-9 w-9 flex items-center justify-center rounded-lg bg-onyx text-ivory hover:bg-gold hover:text-onyx transition-all shadow-sm"
+                              title="Reply"
+                            >
+                              <Mail size={14} />
+                            </a>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="text-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all opacity-0 group-hover:opacity-100"
+                              className="h-9 w-9 text-red-500/30 hover:text-red-500 hover:bg-red-500/5"
                               onClick={() => {
                                 if (confirm("Delete this inquiry?")) {
                                   deleteInquiryMutation.mutate(inquiry._id);
                                 }
                               }}
                             >
-                              <Trash2 size={16} />
+                              <Trash2 size={14} />
                             </Button>
                           </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 py-6 border-y border-onyx/5">
-                            <div className="space-y-1">
-                              <p className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Customer</p>
-                              <p className="text-sm font-bold text-onyx">{inquiry.name}</p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Email</p>
-                              <a href={`mailto:${inquiry.email}`} className="text-sm text-gold hover:underline font-bold">{inquiry.email}</a>
-                            </div>
-                            {inquiry.phone && (
-                              <div className="space-y-1">
-                                <p className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Phone</p>
-                                <p className="text-sm font-bold text-onyx">{inquiry.phone}</p>
-                              </div>
-                            )}
-                            {inquiry.product_name && (
-                              <div className="space-y-1">
-                                <p className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Product</p>
-                                <p className="text-sm text-onyx/60 font-medium italic font-serif">{inquiry.product_name}</p>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="relative mb-6">
-                            <p className="text-base font-serif italic text-onyx/70 leading-relaxed pl-4 border-l-2 border-gold/20">
-                              "{inquiry.message}"
-                            </p>
-                          </div>
-
-                          <div className="flex justify-end">
-                            <a
-                              href={`mailto:${inquiry.email}?subject=Re: ${encodeURIComponent(inquiry.subject)}`}
-                              className="bg-onyx text-ivory hover:bg-gold hover:text-onyx px-6 py-2.5 rounded-xl text-[10px] uppercase tracking-widest font-black transition-all flex items-center gap-2"
-                            >
-                              <Mail size={14} />
-                              Reply
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
             </div>
           )}
         </TabsContent>
@@ -246,7 +235,7 @@ function AdminContacts() {
               <p className="font-serif text-onyx/30 italic">No leads found.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {filteredLeads.map((lead, idx) => (
                 <motion.div
                   key={lead._id}
@@ -254,57 +243,46 @@ function AdminContacts() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                 >
-                  <Card className="rounded-3xl border-onyx/5 shadow-sm hover:shadow-lg transition-all p-6 sm:p-8 group relative overflow-hidden bg-white">
-                    <div className="relative z-10 space-y-6">
+                  <Card className="rounded-2xl border-onyx/5 shadow-sm hover:shadow-md transition-all p-5 group relative overflow-hidden bg-white">
+                    <div className="relative z-10 space-y-4">
                       <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Offer Code</span>
-                            <span className="px-2 py-0.5 rounded-md bg-gold/10 text-gold text-[10px] font-black tracking-widest border border-gold/10">
-                              {lead.offer_code}
-                            </span>
-                          </div>
-                          <h3 className="font-serif text-2xl text-onyx">{lead.name}</h3>
+                          <span className="px-2 py-0.5 rounded bg-gold/10 text-gold text-[8px] font-black tracking-widest border border-gold/10 uppercase">
+                            {lead.offer_code}
+                          </span>
+                          <h3 className="font-serif text-lg text-onyx">{lead.name}</h3>
                         </div>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all opacity-0 group-hover:opacity-100"
+                          className="h-7 w-7 text-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all opacity-0 group-hover:opacity-100"
                           onClick={() => {
                             if (confirm("Remove this lead?")) {
                               deleteLeadMutation.mutate(lead._id);
                             }
                           }}
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={14} />
                         </Button>
                       </div>
 
-                      <div className="space-y-3 pt-4 border-t border-onyx/5">
+                      <div className="space-y-2 pt-3 border-t border-onyx/5 text-[11px]">
                         <div className="flex justify-between items-center">
-                          <span className="text-[9px] uppercase tracking-widest text-onyx/30 font-black">Email</span>
-                          <a href={`mailto:${lead.email}`} className="text-sm font-bold text-gold hover:underline">{lead.email}</a>
+                          <span className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Email</span>
+                          <a href={`mailto:${lead.email}`} className="font-bold text-gold hover:underline">{lead.email}</a>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-[9px] uppercase tracking-widest text-onyx/30 font-black">Phone</span>
-                          <span className="text-sm font-bold text-onyx">{lead.phone}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-[9px] uppercase tracking-widest text-onyx/30 font-black">Captured</span>
-                          <span className="text-xs font-medium text-onyx/40">
-                            {lead.created_at ? new Date(lead.created_at).toLocaleDateString("en-IN", { 
-                              day: '2-digit', month: 'short', year: 'numeric'
-                            }) : "N/A"}
-                          </span>
+                          <span className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Phone</span>
+                          <span className="font-bold text-onyx">{lead.phone}</span>
                         </div>
                       </div>
 
                       <a
-                        href={`mailto:${lead.email}?subject=Welcome to Maison Aurum&body=Hello ${lead.name}, thank you for your interest in Maison Aurum. Your welcome code ${lead.offer_code} is ready to use.`}
-                        className="w-full bg-onyx text-ivory hover:bg-gold hover:text-onyx h-12 flex items-center justify-center rounded-xl text-[10px] uppercase tracking-widest font-black transition-all gap-2"
+                        href={`mailto:${lead.email}?subject=Welcome to Sahajanand Jewellers&body=Hello ${lead.name}, thank you for your interest in Sahajanand Jewellers. Your welcome code ${lead.offer_code} is ready to use.`}
+                        className="w-full bg-onyx text-ivory hover:bg-gold hover:text-onyx h-10 flex items-center justify-center rounded-lg text-[9px] uppercase tracking-widest font-black transition-all gap-2"
                       >
-                        <Mail size={14} />
-                        Contact Lead
+                        <Mail size={12} />
+                        Contact
                       </a>
                     </div>
                   </Card>

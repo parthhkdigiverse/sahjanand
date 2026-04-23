@@ -66,7 +66,7 @@ function AdminDashboard() {
       <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
           <h1 className="text-4xl font-serif text-onyx tracking-tight">Welcome to Dashboard</h1>
-          <p className="text-onyx/40 text-sm font-light uppercase tracking-[0.3em]">Management Console • Maison Aurum</p>
+          <p className="text-onyx/40 text-sm font-light uppercase tracking-[0.3em]">Management Console • Sahajanand Jewellers</p>
         </div>
         <div className="flex items-center gap-4 bg-onyx/5 px-6 py-3 rounded-2xl border border-onyx/5">
           <div className="flex flex-col text-right">
