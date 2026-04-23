@@ -12,8 +12,15 @@ class SettingsBase(BaseModel):
     popup_heading: str = "Your 10% Discount"
     popup_description: str = "Just a few details and your code is yours."
     popup_button_text: str = "Send My Code"
-    offer_button_text: str = "Get My Offer"
+        offer_button_text: str = "Get My Offer"
     offer_footer_text: str = "Limited time · One per customer"
+
+    # Gold Price Settings
+    gold_price_source: str = "manual"  # "manual" or "api"
+    manual_price_24k: float = 7780.0
+    manual_price_22k: float = 7140.0
+    manual_price_18k: float = 5840.0
+    gold_price_api_key: Optional[str] = None
 
 class Settings(SettingsBase):
     pass

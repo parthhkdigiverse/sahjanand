@@ -1,11 +1,14 @@
-const getApiBase = () => {
+const getBackendBase = () => {
   if (typeof window !== 'undefined') {
-    return `http://${window.location.hostname}:8002/api`;
+    return `http://${window.location.hostname}:8002`;
   }
-  return "http://localhost:8002/api";
+  return "http://localhost:8002";
 };
 
+const getApiBase = () => `${getBackendBase()}/api`;
+
 export const API_BASE = getApiBase();
+export const BACKEND_BASE = getBackendBase();
 
 export const getImageUrl = (path: string) => {
   if (!path) return '';
@@ -16,11 +19,12 @@ export const getImageUrl = (path: string) => {
   // Ensure it starts with a slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
-  // If it doesn't specify a known folder, assume uploads
-  if (!cleanPath.startsWith('/uploads') && !cleanPath.startsWith('/assets')) {
-    return `/uploads${cleanPath}`;
+  // If it's an uploaded file or asset, prepend backend base
+  if (cleanPath.startsWith('/uploads')) {
+    return `${BACKEND_BASE}${cleanPath}`;
   }
   
+  // Local assets are served from the frontend itself
   return cleanPath;
 };
 
@@ -88,6 +92,13 @@ export type OfferLead = {
   phone: string;
   offer_code: string;
   created_at: string;
+};
+
+export type InstagramPost = {
+  _id: string;
+  image_url: string;
+  link: string;
+  order: number;
 };
 
 export type GalleryItem = {
@@ -205,6 +216,12 @@ export type SiteSettings = {
   popup_heading: string;
   popup_description: string;
   popup_button_text: string;
+  // Gold Price Settings
+  gold_price_source: 'manual' | 'api';
+  manual_price_24k: number;
+  manual_price_22k: number;
+  manual_price_18k: number;
+  gold_price_api_key?: string;
   offer_button_text: string;
   offer_footer_text: string;
 };
@@ -290,6 +307,27 @@ export async function deleteOfferLead(id: string, token: string) {
     method: "DELETE",
     headers: { "Authorization": `Bearer ${token}` }
   });
+  return res.json();
+}
+
+export async function fetchInstagramPosts(): Promise<InstagramPost[]> {
+  const res = await fetch(`${API_BASE}/instagram/`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+// Gold Prices
+export type GoldPriceResponse = {
+  price_24k: number;
+  price_22k: number;
+  price_18k: number;
+  change: number;
+  source: string;
+};
+
+export async function fetchGoldPrices(): Promise<GoldPriceResponse> {
+  const res = await fetch(`${API_BASE}/gold-prices/`);
+  if (!res.ok) throw new Error("Failed to fetch gold prices");
   return res.json();
 }
 // Offers (Dynamic Promotions)

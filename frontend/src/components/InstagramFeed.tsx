@@ -1,14 +1,14 @@
 import { Instagram } from "lucide-react";
-import insta1 from "@/assets/insta-1.jpg";
-import insta2 from "@/assets/insta-2.jpg";
-import insta3 from "@/assets/insta-3.jpg";
-import insta4 from "@/assets/insta-4.jpg";
-import insta5 from "@/assets/insta-5.jpg";
-import insta6 from "@/assets/insta-6.jpg";
-
-const posts = [insta1, insta2, insta3, insta4, insta5, insta6];
+import { useQuery } from "@tanstack/react-query";
+import { fetchInstagramPosts, getImageUrl } from "@/lib/api";
 
 export function InstagramFeed() {
+  const { data: posts } = useQuery({
+    queryKey: ["instagram-posts"],
+    queryFn: fetchInstagramPosts,
+  });
+
+  if (!posts || posts.length === 0) return null;
   return (
     <section className="container-luxe py-24 md:py-32">
       <div className="text-center mb-14">
@@ -18,15 +18,17 @@ export function InstagramFeed() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
-        {posts.map((src, i) => (
+        {posts.map((post, i) => (
           <a
-            key={i}
-            href="#"
+            key={post._id}
+            href={post.link}
+            target={post.link !== "#" ? "_blank" : undefined}
+            rel={post.link !== "#" ? "noopener noreferrer" : undefined}
             className="group relative block aspect-square overflow-hidden bg-secondary animate-fade-up"
             style={{ animationDelay: `${i * 0.05}s` }}
           >
             <img
-              src={src}
+              src={getImageUrl(post.image_url)}
               alt={`Instagram post ${i + 1}`}
               loading="lazy"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"

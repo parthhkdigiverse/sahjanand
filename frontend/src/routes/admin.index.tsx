@@ -10,7 +10,11 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
-  const navigate = useNavigate();
+  const { data: goldPrices } = useQuery({
+    queryKey: ["gold-prices"],
+    queryFn: () => fetch(`${API_BASE}/gold-prices/`).then(res => res.json())
+  });
+
   const { data: products } = useQuery({
     queryKey: ["products"],
     queryFn: () => fetch(`${API_BASE}/products/`).then(res => res.json())
@@ -31,6 +35,7 @@ function AdminDashboard() {
     { title: "Gallery Items", value: galleryItems?.length || 0, icon: TrendingUp, color: "text-gold" },
     { title: "Blog Posts", value: blogs?.length || 0, icon: FileText, color: "text-gold" },
     { title: "New Inquiries", value: "12", icon: MessageSquare, color: "text-gold" },
+    { title: "Current Rate (22K)", value: goldPrices ? `₹${goldPrices.price_22k.toLocaleString('en-IN')}` : "Loading...", icon: TrendingUp, color: "text-gold" },
   ];
 
   return (
