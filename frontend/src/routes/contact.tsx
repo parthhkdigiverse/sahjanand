@@ -144,18 +144,17 @@ function Contact() {
               </div>
             </div>
 
-            <motion.div variants={FADE_UP} className="relative aspect-[4/3] rounded-2xl overflow-hidden group shadow-luxe">
-              <img src={mapFallback} alt="Atelier Interior" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-onyx/30 group-hover:bg-onyx/40 transition-colors flex items-center justify-center">
-                <a 
-                  href="https://maps.google.com" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="bg-white/90 backdrop-blur-sm text-onyx px-8 py-4 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-gold hover:text-white transition-all duration-300 shadow-lg flex items-center gap-2"
-                >
-                  Get Directions <ArrowRight size={14} />
-                </a>
-              </div>
+            <motion.div variants={FADE_UP} className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-luxe bg-onyx/5">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3774.215577626993!2d72.82298781538337!3d18.921389787176527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7d1e89ce4b87f%3A0xc3ec5bf4d28dc124!2sMarine%20Drive!5e0!3m2!1sen!2sin!4v1682348572883!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                style={{ border: 0, filter: "grayscale(0.2) contrast(1.05)" }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Maison Aurum Location"
+              ></iframe>
             </motion.div>
           </motion.div>
 
