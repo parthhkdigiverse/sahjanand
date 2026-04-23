@@ -8,11 +8,11 @@ router = APIRouter(prefix="/settings", tags=["settings"])
 @router.get("/", response_model=Settings)
 async def get_settings():
     db = get_database()
-    settings = await db.settings.find_one({"id": "global"})
-    if not settings:
-        # Return defaults if not set
+    doc = await db.settings.find_one({"id": "global"})
+    if not doc:
         return Settings()
-    return settings
+    # Explicitly create model to populate defaults for new fields
+    return Settings(**doc)
 
 @router.put("/", response_model=Settings)
 async def update_settings(settings_data: SettingsBase = Body(...), admin: str = Depends(get_current_admin)):

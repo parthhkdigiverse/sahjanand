@@ -15,7 +15,10 @@ from .routes import (
     categories,
     hero,
     offer_leads,
-    uploads
+    uploads,
+    offers,
+    about,
+    gallery
 )
 import os
 
@@ -53,6 +56,9 @@ app.include_router(uploads.router, prefix="/api")
 app.include_router(settings_route.router, prefix="/api")
 app.include_router(hero.router, prefix="/api/hero", tags=["Hero"])
 app.include_router(offer_leads.router, prefix="/api/offer-leads", tags=["Offer Leads"])
+app.include_router(offers.router, prefix="/api/offers", tags=["Offers"])
+app.include_router(about.router, prefix="/api", tags=["About"])
+app.include_router(gallery.router, prefix="/api", tags=["Gallery"])
 
 # Mount uploads directory to serve static files
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")

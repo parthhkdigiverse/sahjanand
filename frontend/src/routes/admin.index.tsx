@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { Package, FileText, MessageSquare, TrendingUp } from "lucide-react";
@@ -9,9 +10,15 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
+  const navigate = useNavigate();
   const { data: products } = useQuery({
     queryKey: ["products"],
     queryFn: () => fetch(`${API_BASE}/products/`).then(res => res.json())
+  });
+
+  const { data: galleryItems } = useQuery({
+    queryKey: ["gallery"],
+    queryFn: () => fetch(`${API_BASE}/gallery/`).then(res => res.json())
   });
 
   const { data: blogs } = useQuery({
@@ -21,9 +28,9 @@ function AdminDashboard() {
 
   const stats = [
     { title: "Total Products", value: products?.length || 0, icon: Package, color: "text-gold" },
+    { title: "Gallery Items", value: galleryItems?.length || 0, icon: TrendingUp, color: "text-gold" },
     { title: "Blog Posts", value: blogs?.length || 0, icon: FileText, color: "text-gold" },
     { title: "New Inquiries", value: "12", icon: MessageSquare, color: "text-gold" },
-    { title: "Avg. Gold Rate", value: "₹7,240", icon: TrendingUp, color: "text-gold" },
   ];
 
   return (
@@ -102,6 +109,18 @@ function AdminDashboard() {
                   <div className="text-[10px] text-ivory/30 uppercase tracking-widest">Journal Editorial</div>
                 </div>
                 <FileText className="h-5 w-5 text-gold/40 group-hover:text-gold group-hover:rotate-12 transition-all" />
+              </div>
+            </button>
+            <button 
+              onClick={() => navigate({ to: "/admin/gallery" })}
+              className="p-6 glass-dark border border-white/10 rounded-xl hover:border-gold hover:scale-[1.02] transition-all text-left group"
+            >
+              <div className="flex justify-between items-center">
+                <div className="space-y-1">
+                  <div className="font-serif text-lg group-hover:text-gold transition-colors">Manage Gallery</div>
+                  <div className="text-[10px] text-ivory/30 uppercase tracking-widest">Visual Storytelling</div>
+                </div>
+                <TrendingUp className="h-5 w-5 text-gold/40 group-hover:text-gold group-hover:rotate-12 transition-all" />
               </div>
             </button>
           </CardContent>

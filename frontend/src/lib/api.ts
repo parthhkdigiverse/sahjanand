@@ -9,8 +9,8 @@ export const API_BASE = getApiBase();
 
 export const getImageUrl = (path: string) => {
   if (!path) return '';
-  // If it's a full URL or data URI, return as is
-  if (path.startsWith('http') || path.startsWith('data:')) {
+  // If it's a full URL, data URI, or blob URI, return as is
+  if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) {
     return path;
   }
   // Ensure it starts with a slash
@@ -90,6 +90,21 @@ export type OfferLead = {
   created_at: string;
 };
 
+export type GalleryItem = {
+  id: string;
+  title: string;
+  image: string;
+  category?: string;
+  description?: string;
+  order?: number;
+};
+
+export type GallerySettings = {
+  eyebrow: string;
+  heading: string;
+  subheading: string;
+};
+
 export async function fetchProducts(): Promise<Product[]> {
   const res = await fetch(`${API_BASE}/products/`);
   if (!res.ok) throw new Error("Failed to fetch products");
@@ -154,6 +169,31 @@ export async function fetchCategories(): Promise<Category[]> {
   return res.json();
 }
 
+export async function fetchGalleryItems(): Promise<GalleryItem[]> {
+  const res = await fetch(`${API_BASE}/gallery/`);
+  if (!res.ok) throw new Error("Failed to fetch gallery items");
+  return res.json();
+}
+
+export async function fetchGallerySettings(): Promise<GallerySettings> {
+  const res = await fetch(`${API_BASE}/gallery/settings`);
+  if (!res.ok) throw new Error("Failed to fetch gallery settings");
+  return res.json();
+}
+
+export async function updateGallerySettings(data: GallerySettings, token: string) {
+  const res = await fetch(`${API_BASE}/gallery/settings`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update gallery settings");
+  return res.json();
+}
+
 export type SiteSettings = {
   reviews_heading: string;
   reviews_subheading: string;
@@ -165,6 +205,8 @@ export type SiteSettings = {
   popup_heading: string;
   popup_description: string;
   popup_button_text: string;
+  offer_button_text: string;
+  offer_footer_text: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {
@@ -248,5 +290,95 @@ export async function deleteOfferLead(id: string, token: string) {
     method: "DELETE",
     headers: { "Authorization": `Bearer ${token}` }
   });
+  return res.json();
+}
+// Offers (Dynamic Promotions)
+export type Offer = {
+  _id: string;
+  title: string;
+  description: string;
+  code: string;
+  image?: string;
+  is_active: boolean;
+  expiry_date?: string;
+  created_at: string;
+};
+
+export async function fetchOffers(): Promise<Offer[]> {
+  const res = await fetch(`${API_BASE}/offers/`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function createOffer(data: Omit<Offer, "_id" | "created_at">, token: string) {
+  const res = await fetch(`${API_BASE}/offers/`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updateOffer(id: string, data: Partial<Offer>, token: string) {
+  const res = await fetch(`${API_BASE}/offers/${id}`, {
+    method: "PUT",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteOffer(id: string, token: string) {
+  const res = await fetch(`${API_BASE}/offers/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error("Failed to delete offer");
+  return res.json();
+}
+
+// --- About Page Types & API ---
+export type PromiseItem = {
+  title: string;
+  description: string;
+};
+
+export type AboutData = {
+  hero_image?: string;
+  hero_heading: string;
+  hero_eyebrow: string;
+  story_heading: string;
+  story_eyebrow: string;
+  story_paragraphs: string[];
+  promise_image?: string;
+  promise_heading: string;
+  promise_eyebrow: string;
+  promises: PromiseItem[];
+};
+
+export async function fetchAboutData(): Promise<AboutData> {
+  const res = await fetch(`${API_BASE}/about/`);
+  if (!res.ok) throw new Error("Failed to fetch about data");
+  return res.json();
+}
+
+export async function updateAboutData(data: AboutData, token: string) {
+  const res = await fetch(`${API_BASE}/about/`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update about data");
   return res.json();
 }

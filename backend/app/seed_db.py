@@ -264,6 +264,72 @@ CATEGORIES = [
     }
 ]
 
+GALLERY = [
+    {
+        "id": "gallery-1",
+        "title": "Aurélia Halo Detail",
+        "image": "/assets/aurelia-ring-2.png",
+        "description": "Macro shot of the Aurélia Halo Ring setting.",
+        "order": 1
+    },
+    {
+        "id": "gallery-2",
+        "title": "Emerald Brilliance",
+        "image": "/assets/esmeralda-pendant-2.png",
+        "category": "High Jewellery",
+        "description": "The deep green allure of our Colombian emeralds.",
+        "order": 2
+    },
+    {
+        "id": "gallery-3",
+        "title": "Celeste Star Close-up",
+        "image": "/assets/celeste-earrings-2.png",
+        "category": "Atelier",
+        "description": "Every star is hand-set by our master craftsmen.",
+        "order": 3
+    },
+    {
+        "id": "gallery-4",
+        "title": "Gold Bangle Texture",
+        "image": "/assets/gold-bangle-2.png",
+        "category": "Craftsmanship",
+        "description": "Mirror finish on 22K solid gold.",
+        "order": 4
+    },
+    {
+        "id": "gallery-5",
+        "title": "Jewellery Journal",
+        "image": "/assets/insta-1.jpg",
+        "category": "Lifestyle",
+        "description": "Capturing the essence of Maison Aurum.",
+        "order": 5
+    },
+    {
+        "id": "gallery-6",
+        "title": "Bridal Collection",
+        "image": "/assets/insta-2.jpg",
+        "category": "Lifestyle",
+        "description": "Timeless pieces for your most special moments.",
+        "order": 6
+    },
+    {
+        "id": "gallery-7",
+        "title": "Atelier Workspace",
+        "image": "/assets/insta-4.jpg",
+        "category": "Atelier",
+        "description": "Where the magic happens.",
+        "order": 7
+    },
+    {
+        "id": "gallery-8",
+        "title": "Finished Masterpiece",
+        "image": "/assets/insta-5.jpg",
+        "category": "High Jewellery",
+        "description": "The final result of weeks of meticulous work.",
+        "order": 8
+    }
+]
+
 async def seed():
     client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
     db = client.get_default_database()
@@ -274,6 +340,8 @@ async def seed():
     await db.reviews.delete_many({})
     await db.testimonials.delete_many({})
     await db.categories.delete_many({})
+    await db.gallery.delete_many({})
+    await db.gallery_settings.delete_many({})
     
     print(f"Seeding {len(PRODUCTS)} products...")
     await db.products.insert_many(PRODUCTS)
@@ -289,6 +357,16 @@ async def seed():
     
     print(f"Seeding {len(CATEGORIES)} categories...")
     await db.categories.insert_many(CATEGORIES)
+    
+    print(f"Seeding {len(GALLERY)} gallery items...")
+    await db.gallery.insert_many(GALLERY)
+    
+    print("Seeding gallery settings...")
+    await db.gallery_settings.insert_one({
+        "eyebrow": "Atelier Gallery",
+        "heading": "Moments of Brilliance",
+        "subheading": "A visual journey through our atelier and the craft behind each creation."
+    })
     
     print("Seeding complete!")
     client.close()

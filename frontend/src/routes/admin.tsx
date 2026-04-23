@@ -11,7 +11,8 @@ import {
   X,
   Star,
   Quote,
-  FolderTree
+  FolderTree,
+  Camera
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -54,9 +55,11 @@ function AdminLayout() {
 
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-    { label: "Hero Slides", icon: LayoutDashboard, href: "/admin/hero" },
+    { label: "Hero Slides", icon: Star, href: "/admin/hero" },
     { label: "Categories", icon: FolderTree, href: "/admin/categories" },
+    { label: "Gallery", icon: Camera, href: "/admin/gallery" },
     { label: "Products", icon: Package, href: "/admin/products" },
+    { label: "About Page", icon: FileText, href: "/admin/about" },
     { label: "Blogs", icon: FileText, href: "/admin/blogs" },
     { label: "Inquiries", icon: MessageSquare, href: "/admin/contacts" },
     { label: "Offers & Leads", icon: MessageSquare, href: "/admin/offers" },
@@ -89,7 +92,7 @@ function AdminLayout() {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-8 space-y-3">
+        <nav className="flex-1 px-4 py-8 space-y-3 overflow-y-auto scrollbar-hide">
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (

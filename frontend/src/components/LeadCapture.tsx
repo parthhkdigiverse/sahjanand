@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import offerImg from "@/assets/offer.jpg";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { fetchSettings, submitOfferLead } from "@/lib/api";
+import { fetchSettings, submitOfferLead, getImageUrl } from "@/lib/api";
 import { toast } from "sonner";
 
 export function LeadCapture() {
@@ -46,7 +46,7 @@ export function LeadCapture() {
             {settings?.offer_heading ? (
               <div dangerouslySetInnerHTML={{ __html: settings.offer_heading.replace("Off", '<span class="italic text-gold">Off</span>') }} />
             ) : (
-              <>Get <span className="italic text-gold">10% Off</span><br />Your First Order</>
+              <>Get <span className="italic text-gold">10% Off</span><br /></>
             )}
           </h2>
           <p className="text-foreground/70 max-w-md mb-10 leading-relaxed">
@@ -61,10 +61,10 @@ export function LeadCapture() {
                 color: "var(--ivory)",
               }}
             >
-              Get My Offer →
+              {settings?.offer_button_text || "Get My Offer"} →
             </button>
             <p className="text-[0.7rem] tracking-wide text-muted-foreground mt-4">
-              Limited time · One per customer
+              {settings?.offer_footer_text || "Limited time · One per customer"}
             </p>
           </div>
         </div>
@@ -72,9 +72,13 @@ export function LeadCapture() {
         {/* RIGHT — image */}
         <div className="relative aspect-[4/5] lg:aspect-auto overflow-hidden bg-secondary">
           <img
-            src={settings?.offer_image || offerImg}
+            src={settings?.offer_image ? getImageUrl(settings.offer_image) : offerImg}
             alt="Offer"
             loading="lazy"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (target.src !== offerImg) target.src = offerImg;
+            }}
             className="absolute inset-0 h-full w-full object-cover"
           />
         </div>

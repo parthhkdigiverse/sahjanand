@@ -7,11 +7,13 @@ class SettingsBase(BaseModel):
     offer_heading: str = "Get 10% Off"
     offer_subheading: str = "Welcome Offer"
     offer_description: str = "A small thank-you for choosing us. Share your details and we'll send your discount code straight to your inbox."
-    offer_image: Optional[str] = None
+    offer_image: str = "/uploads/offer_banner.png"
     popup_eyebrow: str = "Claim Offer"
     popup_heading: str = "Your 10% Discount"
     popup_description: str = "Just a few details and your code is yours."
     popup_button_text: str = "Send My Code"
+    offer_button_text: str = "Get My Offer"
+    offer_footer_text: str = "Limited time · One per customer"
 
 class Settings(SettingsBase):
     pass

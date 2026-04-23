@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "@/lib/api";
+import { fetchGalleryItems, getImageUrl, fetchGallerySettings } from "@/lib/api";
 import { useState } from "react";
 import { X, ZoomIn } from "lucide-react";
 
@@ -27,29 +27,34 @@ export const Route = createFileRoute("/gallery")({
 function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ["products"],
-    queryFn: fetchProducts,
+  const { data: galleryItems = [], isLoading } = useQuery({
+    queryKey: ["gallery"],
+    queryFn: fetchGalleryItems,
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ["gallery-settings"],
+    queryFn: fetchGallerySettings
   });
 
   if (isLoading) return <div className="py-40 text-center animate-pulse text-gold uppercase tracking-[0.3em] text-xs">Curating Gallery...</div>;
 
-  const featured = products.slice(0, 5);
-  const remaining = products.slice(5);
+  const featured = galleryItems.slice(0, 5);
+  const remaining = galleryItems.slice(5);
 
   return (
     <main className="pt-32 pb-24 md:pt-40 md:pb-32 bg-[#F9F8F6]">
       <div className="container-luxe">
-        <header className="text-center mb-16 md:mb-24">
-          <p className="text-[10px] tracking-[0.4em] text-gold uppercase mb-6 font-bold">
-            Atelier Gallery
-          </p>
-          <h1 className="font-serif text-5xl md:text-7xl text-gray-900 mb-8">
-            Moments of Brilliance
+        <header className="text-center space-y-4 max-w-3xl mx-auto mb-16 animate-fade-up">
+          <span className="text-gold uppercase tracking-[0.4em] text-[10px] font-medium block">
+            {settings?.eyebrow || "Atelier Gallery"}
+          </span>
+          <h1 className="text-5xl md:text-7xl font-serif text-onyx tracking-wide leading-tight">
+            {settings?.heading || "Moments of Brilliance"}
           </h1>
-          <div className="w-24 h-px bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mb-10" />
-          <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            A visual journey through our atelier and the craft behind each creation.
+          <div className="h-px w-24 bg-gold/30 mx-auto" />
+          <p className="text-onyx/60 font-light max-w-xl mx-auto leading-relaxed">
+            {settings?.subheading || "A visual journey through our atelier and the craft behind each creation."}
           </p>
         </header>
 
@@ -58,12 +63,12 @@ function GalleryPage() {
           {/* Main Large Image */}
           {featured[0] && (
             <div 
-              onClick={() => setSelectedImage(featured[0].image)}
+              onClick={() => setSelectedImage(getImageUrl(featured[0].image))}
               className="relative group overflow-hidden bg-white aspect-square md:aspect-auto md:row-span-2 cursor-pointer"
             >
               <img
-                src={featured[0].image}
-                alt={featured[0].name}
+                src={getImageUrl(featured[0].image)}
+                alt={featured[0].title}
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
@@ -76,15 +81,15 @@ function GalleryPage() {
 
           {/* 2x2 Supporting Grid */}
           <div className="grid grid-cols-2 gap-4 lg:gap-6">
-            {featured.slice(1).map((p) => (
+            {featured.slice(1).map((item) => (
               <div
-                key={p.id}
-                onClick={() => setSelectedImage(p.image)}
+                key={item.id}
+                onClick={() => setSelectedImage(getImageUrl(item.image))}
                 className="relative group overflow-hidden bg-white aspect-square shadow-sm cursor-pointer"
               >
                 <img
-                  src={p.image}
-                  alt={p.name}
+                  src={getImageUrl(item.image)}
+                  alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
@@ -100,15 +105,15 @@ function GalleryPage() {
         {/* Remaining Gallery Items */}
         {remaining.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 mt-4 lg:mt-6">
-            {remaining.map((p) => (
+            {remaining.map((item) => (
               <div
-                key={p.id}
-                onClick={() => setSelectedImage(p.image)}
+                key={item.id}
+                onClick={() => setSelectedImage(getImageUrl(item.image))}
                 className="relative group overflow-hidden bg-white aspect-square shadow-sm cursor-pointer"
               >
                 <img
-                  src={p.image}
-                  alt={p.name}
+                  src={getImageUrl(item.image)}
+                  alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
