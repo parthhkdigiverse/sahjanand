@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit, Trash2, Search, Loader2 } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Loader2, Camera } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { BlogPost } from "@/lib/api";
+import { BlogPost, API_BASE } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/blogs")({
   component: AdminBlogs,
@@ -34,18 +34,20 @@ function AdminBlogs() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data: blogs, isLoading } = useQuery<BlogPost[]>({
     queryKey: ["blogs"],
-    queryFn: () => fetch("http://localhost:8001/api/blogs/").then(res => res.json())
+    queryFn: () => fetch(`${API_BASE}/blogs/`).then(res => res.json())
   });
 
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
       const isEdit = !!editingBlog;
       const url = isEdit 
-        ? `http://localhost:8001/api/blogs/${editingBlog.slug}` 
-        : `http://localhost:8001/api/blogs/`;
+        ? `${API_BASE}/blogs/${editingBlog.slug}` 
+        : `${API_BASE}/blogs/`;
       
       const res = await authenticatedFetch(url, {
         method: isEdit ? "PUT" : "POST",
@@ -60,13 +62,14 @@ function AdminBlogs() {
       toast.success(editingBlog ? "Article updated" : "Article published");
       setIsDialogOpen(false);
       setEditingBlog(null);
+      setImagePreview(null);
     },
     onError: () => toast.error("An error occurred")
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (slug: string) => {
-      const res = await authenticatedFetch(`http://localhost:8001/api/blogs/${slug}`, {
+      const res = await authenticatedFetch(`${API_BASE}/blogs/${slug}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");
@@ -80,6 +83,7 @@ function AdminBlogs() {
 
   const handleOpenDialog = (blog: BlogPost | null = null) => {
     setEditingBlog(blog);
+    setImagePreview(blog?.image || null);
     setIsDialogOpen(true);
   };
 
@@ -188,14 +192,47 @@ function AdminBlogs() {
           <DialogHeader>
             <DialogTitle>{editingBlog ? 'Edit Article' : 'Compose New Article'}</DialogTitle>
           </DialogHeader>
-          <form className="space-y-4" onSubmit={(e) => {
+          <form className="space-y-4" onSubmit={async (e) => {
             e.preventDefault();
-            const formData = new FormData(e.currentTarget);
+            const form = e.currentTarget;
+            const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+            
+            let imageUrl = editingBlog?.image || "";
+            const imageFile = formData.get("image_file") as File;
+
+            if (imageFile && imageFile.size > 0) {
+              setIsUploading(true);
+              const fileData = new FormData();
+              fileData.append("files", imageFile);
+              try {
+                const res = await fetch(`${API_BASE}/uploads/`, {
+                  method: "POST",
+                  body: fileData
+                });
+                if (res.ok) {
+                  const result = await res.json();
+                  imageUrl = result.urls[0];
+                } else {
+                  toast.error("Image upload failed");
+                  setIsUploading(false);
+                  return;
+                }
+              } catch (err) {
+                toast.error("Image upload error");
+                setIsUploading(false);
+                return;
+              } finally {
+                setIsUploading(false);
+              }
+            }
+
             const payload = {
               ...data,
+              image: imageUrl,
               content: (data.content as string).split('\n\n').map(p => p.trim()).filter(p => p),
             };
+            delete (payload as any).image_file;
             upsertMutation.mutate(payload);
           }}>
             <div className="grid grid-cols-2 gap-4">
@@ -219,9 +256,33 @@ function AdminBlogs() {
                 <Label htmlFor="date">Publication Date</Label>
                 <Input id="date" name="date" defaultValue={editingBlog?.date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} required />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="image">Cover Image URL</Label>
-                <Input id="image" name="image" defaultValue={editingBlog?.image} required />
+              <div className="col-span-2 space-y-2">
+                <Label htmlFor="image_file">Cover Image {editingBlog?.image && "(Leave blank to keep existing)"}</Label>
+                <div className="flex items-center gap-4">
+                  {imagePreview && (
+                    <img src={imagePreview} alt="Preview" className="h-20 w-32 object-cover rounded shadow-sm border border-onyx/5" />
+                  )}
+                  <div className="flex-1 relative">
+                    <Input 
+                      id="image_file" 
+                      name="image_file" 
+                      type="file" 
+                      accept="image/*" 
+                      required={!editingBlog?.image} 
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          setImagePreview(URL.createObjectURL(e.target.files[0]));
+                        }
+                      }}
+                      className="cursor-pointer h-12 pt-2.5"
+                    />
+                    {isUploading && (
+                      <div className="absolute inset-y-0 right-3 flex items-center">
+                        <Loader2 className="animate-spin h-4 w-4 text-gold" />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="space-y-2">

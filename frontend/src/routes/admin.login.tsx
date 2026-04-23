@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { API_BASE } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLogin,
@@ -22,7 +23,7 @@ function AdminLogin() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8001/api/auth/login", {
+      const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

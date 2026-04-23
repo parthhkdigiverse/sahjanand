@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { Package, FileText, MessageSquare, TrendingUp } from "lucide-react";
+import { API_BASE } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
@@ -10,12 +11,12 @@ export const Route = createFileRoute("/admin/")({
 function AdminDashboard() {
   const { data: products } = useQuery({
     queryKey: ["products"],
-    queryFn: () => fetch("http://localhost:8001/api/products/").then(res => res.json())
+    queryFn: () => fetch(`${API_BASE}/products/`).then(res => res.json())
   });
 
   const { data: blogs } = useQuery({
     queryKey: ["blogs"],
-    queryFn: () => fetch("http://localhost:8001/api/blogs/").then(res => res.json())
+    queryFn: () => fetch(`${API_BASE}/blogs/`).then(res => res.json())
   });
 
   const stats = [

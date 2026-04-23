@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Loader2, Download, Mail, Phone, User, Calendar, Plus, Camera } from "lucide-react";
-import { fetchSettings, SiteSettings } from "@/lib/api";
+import { fetchSettings, SiteSettings, API_BASE } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -57,7 +57,7 @@ function AdminOffers() {
   const { data: leads, isLoading: leadsLoading } = useQuery({
     queryKey: ["offer-leads"],
     queryFn: async () => {
-      const res = await authenticatedFetch("http://localhost:8001/api/offer-leads/");
+      const res = await authenticatedFetch(`${API_BASE}/offer-leads/`);
       if (!res.ok) throw new Error("Failed to fetch leads");
       return res.json();
     },
@@ -67,7 +67,7 @@ function AdminOffers() {
     mutationFn: async (updated: any) => {
       // We need to provide ALL settings fields to avoid clearing others
       const fullSettings = { ...settings, ...updated };
-      const res = await authenticatedFetch("http://localhost:8001/api/settings/", {
+      const res = await authenticatedFetch(`${API_BASE}/settings/`, {
         method: "PUT",
         body: JSON.stringify(fullSettings),
       });
@@ -83,7 +83,7 @@ function AdminOffers() {
 
   const deleteLeadMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8001/api/offer-leads/${id}`, {
+      const res = await authenticatedFetch(`${API_BASE}/offer-leads/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete lead");
@@ -101,7 +101,7 @@ function AdminOffers() {
     const fileData = new FormData();
     fileData.append("files", file);
     try {
-      const res = await authenticatedFetch("http://localhost:8001/api/uploads/", {
+      const res = await authenticatedFetch(`${API_BASE}/uploads/`, {
         method: "POST",
         body: fileData,
       });

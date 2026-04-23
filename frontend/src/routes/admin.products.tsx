@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Product, fetchCategories, Category } from "@/lib/api";
+import { Product, fetchCategories, Category, API_BASE } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -40,7 +40,7 @@ function AdminProducts() {
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["products"],
-    queryFn: () => fetch("http://localhost:8001/api/products/").then(res => res.json())
+    queryFn: () => fetch(`${API_BASE}/products/`).then(res => res.json())
   });
 
   const { data: categories = [] } = useQuery<Category[]>({
@@ -52,8 +52,8 @@ function AdminProducts() {
     mutationFn: async (data: any) => {
       const isEdit = !!editingProduct;
       const url = isEdit 
-        ? `http://localhost:8001/api/products/${editingProduct.id}` 
-        : `http://localhost:8001/api/products/`;
+        ? `${API_BASE}/products/${editingProduct.id}` 
+        : `${API_BASE}/products/`;
       
       const res = await authenticatedFetch(url, {
         method: isEdit ? "PUT" : "POST",
@@ -74,7 +74,7 @@ function AdminProducts() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8001/api/products/${id}`, {
+      const res = await authenticatedFetch(`${API_BASE}/products/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");
@@ -231,7 +231,7 @@ function AdminProducts() {
             if (imageFile && imageFile.size > 0) {
               const fileData = new FormData();
               fileData.append("files", imageFile);
-              const res = await fetch("http://localhost:8001/api/uploads/", {
+              const res = await fetch(`${API_BASE}/uploads/`, {
                 method: "POST",
                 body: fileData
               });
@@ -246,7 +246,7 @@ function AdminProducts() {
               if (file && file.size > 0) {
                 const fileData = new FormData();
                 fileData.append("files", file);
-                const res = await fetch("http://localhost:8001/api/uploads/", {
+                const res = await fetch(`${API_BASE}/uploads/`, {
                   method: "POST",
                   body: fileData
                 });

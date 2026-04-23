@@ -1,4 +1,11 @@
-const API_BASE = "http://localhost:8001/api";
+const getApiBase = () => {
+  if (typeof window !== 'undefined') {
+    return `http://${window.location.hostname}:8002/api`;
+  }
+  return "http://localhost:8002/api";
+};
+
+export const API_BASE = getApiBase();
 
 export type Product = {
   id: string;

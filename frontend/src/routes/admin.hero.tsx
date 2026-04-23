@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit2, Trash2, Loader2, ArrowUp, ArrowDown, Camera } from "lucide-react";
-import { fetchHeroSlides, HeroSlide } from "@/lib/api";
+import { fetchHeroSlides, HeroSlide, API_BASE } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -41,14 +41,14 @@ function AdminHero() {
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
       if (editingSlide) {
-        const res = await authenticatedFetch(`http://localhost:8001/api/hero/${editingSlide._id}`, {
+        const res = await authenticatedFetch(`${API_BASE}/hero/${editingSlide._id}`, {
           method: "PUT",
           body: JSON.stringify(data),
         });
         if (!res.ok) throw new Error("Failed to update slide");
         return res.json();
       } else {
-        const res = await authenticatedFetch("http://localhost:8001/api/hero/", {
+        const res = await authenticatedFetch(`${API_BASE}/hero/`, {
           method: "POST",
           body: JSON.stringify(data),
         });
@@ -67,7 +67,7 @@ function AdminHero() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8001/api/hero/${id}`, {
+      const res = await authenticatedFetch(`${API_BASE}/hero/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete slide");
@@ -114,7 +114,7 @@ function AdminHero() {
     const fileData = new FormData();
     fileData.append("files", file);
     try {
-      const res = await authenticatedFetch("http://localhost:8001/api/uploads/", {
+      const res = await authenticatedFetch(`${API_BASE}/uploads/`, {
         method: "POST",
         body: fileData,
       });

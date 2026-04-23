@@ -23,7 +23,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Category } from "@/lib/api";
+import { Category, API_BASE } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/categories")({
   component: AdminCategories,
@@ -38,15 +38,15 @@ function AdminCategories() {
 
   const { data: categories, isLoading } = useQuery<Category[]>({
     queryKey: ["categories"],
-    queryFn: () => fetch("http://localhost:8001/api/categories/").then(res => res.json())
+    queryFn: () => fetch(`${API_BASE}/categories/`).then(res => res.json())
   });
 
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
       const isEdit = !!editingCategory;
       const url = isEdit 
-        ? `http://localhost:8001/api/categories/${editingCategory.id}` 
-        : `http://localhost:8001/api/categories/`;
+        ? `${API_BASE}/categories/${editingCategory.id}` 
+        : `${API_BASE}/categories/`;
       
       const res = await authenticatedFetch(url, {
         method: isEdit ? "PUT" : "POST",
@@ -70,7 +70,7 @@ function AdminCategories() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8001/api/categories/${id}`, {
+      const res = await authenticatedFetch(`${API_BASE}/categories/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");
@@ -209,7 +209,7 @@ function AdminCategories() {
             if (imageFile && imageFile.size > 0) {
               const fileData = new FormData();
               fileData.append("files", imageFile);
-              const res = await fetch("http://localhost:8001/api/uploads/", {
+              const res = await fetch(`${API_BASE}/uploads/`, {
                 method: "POST",
                 body: fileData
               });

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useState } from "react";
+import { API_BASE } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/contacts")({
   component: AdminContacts,
@@ -40,13 +41,13 @@ function AdminContacts() {
 
   const { data: inquiries, isLoading: inquiriesLoading } = useQuery<Inquiry[]>({
     queryKey: ["contacts"],
-    queryFn: () => authenticatedFetch("http://localhost:8001/api/contacts/").then(res => res.json()),
+    queryFn: () => authenticatedFetch(`${API_BASE}/contacts/`).then(res => res.json()),
   });
 
   const { data: leads, isLoading: leadsLoading } = useQuery<OfferLead[]>({
     queryKey: ["offer-leads"],
     queryFn: async () => {
-      const res = await authenticatedFetch("http://localhost:8001/api/offer-leads/");
+      const res = await authenticatedFetch(`${API_BASE}/offer-leads/`);
       if (!res.ok) throw new Error("Failed to fetch leads");
       return res.json();
     },
@@ -54,7 +55,7 @@ function AdminContacts() {
 
   const deleteInquiryMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8001/api/contacts/${id}`, {
+      const res = await authenticatedFetch(`${API_BASE}/contacts/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");
@@ -68,7 +69,7 @@ function AdminContacts() {
 
   const deleteLeadMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8001/api/offer-leads/${id}`, {
+      const res = await authenticatedFetch(`${API_BASE}/offer-leads/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete lead");

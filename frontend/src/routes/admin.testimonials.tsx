@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Loader2, Quote, Play, Plus, Edit2, Camera, Settings } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
-import { fetchSettings } from "@/lib/api";
+import { fetchSettings, API_BASE } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -61,13 +61,13 @@ function AdminTestimonials() {
 
   const { data: testimonials, isLoading } = useQuery<Testimonial[]>({
     queryKey: ["testimonials"],
-    queryFn: () => fetch("http://localhost:8001/api/testimonials/").then(res => res.json())
+    queryFn: () => fetch(`${API_BASE}/testimonials/`).then(res => res.json())
   });
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (updated: any) => {
       const fullSettings = { ...settings, ...updated };
-      const res = await authenticatedFetch("http://localhost:8001/api/settings/", {
+      const res = await authenticatedFetch(`${API_BASE}/settings/`, {
         method: "PUT",
         body: JSON.stringify(fullSettings),
       });
@@ -84,7 +84,7 @@ function AdminTestimonials() {
   const createMutation = useMutation({
     mutationFn: async (data: typeof EMPTY_FORM) => {
       const payload = { ...data, video_url: data.video_url || undefined };
-      const res = await authenticatedFetch("http://localhost:8001/api/testimonials/", {
+      const res = await authenticatedFetch(`${API_BASE}/testimonials/`, {
         method: "POST",
         body: JSON.stringify(payload),
       });
@@ -102,7 +102,7 @@ function AdminTestimonials() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: typeof EMPTY_FORM }) => {
       const payload = { ...data, video_url: data.video_url || undefined };
-      const res = await authenticatedFetch(`http://localhost:8001/api/testimonials/${id}`, {
+      const res = await authenticatedFetch(`${API_BASE}/testimonials/${id}`, {
         method: "PUT",
         body: JSON.stringify(payload),
       });
@@ -119,7 +119,7 @@ function AdminTestimonials() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await authenticatedFetch(`http://localhost:8001/api/testimonials/${id}`, {
+      const res = await authenticatedFetch(`${API_BASE}/testimonials/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete testimonial");
@@ -136,7 +136,7 @@ function AdminTestimonials() {
     const fileData = new FormData();
     fileData.append("files", file);
     try {
-      const res = await authenticatedFetch("http://localhost:8001/api/uploads/", {
+      const res = await authenticatedFetch(`${API_BASE}/uploads/`, {
         method: "POST",
         body: fileData,
       });
