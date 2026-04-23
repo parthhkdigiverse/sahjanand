@@ -1,3 +1,5 @@
+import { authenticatedFetch } from "@/services/auth";
+
 const getBackendBase = () => {
   if (typeof window !== 'undefined') {
     return `http://${window.location.hostname}:8002`;
@@ -193,12 +195,8 @@ export async function fetchGallerySettings(): Promise<GallerySettings> {
 }
 
 export async function updateGallerySettings(data: GallerySettings, token: string) {
-  const res = await fetch(`${API_BASE}/gallery/settings`, {
+  const res = await authenticatedFetch(`${API_BASE}/gallery/settings`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to update gallery settings");
@@ -227,6 +225,7 @@ export type SiteSettings = {
   facebook_url: string;
   twitter_url: string;
   youtube_url: string;
+  whatsapp_number: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {
@@ -236,12 +235,8 @@ export async function fetchSettings(): Promise<SiteSettings> {
 }
 
 export async function updateSettings(data: SiteSettings, token: string) {
-  const res = await fetch(`${API_BASE}/settings/`, {
+  const res = await authenticatedFetch(`${API_BASE}/settings/`, {
     method: "PUT",
-    headers: { 
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to update settings");
@@ -256,42 +251,31 @@ export async function fetchHeroSlides(): Promise<HeroSlide[]> {
 }
 
 export async function createHeroSlide(data: Omit<HeroSlide, "_id">, token: string) {
-  const res = await fetch(`${API_BASE}/hero/`, {
+  const res = await authenticatedFetch(`${API_BASE}/hero/`, {
     method: "POST",
-    headers: { 
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
     body: JSON.stringify(data),
   });
   return res.json();
 }
 
 export async function updateHeroSlide(id: string, data: Partial<HeroSlide>, token: string) {
-  const res = await fetch(`${API_BASE}/hero/${id}`, {
+  const res = await authenticatedFetch(`${API_BASE}/hero/${id}`, {
     method: "PUT",
-    headers: { 
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
     body: JSON.stringify(data),
   });
   return res.json();
 }
 
 export async function deleteHeroSlide(id: string, token: string) {
-  const res = await fetch(`${API_BASE}/hero/${id}`, {
+  const res = await authenticatedFetch(`${API_BASE}/hero/${id}`, {
     method: "DELETE",
-    headers: { "Authorization": `Bearer ${token}` }
   });
   return res.json();
 }
 
 // Offer Leads
 export async function fetchOfferLeads(token: string): Promise<OfferLead[]> {
-  const res = await fetch(`${API_BASE}/offer-leads/`, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
+  const res = await authenticatedFetch(`${API_BASE}/offer-leads/`);
   if (!res.ok) return [];
   return res.json();
 }
@@ -306,9 +290,8 @@ export async function submitOfferLead(data: Omit<OfferLead, "_id" | "created_at"
 }
 
 export async function deleteOfferLead(id: string, token: string) {
-  const res = await fetch(`${API_BASE}/offer-leads/${id}`, {
+  const res = await authenticatedFetch(`${API_BASE}/offer-leads/${id}`, {
     method: "DELETE",
-    headers: { "Authorization": `Bearer ${token}` }
   });
   return res.json();
 }
@@ -352,35 +335,24 @@ export async function fetchOffers(): Promise<Offer[]> {
 }
 
 export async function createOffer(data: Omit<Offer, "_id" | "created_at">, token: string) {
-  const res = await fetch(`${API_BASE}/offers/`, {
+  const res = await authenticatedFetch(`${API_BASE}/offers/`, {
     method: "POST",
-    headers: { 
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
     body: JSON.stringify(data),
   });
   return res.json();
 }
 
 export async function updateOffer(id: string, data: Partial<Offer>, token: string) {
-  const res = await fetch(`${API_BASE}/offers/${id}`, {
+  const res = await authenticatedFetch(`${API_BASE}/offers/${id}`, {
     method: "PUT",
-    headers: { 
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
     body: JSON.stringify(data),
   });
   return res.json();
 }
 
 export async function deleteOffer(id: string, token: string) {
-  const res = await fetch(`${API_BASE}/offers/${id}`, {
+  const res = await authenticatedFetch(`${API_BASE}/offers/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   });
   if (!res.ok) throw new Error("Failed to delete offer");
   return res.json();
@@ -428,12 +400,8 @@ export async function fetchAboutData(): Promise<AboutData> {
 }
 
 export async function updateAboutData(data: AboutData, token: string) {
-  const res = await fetch(`${API_BASE}/about/`, {
+  const res = await authenticatedFetch(`${API_BASE}/about/`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to update about data");
@@ -447,12 +415,8 @@ export async function fetchContactPageData(): Promise<ContactPageData> {
 }
 
 export async function updateContactPageData(data: ContactPageData, token: string) {
-  const res = await fetch(`${API_BASE}/contact-page/`, {
+  const res = await authenticatedFetch(`${API_BASE}/contact-page/`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to update contact page data");
@@ -486,12 +450,8 @@ export async function fetchPolicy(slug: string): Promise<Policy> {
 }
 
 export async function createPolicy(data: Policy, token: string) {
-  const res = await fetch(`${API_BASE}/policies/`, {
+  const res = await authenticatedFetch(`${API_BASE}/policies/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to create policy");
@@ -499,12 +459,8 @@ export async function createPolicy(data: Policy, token: string) {
 }
 
 export async function updatePolicy(id: string, data: Policy, token: string) {
-  const res = await fetch(`${API_BASE}/policies/${id}`, {
+  const res = await authenticatedFetch(`${API_BASE}/policies/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to update policy");
@@ -512,11 +468,8 @@ export async function updatePolicy(id: string, data: Policy, token: string) {
 }
 
 export async function deletePolicy(id: string, token: string) {
-  const res = await fetch(`${API_BASE}/policies/${id}`, {
+  const res = await authenticatedFetch(`${API_BASE}/policies/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   });
   if (!res.ok) throw new Error("Failed to delete policy");
   return res.json();

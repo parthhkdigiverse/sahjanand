@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { fetchProduct, fetchProducts, type Product } from "@/lib/api";
+import { fetchProduct, fetchProducts, fetchSettings, type Product } from "@/lib/api";
 import { ProductCard } from "@/components/FeaturedProducts";
 import { InquiryModal } from "@/components/InquiryModal";
 import { Check, MessageCircle, ArrowLeft, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/product/$id")({
   component: ProductPage,
@@ -19,6 +20,11 @@ function ProductPage() {
   const [zoom, setZoom] = useState({ active: false, x: 50, y: 50 });
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
 
   useEffect(() => {
     async function loadData() {
@@ -55,6 +61,14 @@ function ProductPage() {
 
   const galleryImages = product.images?.length > 0 ? product.images : [product.image];
   
+  const handleWhatsAppInquiry = () => {
+    if (!settings?.whatsapp_number) return;
+    
+    // Clean number: remove all non-digits
+    const cleanNumber = settings.whatsapp_number.replace(/\D/g, "");
+    const message = encodeURIComponent(`Hello Sahajanand Jewellers, I'm interested in the ${product.name} (${product.id}). Can you provide more details?`);
+    window.open(`https://wa.me/${cleanNumber}?text=${message}`, "_blank");
+  };
 
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -159,6 +173,7 @@ function ProductPage() {
                   Enquire Now
                 </button>
                 <button
+                  onClick={handleWhatsAppInquiry}
                   className="flex-1 bg-white border border-gray-300 text-gray-800 py-4 px-8 text-[11px] tracking-[0.2em] font-bold uppercase transition-all hover:bg-gray-50 flex items-center justify-center gap-2"
                 >
                   <MessageCircle size={16} /> WhatsApp Inquiry
@@ -198,11 +213,6 @@ function ProductPage() {
           </div>
         </div>
       </section>
-      <InquiryModal 
-        product={product} 
-        isOpen={isInquiryOpen} 
-        onClose={() => setIsInquiryOpen(false)} 
-      />
 
       {isLightboxOpen && (
         <div 

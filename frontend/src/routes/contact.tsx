@@ -115,7 +115,7 @@ function Contact() {
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0">
           <img 
-            src={heroFallback} 
+            src={getImageUrl(contactData?.hero_image || "/assets/hero-3.jpg")} 
             alt="Sahajanand Jewellers Atelier" 
             className="w-full h-full object-cover"
           />
@@ -145,12 +145,7 @@ function Contact() {
             <div>
               <h2 className="font-serif text-3xl md:text-4xl text-onyx mb-10">Our Atelier</h2>
               <div className="space-y-8">
-                {[
-                  { icon: MapPin, t: "The Boutique", l: ["Opp. Kidney Hospital", "Nadiad, Gujarat 387001"] },
-                  { icon: Phone, t: "Concierge", l: ["+91 95123 06199"] },
-                  { icon: Mail, t: "Inquiries", l: ["info@sahajanandjewellers.com"] },
-                  { icon: Clock, t: "Opening Hours", l: ["Mon – Sat · 10:30 – 19:30", "Sunday · Closed"] },
-                ].map(({ icon: Icon, t, l }, idx) => (
+                {boutiqueDetails.map(({ icon: Icon, t, l }, idx) => (
                   <div key={idx} className="flex gap-6 group">
                     <div className="h-14 w-14 rounded-full border border-gold/30 bg-white shadow-sm flex items-center justify-center text-gold flex-none group-hover:scale-110 group-hover:border-gold transition-all duration-500">
                       <Icon strokeWidth={1.5} size={24} />

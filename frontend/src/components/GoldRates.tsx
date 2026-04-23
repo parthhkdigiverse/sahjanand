@@ -114,10 +114,7 @@ export function GoldRates() {
           </div>
         )}
 
-        <p className="text-center text-xs tracking-luxe text-muted-foreground mt-12 inline-flex items-center gap-2 w-full justify-center">
-          <ShieldCheck size={13} className="text-gold" />
-          BIS Hallmark Certified · Rates revised daily {priceData?.source === 'api' ? 'automatically' : 'at 10:00 AM IST'}
-        </p>
+
       </div>
     </section>
   );
@@ -196,12 +193,7 @@ function RateCard({
             <ShieldCheck size={12} className="text-gold" />
             Hallmark Certified
           </span>
-          <button className="relative text-gold tracking-luxe font-medium overflow-hidden group/btn">
-            <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">
-              Book Visit →
-            </span>
-            <span className="absolute bottom-0 left-0 w-full h-px bg-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-          </button>
+
         </div>
       </div>
     </div>

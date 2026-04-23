@@ -19,6 +19,7 @@ class SettingsBase(BaseModel):
     facebook_url: str = "#"
     twitter_url: str = "#"
     youtube_url: str = "#"
+    whatsapp_number: str = "+91 95123 06199"
 
     # Gold Price Settings
     gold_price_source: str = "manual"  # "manual" or "api"

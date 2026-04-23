@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { authService } from "@/services/auth";
+import { authService, authenticatedFetch } from "@/services/auth";
 import { Loader2, Save, MapPin, Phone, Mail, Clock, Globe, Image as ImageIcon, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/admin/contact-page")({
@@ -80,12 +80,9 @@ function AdminContactPage() {
           const uploadData = new FormData();
           uploadData.append("files", imageFile);
           
-          const res = await fetch(`${API_BASE}/uploads/`, {
+          const res = await authenticatedFetch(`${API_BASE}/uploads/`, {
             method: "POST",
             body: uploadData,
-            headers: {
-              "Authorization": `Bearer ${token}`
-            }
           });
 
           if (!res.ok) {

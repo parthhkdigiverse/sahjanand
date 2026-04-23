@@ -138,13 +138,13 @@ function AdminSettings() {
                 <Share2 className="h-5 w-5 text-gold" />
               </div>
               <div>
-                <CardTitle className="font-serif text-xl">Social Media Links</CardTitle>
-                <CardDescription className="text-[10px] uppercase tracking-widest">Global Social Presence Configuration</CardDescription>
+                <CardTitle className="font-serif text-xl">Social Media & Communication</CardTitle>
+                <CardDescription className="text-[10px] uppercase tracking-widest">Global Digital Presence Configuration</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="p-8 space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Instagram URL</Label>
                 <Input 
@@ -175,6 +175,15 @@ function AdminSettings() {
                   value={formData.youtube_url || ""}
                   onChange={(e) => setFormData({...formData, youtube_url: e.target.value})}
                   className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">WhatsApp Number (with country code)</Label>
+                <Input 
+                  value={formData.whatsapp_number || ""}
+                  onChange={(e) => setFormData({...formData, whatsapp_number: e.target.value})}
+                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                  placeholder="+91 95123 06199"
                 />
               </div>
             </div>
