@@ -22,7 +22,7 @@ def load_env():
 def run_app():
     load_env()
     
-    backend_port = os.environ.get("BACKEND_PORT", "8001")
+    backend_port = os.environ.get("BACKEND_PORT", "8002")
     frontend_port = os.environ.get("FRONTEND_PORT", "3535")
 
     print(f"🚀 Starting Sahjanand Application...")
