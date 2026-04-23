@@ -56,11 +56,12 @@ export function Navbar() {
 
           {/* Center: logo */}
           <Link to="/" className="text-center justify-self-center">
-            <div className="font-serif text-2xl md:text-3xl tracking-wide leading-none text-foreground">
-              Maison <span className="text-gold italic">Aurum</span>
+            <div className="font-serif text-2xl md:text-3xl tracking-wide leading-none text-foreground flex flex-col items-center">
+              <span className="text-[0.6em] text-gold/60 mb-1 opacity-80">SHREE</span>
+              <span>Sahajanand <span className="text-gold italic">Jewellers</span></span>
             </div>
-            <div className="text-[0.6rem] tracking-luxe text-muted-foreground mt-1 hidden sm:block">
-              FINE JEWELLERY · EST. 1948
+            <div className="text-[0.6rem] tracking-luxe text-muted-foreground mt-2 hidden sm:block font-bold">
+              EST. 1970 · NADIAD
             </div>
           </Link>
 
@@ -93,10 +94,10 @@ export function Navbar() {
               </Link>
             ))}
             <a
-              href="tel:+912240000000"
+              href="tel:+919512306199"
               className="py-3 mt-2 text-gold flex items-center gap-2"
             >
-              <Phone size={14} /> +91 22 4000 0000
+              <Phone size={14} /> +91 95123 06199
             </a>
           </nav>
         </div>

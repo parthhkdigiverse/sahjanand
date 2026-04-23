@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Instagram, Facebook, Twitter, Youtube, MapPin, Phone, Mail } from "lucide-react";
+import { Instagram, Facebook, Twitter, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
 import { fetchPolicies, fetchSettings } from "@/lib/api";
 
 const exploreLinks = [
@@ -22,9 +22,9 @@ export function Footer() {
   });
 
   const s = settings || {
-    contact_address: "14 Marine Drive, Mumbai · 400001, India",
-    contact_phone: "+91 22 4000 0000",
-    contact_email: "hello@maisonaurum.com",
+    contact_address: "Opp. Kidney Hospital, Nadiad, Gujarat, India",
+    contact_phone: "+91 95123 06199",
+    contact_email: "info@sahajanandjewellers.com",
     instagram_url: "#",
     facebook_url: "#",
     twitter_url: "#",
@@ -41,7 +41,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="font-serif text-2xl mb-6">
-              Maison <span className="text-gold italic">Aurum</span>
+              Sahajanand <span className="text-gold italic">Jewellers</span>
             </div>
             <p className="text-sm text-ivory/60 leading-relaxed mb-6">
               Fine jewellery, made by hand. Designed to be loved for a lifetime.
@@ -93,19 +93,17 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-ivory/70 mb-8 font-sans">
               <li className="flex items-start gap-2">
                 <MapPin size={14} className="mt-1 text-gold shrink-0" />
-                <span>14 Marine Drive, Mumbai · 400001, India</span>
+                <span>Opp. Kidney Hospital, Nadiad, Gujarat</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone size={14} className="text-gold shrink-0" />
-                <a href="tel:+912240000000" className="hover:text-gold transition-colors">
-                  +91 22 4000 0000
+                <a href="tel:+919512306199" className="hover:text-gold transition-colors">
+                  +91 95123 06199
                 </a>
               </li>
-              <li className="flex items-center gap-2">
-                <Mail size={14} className="text-gold shrink-0" />
-                <a href="mailto:hello@maisonaurum.com" className="hover:text-gold transition-colors">
-                  hello@maisonaurum.com
-                </a>
+              <li className="flex items-center gap-2 text-[10px] tracking-wide text-ivory/50 mt-4 uppercase">
+                <Clock size={14} className="text-gold shrink-0" />
+                <span>Mon to Sat : 10:30 to 7:30</span>
               </li>
             </ul>
 
@@ -130,7 +128,7 @@ export function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-ivory/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-ivory/20 tracking-[0.2em] uppercase font-sans">
-          <p>© {new Date().getFullYear()} Maison Aurum. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Sahajanand Jewellers. All rights reserved.</p>
           <p>Made with care in India.</p>
         </div>
       </div>

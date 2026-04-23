@@ -7,14 +7,14 @@ import heroFallback from "@/assets/hero-3.jpg";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Us — Maison Aurum Mumbai" },
+      { title: "Contact Us — Sahajanand Jewellers Nadiad" },
       {
         name: "description",
         content:
-          "Visit our store in Mumbai or book a private appointment with our team. We'd love to hear from you.",
+          "Visit our store in Nadiad or book a private appointment with our team. We'd love to hear from you.",
       },
-      { property: "og:title", content: "Contact Us — Maison Aurum" },
-      { property: "og:description", content: "Visit our Mumbai store or book an appointment." },
+      { property: "og:title", content: "Contact Us — Sahajanand Jewellers" },
+      { property: "og:description", content: "Visit our Nadiad store or book an appointment." },
     ],
   }),
   component: Contact,
@@ -59,7 +59,7 @@ function Contact() {
         <div className="absolute inset-0">
           <img 
             src={heroFallback} 
-            alt="Maison Aurum Atelier" 
+            alt="Sahajanand Jewellers Atelier" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-onyx/60" />
@@ -75,7 +75,7 @@ function Contact() {
             Experience the <br className="hidden md:block" /> Art of Craft
           </h1>
           <p className="text-ivory/70 max-w-xl mx-auto font-light text-sm md:text-base">
-            Schedule a private consultation at our Mumbai boutique. Discover our collections with dedicated assistance from our master jewelers.
+            Schedule a private consultation at our Nadiad boutique. Discover our collections with dedicated assistance from our master jewelers.
           </p>
         </div>
       </section>
@@ -87,10 +87,10 @@ function Contact() {
               <h2 className="font-serif text-3xl md:text-4xl text-onyx mb-10">Our Atelier</h2>
               <div className="space-y-8">
                 {[
-                  { icon: MapPin, t: "The Boutique", l: ["14 Marine Drive", "Colaba, Mumbai 400001"] },
-                  { icon: Phone, t: "Concierge", l: ["+91 22 4000 0000"] },
-                  { icon: Mail, t: "Inquiries", l: ["hello@maisonaurum.com"] },
-                  { icon: Clock, t: "Opening Hours", l: ["Tue – Sat · 11:00 – 19:00", "Sun & Mon · Private Appointments Only"] },
+                  { icon: MapPin, t: "The Boutique", l: ["Opp. Kidney Hospital", "Nadiad, Gujarat 387001"] },
+                  { icon: Phone, t: "Concierge", l: ["+91 95123 06199"] },
+                  { icon: Mail, t: "Inquiries", l: ["info@sahajanandjewellers.com"] },
+                  { icon: Clock, t: "Opening Hours", l: ["Mon – Sat · 10:30 – 19:30", "Sunday · Closed"] },
                 ].map(({ icon: Icon, t, l }, idx) => (
                   <div key={idx} className="flex gap-6 group">
                     <div className="h-14 w-14 rounded-full border border-gold/30 bg-white shadow-sm flex items-center justify-center text-gold flex-none group-hover:scale-110 group-hover:border-gold transition-all duration-500">
@@ -109,14 +109,14 @@ function Contact() {
 
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-luxe bg-onyx/5">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3774.215577626993!2d72.82298781538337!3d18.921389787176527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7d1e89ce4b87f%3A0xc3ec5bf4d28dc124!2sMarine%20Drive!5e0!3m2!1sen!2sin!4v1682348572883!5m2!1sen!2sin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3681.4278457630737!2d72.8614271752494!3d22.67509547941913!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e5006d96e594d%3A0xc3f8e5c5c1f5e2ec!2sMuljibhai%20Patel%20Urological%20Hospital!5e0!3m2!1sen!2sin!4v1713876000000!5m2!1sen!2sin"
                 width="100%"
                 height="100%"
                 style={{ border: 0, filter: "grayscale(0.2) contrast(1.05)" }}
                 allowFullScreen={false}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Maison Aurum Location"
+                title="Sahajanand Jewellers Nadiad Location"
               ></iframe>
             </div>
           </div>
@@ -183,7 +183,7 @@ function Contact() {
                           value={formData.phone}
                           onChange={e => setFormData({...formData, phone: e.target.value})}
                           className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
-                          placeholder="+91 98765 43210"
+                          placeholder="+91 95123 06199"
                         />
                       </div>
                       <div className="space-y-2 relative group">

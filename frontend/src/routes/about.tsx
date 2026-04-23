@@ -15,7 +15,7 @@ function About() {
   });
 
   if (isLoading) return <div className="h-screen flex items-center justify-center bg-ivory/30">
-    <div className="animate-pulse font-serif text-2xl text-gold tracking-widest uppercase">Maison Aurum</div>
+    <div className="animate-pulse font-serif text-2xl text-gold tracking-widest uppercase">Sahajanand Jewellers</div>
   </div>;
 
   const data = about || {
@@ -37,7 +37,7 @@ function About() {
       <section className="relative h-[70vh] min-h-[480px] overflow-hidden">
         <img 
           src={data.hero_image ? getImageUrl(data.hero_image) : heroFallback} 
-          alt="Maison Aurum" 
+          alt="Sahajanand Jewellers" 
           className="absolute inset-0 h-full w-full object-cover" 
         />
         <div className="absolute inset-0 bg-onyx/40" />
