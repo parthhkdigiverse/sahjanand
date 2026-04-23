@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { submitContact } from "@/lib/api";
+import heroFallback from "@/assets/hero-3.jpg";
+import mapFallback from "@/assets/insta-5.jpg";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -18,6 +21,16 @@ export const Route = createFileRoute("/contact")({
   }),
   component: Contact,
 });
+
+const FADE_UP = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+};
+
+const STAGGER = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+};
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -53,117 +66,225 @@ function Contact() {
   };
 
   return (
-    <section className="pt-32 pb-24 container-luxe">
-      <div className="text-center mb-16">
-        <p className="divider-gold mb-5">Get in Touch</p>
-        <h1 className="font-serif text-5xl md:text-6xl mb-4">Visit Our Store</h1>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Walk in any day, or book a private appointment with our team.
-        </p>
-      </div>
+    <div className="bg-ivory/30 min-h-screen">
+      {/* Premium Hero Section */}
+      <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden pt-20">
+        <div className="absolute inset-0">
+          <img 
+            src={heroFallback} 
+            alt="Maison Aurum Atelier" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-onyx/60" />
+        </div>
+        
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-gold uppercase tracking-[0.3em] text-xs font-bold mb-6 flex items-center justify-center gap-4"
+          >
+            <span className="w-12 h-px bg-gold/50"></span>
+            Private Viewing
+            <span className="w-12 h-px bg-gold/50"></span>
+          </motion.p>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="font-serif text-5xl md:text-7xl text-ivory mb-6 leading-tight"
+          >
+            Experience the <br className="hidden md:block" /> Art of Craft
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="text-ivory/70 max-w-xl mx-auto font-light text-sm md:text-base"
+          >
+            Schedule a private consultation at our Mumbai boutique. Discover our collections with dedicated assistance from our master jewelers.
+          </motion.p>
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-        <div className="space-y-8">
-          {[
-            { icon: MapPin, t: "Address", l: ["14 Marine Drive", "Colaba, Mumbai 400001"] },
-            { icon: Phone, t: "Phone", l: ["+91 22 4000 0000"] },
-            { icon: Mail, t: "Email", l: ["hello@maisonaurum.com"] },
-            { icon: Clock, t: "Hours", l: ["Tue – Sat · 11:00 – 19:00", "Sun & Mon · By appointment"] },
-          ].map(({ icon: Icon, t, l }) => (
-            <div key={t} className="flex gap-5">
-              <div className="h-12 w-12 rounded-full border border-gold flex items-center justify-center text-gold flex-none">
-                <Icon size={18} />
-              </div>
-              <div>
-                <h3 className="text-xs tracking-luxe text-gold mb-2">{t}</h3>
-                {l.map((line) => (
-                  <p key={line} className="text-foreground/80">{line}</p>
+      {/* Main Content */}
+      <section className="container-luxe py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+          
+          {/* Left Column: Contact Details */}
+          <motion.div 
+            variants={STAGGER}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="lg:col-span-5 space-y-12"
+          >
+            <div>
+              <motion.h2 variants={FADE_UP} className="font-serif text-3xl md:text-4xl text-onyx mb-10">Our Atelier</motion.h2>
+              <div className="space-y-8">
+                {[
+                  { icon: MapPin, t: "The Boutique", l: ["14 Marine Drive", "Colaba, Mumbai 400001"] },
+                  { icon: Phone, t: "Concierge", l: ["+91 22 4000 0000"] },
+                  { icon: Mail, t: "Inquiries", l: ["hello@maisonaurum.com"] },
+                  { icon: Clock, t: "Opening Hours", l: ["Tue – Sat · 11:00 – 19:00", "Sun & Mon · Private Appointments Only"] },
+                ].map(({ icon: Icon, t, l }, idx) => (
+                  <motion.div variants={FADE_UP} key={idx} className="flex gap-6 group">
+                    <div className="h-14 w-14 rounded-full border border-gold/30 bg-white shadow-sm flex items-center justify-center text-gold flex-none group-hover:scale-110 group-hover:border-gold transition-all duration-500">
+                      <Icon strokeWidth={1.5} size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-xs tracking-[0.2em] uppercase font-bold text-onyx/40 mb-2 group-hover:text-gold transition-colors">{t}</h3>
+                      {l.map((line, i) => (
+                        <p key={i} className="text-onyx/80 font-medium">{line}</p>
+                      ))}
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
-          ))}
 
-          <div className="aspect-[4/3] bg-secondary mt-10 grid place-items-center text-muted-foreground text-xs tracking-luxe">
-            [ Store Map ]
-          </div>
-        </div>
-
-        <div className="bg-card border border-border p-10 shadow-card">
-          {sent ? (
-            <div className="text-center py-10">
-              <div className="text-gold mx-auto mb-4 w-12 h-12 rounded-full border border-gold flex items-center justify-center text-xl">✓</div>
-              <h3 className="font-serif text-3xl mb-2">Thank You</h3>
-              <p className="text-sm text-muted-foreground">We'll get back to you within an hour.</p>
-            </div>
-          ) : (
-            <>
-              <p className="divider-gold mb-5">Book a Visit</p>
-              <h2 className="font-serif text-3xl mb-8">Make an Appointment</h2>
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Full Name</label>
-                    <input
-                      required
-                      type="text"
-                      value={formData.name}
-                      onChange={e => setFormData({...formData, name: e.target.value})}
-                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Email</label>
-                    <input
-                      required
-                      type="email"
-                      value={formData.email}
-                      onChange={e => setFormData({...formData, email: e.target.value})}
-                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Phone</label>
-                    <input
-                      required
-                      type="tel"
-                      value={formData.phone}
-                      onChange={e => setFormData({...formData, phone: e.target.value})}
-                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Preferred Date</label>
-                    <input
-                      required
-                      type="date"
-                      value={formData.date}
-                      onChange={e => setFormData({...formData, date: e.target.value})}
-                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Message (optional)</label>
-                    <textarea
-                      rows={4}
-                      value={formData.message}
-                      onChange={e => setFormData({...formData, message: e.target.value})}
-                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors resize-none"
-                    />
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="sheen w-full mt-6 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors disabled:opacity-50"
-                  style={{ backgroundColor: "var(--onyx)", color: "var(--ivory)" }}
+            <motion.div variants={FADE_UP} className="relative aspect-[4/3] rounded-2xl overflow-hidden group shadow-luxe">
+              <img src={mapFallback} alt="Atelier Interior" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-onyx/30 group-hover:bg-onyx/40 transition-colors flex items-center justify-center">
+                <a 
+                  href="https://maps.google.com" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="bg-white/90 backdrop-blur-sm text-onyx px-8 py-4 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-gold hover:text-white transition-all duration-300 shadow-lg flex items-center gap-2"
                 >
-                  {isSubmitting ? "Sending..." : "Book Appointment →"}
-                </button>
-              </form>
-            </>
-          )}
+                  Get Directions <ArrowRight size={14} />
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Column: Appointment Form */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-7"
+          >
+            <div className="bg-white p-10 md:p-14 rounded-3xl shadow-luxe border border-gold/10 relative overflow-hidden">
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+              
+              <AnimatePresence mode="wait">
+                {sent ? (
+                  <motion.div 
+                    key="success"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center py-20 relative z-10"
+                  >
+                    <div className="w-24 h-24 bg-gold/10 rounded-full mx-auto mb-8 flex items-center justify-center">
+                      <CheckCircle2 className="text-gold w-12 h-12" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="font-serif text-4xl text-onyx mb-4">Request Received</h3>
+                    <p className="text-onyx/60 max-w-sm mx-auto mb-10 leading-relaxed">
+                      Thank you for reaching out. A dedicated concierge will contact you shortly to confirm your appointment.
+                    </p>
+                    <button 
+                      onClick={() => setSent(false)}
+                      className="text-xs uppercase tracking-widest font-bold text-gold hover:text-onyx transition-colors border-b border-gold hover:border-onyx pb-1"
+                    >
+                      Book Another
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    key="form"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="relative z-10"
+                  >
+                    <div className="mb-10">
+                      <p className="text-gold uppercase tracking-[0.2em] text-[10px] font-bold mb-3 flex items-center gap-3">
+                        <span className="w-8 h-px bg-gold/50"></span>
+                        RSVP
+                      </p>
+                      <h2 className="font-serif text-3xl md:text-4xl text-onyx">Request an Appointment</h2>
+                    </div>
+
+                    <form className="space-y-8" onSubmit={handleSubmit}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2 relative group">
+                          <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Full Name *</label>
+                          <input
+                            required
+                            type="text"
+                            value={formData.name}
+                            onChange={e => setFormData({...formData, name: e.target.value})}
+                            className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
+                            placeholder="Jane Doe"
+                          />
+                        </div>
+                        <div className="space-y-2 relative group">
+                          <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Email Address *</label>
+                          <input
+                            required
+                            type="email"
+                            value={formData.email}
+                            onChange={e => setFormData({...formData, email: e.target.value})}
+                            className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
+                            placeholder="jane@example.com"
+                          />
+                        </div>
+                        <div className="space-y-2 relative group">
+                          <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Phone Number *</label>
+                          <input
+                            required
+                            type="tel"
+                            value={formData.phone}
+                            onChange={e => setFormData({...formData, phone: e.target.value})}
+                            className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
+                            placeholder="+91 98765 43210"
+                          />
+                        </div>
+                        <div className="space-y-2 relative group">
+                          <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Preferred Date *</label>
+                          <input
+                            required
+                            type="date"
+                            value={formData.date}
+                            onChange={e => setFormData({...formData, date: e.target.value})}
+                            className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 relative group pt-2">
+                        <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Specific Interests (Optional)</label>
+                        <textarea
+                          rows={3}
+                          value={formData.message}
+                          onChange={e => setFormData({...formData, message: e.target.value})}
+                          className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors resize-none text-onyx"
+                          placeholder="I am looking for a bridal set..."
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full mt-4 py-5 bg-onyx text-ivory text-xs tracking-widest uppercase font-medium hover:bg-gold hover:text-white transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed group flex justify-center items-center gap-3"
+                      >
+                        {isSubmitting ? "Submitting Request..." : "Confirm Request"}
+                        {!isSubmitting && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+          
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
+
