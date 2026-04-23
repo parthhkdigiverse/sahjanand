@@ -224,6 +224,13 @@ export type SiteSettings = {
   gold_price_api_key?: string;
   offer_button_text: string;
   offer_footer_text: string;
+  contact_address: string;
+  contact_phone: string;
+  contact_email: string;
+  instagram_url: string;
+  facebook_url: string;
+  twitter_url: string;
+  youtube_url: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {

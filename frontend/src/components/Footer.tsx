@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Instagram, Facebook, Twitter, Youtube, MapPin, Phone, Mail } from "lucide-react";
-import { fetchPolicies } from "@/lib/api";
+import { fetchPolicies, fetchSettings } from "@/lib/api";
 
 const exploreLinks = [
   { to: "/gallery", label: "Gallery" },
@@ -15,6 +15,21 @@ export function Footer() {
     queryKey: ["policies"],
     queryFn: fetchPolicies,
   });
+
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
+
+  const s = settings || {
+    contact_address: "14 Marine Drive, Mumbai · 400001, India",
+    contact_phone: "+91 22 4000 0000",
+    contact_email: "hello@maisonaurum.com",
+    instagram_url: "#",
+    facebook_url: "#",
+    twitter_url: "#",
+    youtube_url: "#",
+  };
 
   return (
     <footer
@@ -32,10 +47,10 @@ export function Footer() {
               Fine jewellery, made by hand. Designed to be loved for a lifetime.
             </p>
             <div className="flex gap-4 text-ivory/70">
-              <a href="#" aria-label="Instagram" className="hover:text-gold transition-colors"><Instagram size={18} /></a>
-              <a href="#" aria-label="Facebook" className="hover:text-gold transition-colors"><Facebook size={18} /></a>
-              <a href="#" aria-label="Twitter" className="hover:text-gold transition-colors"><Twitter size={18} /></a>
-              <a href="#" aria-label="Youtube" className="hover:text-gold transition-colors"><Youtube size={18} /></a>
+              <a href={s.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-gold transition-colors"><Instagram size={18} /></a>
+              <a href={s.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-gold transition-colors"><Facebook size={18} /></a>
+              <a href={s.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="hover:text-gold transition-colors"><Twitter size={18} /></a>
+              <a href={s.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:text-gold transition-colors"><Youtube size={18} /></a>
             </div>
           </div>
 
@@ -78,18 +93,18 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-ivory/70 mb-8 font-sans">
               <li className="flex items-start gap-2">
                 <MapPin size={14} className="mt-1 text-gold shrink-0" />
-                <span>14 Marine Drive, Mumbai · 400001, India</span>
+                <span>{s.contact_address}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone size={14} className="text-gold shrink-0" />
-                <a href="tel:+912240000000" className="hover:text-gold transition-colors">
-                  +91 22 4000 0000
+                <a href={`tel:${s.contact_phone}`} className="hover:text-gold transition-colors">
+                  {s.contact_phone}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={14} className="text-gold shrink-0" />
-                <a href="mailto:hello@maisonaurum.com" className="hover:text-gold transition-colors">
-                  hello@maisonaurum.com
+                <a href={`mailto:${s.contact_email}`} className="hover:text-gold transition-colors">
+                  {s.contact_email}
                 </a>
               </li>
             </ul>

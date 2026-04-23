@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { authService } from "@/services/auth";
-import { Loader2, Save, Coins, Edit3 } from "lucide-react";
+import { Loader2, Save, Coins, Edit3, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -176,6 +176,86 @@ function AdminSettings() {
                 <Input 
                   value={formData.offer_subheading || ""}
                   onChange={(e) => setFormData({...formData, offer_subheading: e.target.value})}
+                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Contact & Footer Information */}
+        <Card className="border-none shadow-card overflow-hidden md:col-span-2">
+          <CardHeader className="bg-onyx/[0.02] border-b border-onyx/5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gold/10 rounded-lg">
+                <MapPin className="h-5 w-5 text-gold" />
+              </div>
+              <div>
+                <CardTitle className="font-serif text-xl">Contact & Footer Information</CardTitle>
+                <CardDescription className="text-[10px] uppercase tracking-widest">Global Contact Details & Social Links</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-8 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="md:col-span-3 space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Physical Address</Label>
+                <Input 
+                  value={formData.contact_address || ""}
+                  onChange={(e) => setFormData({...formData, contact_address: e.target.value})}
+                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Phone Number</Label>
+                <Input 
+                  value={formData.contact_phone || ""}
+                  onChange={(e) => setFormData({...formData, contact_phone: e.target.value})}
+                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Email Address</Label>
+                <Input 
+                  value={formData.contact_email || ""}
+                  onChange={(e) => setFormData({...formData, contact_email: e.target.value})}
+                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                />
+              </div>
+            </div>
+            
+            <hr className="border-onyx/5" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Instagram URL</Label>
+                <Input 
+                  value={formData.instagram_url || ""}
+                  onChange={(e) => setFormData({...formData, instagram_url: e.target.value})}
+                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Facebook URL</Label>
+                <Input 
+                  value={formData.facebook_url || ""}
+                  onChange={(e) => setFormData({...formData, facebook_url: e.target.value})}
+                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Twitter URL</Label>
+                <Input 
+                  value={formData.twitter_url || ""}
+                  onChange={(e) => setFormData({...formData, twitter_url: e.target.value})}
+                  className="bg-white border-onyx/5 focus:border-gold/50 h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">YouTube URL</Label>
+                <Input 
+                  value={formData.youtube_url || ""}
+                  onChange={(e) => setFormData({...formData, youtube_url: e.target.value})}
                   className="bg-white border-onyx/5 focus:border-gold/50 h-12"
                 />
               </div>
