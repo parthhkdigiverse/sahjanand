@@ -10,11 +10,11 @@ import { VideoTestimonials } from "@/components/VideoTestimonials";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Maison Aurum — Timeless Elegance, Crafted for Every Occasion" },
+      { title: "Sahajanand Jewellers — Timeless Elegance, Crafted for Every Occasion" },
       {
         name: "description",
         content:
-          "Heirloom gold and diamond jewellery from Maison Aurum's atelier. Browse rings, necklaces, earrings and bracelets — and view today's gold rate.",
+          "Heirloom gold and diamond jewellery from Sahajanand Jewellers' atelier in Nadiad. Browse rings, necklaces, earrings and bracelets — and view today's gold rate.",
       },
     ],
   }),

@@ -7,14 +7,14 @@ import { Loader2, MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle2 } from "l
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Us — Maison Aurum Mumbai" },
+      { title: "Contact Us — Sahajanand Jewellers Nadiad" },
       {
         name: "description",
         content:
-          "Visit our store in Mumbai or book a private appointment with our team. We'd love to hear from you.",
+          "Visit our store in Nadiad or book a private appointment with our team. We'd love to hear from you.",
       },
-      { property: "og:title", content: "Contact Us — Maison Aurum" },
-      { property: "og:description", content: "Visit our Mumbai store or book an appointment." },
+      { property: "og:title", content: "Contact Us — Sahajanand Jewellers" },
+      { property: "og:description", content: "Visit our Nadiad store or book an appointment." },
     ],
   }),
   component: Contact,
@@ -114,13 +114,11 @@ function Contact() {
     <div className="bg-ivory/30 min-h-screen">
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0">
-          {contactData?.hero_image && (
-            <img 
-              src={getImageUrl(contactData.hero_image)} 
-              alt="Maison Aurum Atelier" 
-              className="w-full h-full object-cover"
-            />
-          )}
+          <img 
+            src={heroFallback} 
+            alt="Sahajanand Jewellers Atelier" 
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-onyx/60" />
         </div>
         
@@ -147,7 +145,12 @@ function Contact() {
             <div>
               <h2 className="font-serif text-3xl md:text-4xl text-onyx mb-10">Our Atelier</h2>
               <div className="space-y-8">
-                {boutiqueDetails.map(({ icon: Icon, t, l }, idx) => (
+                {[
+                  { icon: MapPin, t: "The Boutique", l: ["Opp. Kidney Hospital", "Nadiad, Gujarat 387001"] },
+                  { icon: Phone, t: "Concierge", l: ["+91 95123 06199"] },
+                  { icon: Mail, t: "Inquiries", l: ["info@sahajanandjewellers.com"] },
+                  { icon: Clock, t: "Opening Hours", l: ["Mon – Sat · 10:30 – 19:30", "Sunday · Closed"] },
+                ].map(({ icon: Icon, t, l }, idx) => (
                   <div key={idx} className="flex gap-6 group">
                     <div className="h-14 w-14 rounded-full border border-gold/30 bg-white shadow-sm flex items-center justify-center text-gold flex-none group-hover:scale-110 group-hover:border-gold transition-all duration-500">
                       <Icon strokeWidth={1.5} size={24} />
@@ -172,7 +175,7 @@ function Contact() {
                 allowFullScreen={false}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Maison Aurum Location"
+                title="Sahajanand Jewellers Nadiad Location"
               ></iframe>
             </div>
           </div>
@@ -242,7 +245,7 @@ function Contact() {
                           value={formData.phone}
                           onChange={e => setFormData({...formData, phone: e.target.value})}
                           className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
-                          placeholder="+91 98765 43210"
+                          placeholder="+91 95123 06199"
                         />
                       </div>
                       <div className="space-y-2 relative group">
