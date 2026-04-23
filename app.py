@@ -25,16 +25,16 @@ def run_app():
     backend_port = os.environ.get("BACKEND_PORT", "8002")
     frontend_port = os.environ.get("FRONTEND_PORT", "3535")
 
-    print(f"🚀 Starting Sahjanand Application...")
-    print(f"📦 Backend Port: {backend_port}")
-    print(f"🎨 Frontend Port: {frontend_port}")
+    print(f"Starting Sahjanand Application...")
+    print(f"Backend Port: {backend_port}")
+    print(f"Frontend Port: {frontend_port}")
 
     # Determine command for frontend
     frontend_runner = "npm"
     if shutil.which("bun"):
         frontend_runner = "bun"
     
-    print(f"🛠️  Using {frontend_runner} for frontend")
+    print(f"Using {frontend_runner} for frontend")
 
     # Platform specific flags
     is_windows = os.name == 'nt'
@@ -68,7 +68,7 @@ def run_app():
     )
 
     def signal_handler(sig, frame):
-        print("\n🛑 Shutting down applications...")
+        print("\nShutting down applications...")
         
         if is_windows:
             # On Windows, we need to send the signal to the process group
@@ -80,7 +80,7 @@ def run_app():
             backend_process.wait()
             frontend_process.wait()
             
-        print("✅ Shutdown complete.")
+        print("Shutdown complete.")
         sys.exit(0)
 
     # Handle Ctrl+C
@@ -92,10 +92,10 @@ def run_app():
         while True:
             time.sleep(1)
             if backend_process.poll() is not None:
-                print("❌ Backend process terminated unexpectedly.")
+                print("Backend process terminated unexpectedly.")
                 break
             if frontend_process.poll() is not None:
-                print("❌ Frontend process terminated unexpectedly.")
+                print("Frontend process terminated unexpectedly.")
                 break
     except KeyboardInterrupt:
         pass

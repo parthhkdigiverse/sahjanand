@@ -164,6 +164,30 @@ export async function submitContact(data: ContactInquiry) {
   return res.json();
 }
 
+export async function subscribeNewsletter(email: string) {
+  const res = await fetch(`${API_BASE}/newsletter/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) throw new Error("Failed to subscribe to newsletter");
+  return res.json();
+}
+
+export async function fetchSubscribers(token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/newsletter/`);
+  if (!res.ok) throw new Error("Failed to fetch subscribers");
+  return res.json();
+}
+
+export async function deleteSubscriber(id: string, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/newsletter/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete subscriber");
+  return res.json();
+}
+
 export async function fetchReviews(): Promise<Review[]> {
   const res = await fetch(`${API_BASE}/reviews/`);
   if (!res.ok) throw new Error("Failed to fetch reviews");

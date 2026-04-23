@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Instagram, Facebook, Twitter, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
-import { fetchPolicies, fetchSettings, fetchContactPageData } from "@/lib/api";
+import { fetchPolicies, fetchSettings, fetchContactPageData, subscribeNewsletter } from "@/lib/api";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const exploreLinks = [
   { to: "/gallery", label: "Gallery" },
@@ -11,6 +13,8 @@ const exploreLinks = [
 ] as const;
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  
   const { data: policies } = useQuery({
     queryKey: ["policies"],
     queryFn: fetchPolicies,
@@ -25,6 +29,23 @@ export function Footer() {
     queryKey: ["contact-page"],
     queryFn: fetchContactPageData,
   });
+
+  const mutation = useMutation({
+    mutationFn: subscribeNewsletter,
+    onSuccess: (data) => {
+      toast.success(data.message || "Thank you for subscribing!");
+      setEmail("");
+    },
+    onError: () => {
+      toast.error("Subscription failed. Please try again.");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    mutation.mutate(email);
+  };
 
   const socialLinks = settings || {
     instagram_url: "#",
@@ -118,18 +139,22 @@ export function Footer() {
             <h5 className="text-[10px] tracking-widest text-ivory/40 mb-3 uppercase">Preserve our Heritage</h5>
             <form
               className="flex border-b border-ivory/10 focus-within:border-gold transition-colors py-1"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubmit}
             >
               <input
                 type="email"
                 placeholder="Join the newsletter"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="flex-1 bg-transparent py-1 text-sm placeholder:text-ivory/20 outline-none"
               />
               <button
                 type="submit"
-                className="text-[10px] tracking-widest text-gold hover:text-ivory transition-colors px-2 uppercase"
+                disabled={mutation.isPending}
+                className="text-[10px] tracking-widest text-gold hover:text-ivory transition-colors px-2 uppercase disabled:opacity-50"
               >
-                Join →
+                {mutation.isPending ? "..." : "Join →"}
               </button>
             </form>
           </div>

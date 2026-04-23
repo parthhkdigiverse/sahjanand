@@ -15,6 +15,7 @@ import {
   FolderTree,
   Camera,
   Phone,
+  Mail,
   Settings as SettingsIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,7 @@ function AdminLayout() {
     { label: "Reviews", icon: Star, href: "/admin/reviews" },
     { label: "Testimonials", icon: Quote, href: "/admin/testimonials" },
     { label: "Instagram Feed", icon: Instagram, href: "/admin/instagram" },
+    { label: "Newsletter", icon: Mail, href: "/admin/newsletter" },
     { label: "Settings", icon: SettingsIcon, href: "/admin/settings" },
   ];
 

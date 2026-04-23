@@ -27,6 +27,7 @@ import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminPoliciesRouteImport } from './routes/admin.policies'
 import { Route as AdminOffersRouteImport } from './routes/admin.offers'
+import { Route as AdminNewsletterRouteImport } from './routes/admin.newsletter'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminInstagramRouteImport } from './routes/admin.instagram'
 import { Route as AdminHeroRouteImport } from './routes/admin.hero'
@@ -127,6 +128,11 @@ const AdminOffersRoute = AdminOffersRouteImport.update({
   path: '/offers',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminNewsletterRoute = AdminNewsletterRouteImport.update({
+  id: '/newsletter',
+  path: '/newsletter',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -190,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/admin/hero': typeof AdminHeroRoute
   '/admin/instagram': typeof AdminInstagramRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/policies': typeof AdminPoliciesRoute
   '/admin/products': typeof AdminProductsRoute
@@ -217,6 +224,7 @@ export interface FileRoutesByTo {
   '/admin/hero': typeof AdminHeroRoute
   '/admin/instagram': typeof AdminInstagramRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/policies': typeof AdminPoliciesRoute
   '/admin/products': typeof AdminProductsRoute
@@ -247,6 +255,7 @@ export interface FileRoutesById {
   '/admin/hero': typeof AdminHeroRoute
   '/admin/instagram': typeof AdminInstagramRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/newsletter': typeof AdminNewsletterRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/policies': typeof AdminPoliciesRoute
   '/admin/products': typeof AdminProductsRoute
@@ -278,6 +287,7 @@ export interface FileRouteTypes {
     | '/admin/hero'
     | '/admin/instagram'
     | '/admin/login'
+    | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/policies'
     | '/admin/products'
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/admin/hero'
     | '/admin/instagram'
     | '/admin/login'
+    | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/policies'
     | '/admin/products'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin/hero'
     | '/admin/instagram'
     | '/admin/login'
+    | '/admin/newsletter'
     | '/admin/offers'
     | '/admin/policies'
     | '/admin/products'
@@ -487,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOffersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/newsletter': {
+      id: '/admin/newsletter'
+      path: '/newsletter'
+      fullPath: '/admin/newsletter'
+      preLoaderRoute: typeof AdminNewsletterRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -563,6 +582,7 @@ interface AdminRouteChildren {
   AdminHeroRoute: typeof AdminHeroRoute
   AdminInstagramRoute: typeof AdminInstagramRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminNewsletterRoute: typeof AdminNewsletterRoute
   AdminOffersRoute: typeof AdminOffersRoute
   AdminPoliciesRoute: typeof AdminPoliciesRoute
   AdminProductsRoute: typeof AdminProductsRoute
@@ -582,6 +602,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminHeroRoute: AdminHeroRoute,
   AdminInstagramRoute: AdminInstagramRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminNewsletterRoute: AdminNewsletterRoute,
   AdminOffersRoute: AdminOffersRoute,
   AdminPoliciesRoute: AdminPoliciesRoute,
   AdminProductsRoute: AdminProductsRoute,
