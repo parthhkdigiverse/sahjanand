@@ -224,6 +224,13 @@ export type SiteSettings = {
   gold_price_api_key?: string;
   offer_button_text: string;
   offer_footer_text: string;
+  contact_address: string;
+  contact_phone: string;
+  contact_email: string;
+  instagram_url: string;
+  facebook_url: string;
+  twitter_url: string;
+  youtube_url: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {
@@ -420,5 +427,68 @@ export async function updateAboutData(data: AboutData, token: string) {
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to update about data");
+  return res.json();
+}
+
+// --- Policies API ---
+export type PolicySection = {
+  heading: string;
+  body: string[];
+};
+
+export type Policy = {
+  _id?: string;
+  slug: string;
+  title: string;
+  intro: string;
+  sections: PolicySection[];
+};
+
+export async function fetchPolicies(): Promise<Policy[]> {
+  const res = await fetch(`${API_BASE}/policies/`);
+  if (!res.ok) throw new Error("Failed to fetch policies");
+  return res.json();
+}
+
+export async function fetchPolicy(slug: string): Promise<Policy> {
+  const res = await fetch(`${API_BASE}/policies/${slug}`);
+  if (!res.ok) throw new Error("Failed to fetch policy");
+  return res.json();
+}
+
+export async function createPolicy(data: Policy, token: string) {
+  const res = await fetch(`${API_BASE}/policies/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create policy");
+  return res.json();
+}
+
+export async function updatePolicy(id: string, data: Policy, token: string) {
+  const res = await fetch(`${API_BASE}/policies/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update policy");
+  return res.json();
+}
+
+export async function deletePolicy(id: string, token: string) {
+  const res = await fetch(`${API_BASE}/policies/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error("Failed to delete policy");
   return res.json();
 }

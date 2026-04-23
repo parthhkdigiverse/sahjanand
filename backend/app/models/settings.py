@@ -15,6 +15,15 @@ class SettingsBase(BaseModel):
     offer_button_text: str = "Get My Offer"
     offer_footer_text: str = "Limited time · One per customer"
 
+    # Contact & Footer Settings
+    contact_address: str = "14 Marine Drive, Mumbai · 400001, India"
+    contact_phone: str = "+91 22 4000 0000"
+    contact_email: str = "hello@maisonaurum.com"
+    instagram_url: str = "#"
+    facebook_url: str = "#"
+    twitter_url: str = "#"
+    youtube_url: str = "#"
+
     # Gold Price Settings
     gold_price_source: str = "manual"  # "manual" or "api"
     manual_price_24k: float = 7780.0
