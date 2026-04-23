@@ -1,59 +1,67 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { fetchBlog, fetchBlogs, type BlogPost as BlogPostType } from "@/lib/api";
+import { fetchBlog, fetchBlogs, type BlogPost as BlogPostType, getImageUrl } from "@/lib/api";
 import { Calendar, Clock, ArrowLeft, ArrowRight, Share2 } from "lucide-react";
 
 export const Route = createFileRoute("/blog/$slug")({
+  loader: async ({ params: { slug } }) => {
+    const [post, allPosts] = await Promise.all([fetchBlog(slug), fetchBlogs()]);
+    return { post, allPosts };
+  },
+  head: ({ loaderData }) => {
+    const post = loaderData?.post;
+    const title = post?.meta_title || post?.title || "Blog";
+    const description = post?.meta_description || post?.excerpt || "Read our latest blog post.";
+    const keywords = post?.keywords || "";
+
+    return {
+      meta: [
+        { title: `${title} — Maison Aurum` },
+        { name: "description", content: description },
+        { name: "keywords", content: keywords },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: post?.image },
+        { property: "og:type", content: "article" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: post?.image },
+      ],
+    };
+  },
+  pendingComponent: () => (
+    <div className="py-60 flex flex-col items-center justify-center space-y-4">
+      <div className="w-12 h-12 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+      <p className="animate-pulse text-gold uppercase tracking-[0.4em] text-[10px] font-bold">Unfolding Journal...</p>
+    </div>
+  ),
+  errorComponent: () => (
+    <div className="container-luxe py-40 text-center">
+      <p className="divider-gold mx-auto mb-8">Not Found</p>
+      <h1 className="font-serif text-5xl mb-6">Article not found</h1>
+      <Link 
+        to="/blog" 
+        className="inline-flex items-center gap-3 text-gold tracking-luxe text-[10px] font-bold hover:text-onyx transition-colors duration-300"
+      >
+        <ArrowLeft size={14} /> BACK TO JOURNAL
+      </Link>
+    </div>
+  ),
   component: BlogPost,
 });
 
 function BlogPost() {
-  const { slug } = Route.useParams();
-  const [post, setPost] = useState<BlogPostType | null>(null);
+  const { post, allPosts } = Route.useLoaderData();
   const [related, setRelated] = useState<BlogPostType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        setIsLoading(true);
-        const [p, all] = await Promise.all([fetchBlog(slug), fetchBlogs()]);
-        setPost(p);
-        setRelated(all.filter((item: any) => item.slug !== p.slug).slice(0, 3));
-        setError(null);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
+    if (post && allPosts) {
+      setRelated(allPosts.filter((item: any) => item.slug !== post.slug).slice(0, 3));
     }
-    loadData();
     window.scrollTo(0, 0);
-  }, [slug]);
+  }, [post, allPosts]);
 
-  if (isLoading)
-    return (
-      <div className="py-60 flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
-        <p className="animate-pulse text-gold uppercase tracking-[0.4em] text-[10px] font-bold">Unfolding Journal...</p>
-      </div>
-    );
-
-  if (error || !post) {
-    return (
-      <div className="container-luxe py-40 text-center">
-        <p className="divider-gold mx-auto mb-8">Not Found</p>
-        <h1 className="font-serif text-5xl mb-6">Article not found</h1>
-        <Link 
-          to="/blog" 
-          className="inline-flex items-center gap-3 text-gold tracking-luxe text-[10px] font-bold hover:text-onyx transition-colors duration-300"
-        >
-          <ArrowLeft size={14} /> BACK TO JOURNAL
-        </Link>
-      </div>
-    );
-  }
+  if (!post) return null;
 
   return (
     <article className="bg-[#F9F8F6]">
@@ -94,7 +102,7 @@ function BlogPost() {
       <section className="container-luxe mb-20 md:mb-32">
         <div className="aspect-[21/10] overflow-hidden shadow-luxe group">
           <img
-            src={post.image}
+            src={getImageUrl(post.image)}
             alt={post.title}
             className="h-full w-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
           />
@@ -153,7 +161,7 @@ function BlogPost() {
               >
                 <div className="overflow-hidden aspect-[4/5] mb-8 bg-secondary/20 relative">
                   <img
-                    src={p.image}
+                    src={getImageUrl(p.image)}
                     alt={p.title}
                     className="h-full w-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
                   />

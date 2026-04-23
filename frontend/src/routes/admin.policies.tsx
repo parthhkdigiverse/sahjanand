@@ -12,6 +12,16 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { authService } from "@/services/auth";
 
+const generateSlug = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with a single one
+    .trim();
+};
+
+
 export const Route = createFileRoute("/admin/policies")({
   component: AdminPolicies,
 });
@@ -114,6 +124,15 @@ function AdminPolicies() {
     setFormData(prev => ({ ...prev, sections: newSections }));
   };
 
+  const handleTitleChange = (val: string) => {
+    const newSlug = !editingPolicy ? generateSlug(val) : formData.slug;
+    setFormData(prev => ({
+      ...prev,
+      title: val,
+      slug: (prev.slug === "" || prev.slug === generateSlug(prev.title)) ? newSlug : prev.slug
+    }));
+  };
+
   return (
     <div className="space-y-10 animate-fade-up">
       <div className="flex justify-between items-center bg-white p-8 rounded-2xl shadow-card border border-onyx/5">
@@ -180,7 +199,7 @@ function AdminPolicies() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40">Policy Title</Label>
-                <Input value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="bg-white border-onyx/5 focus:border-gold/50" />
+                <Input value={formData.title} onChange={e => handleTitleChange(e.target.value)} className="bg-white border-onyx/5 focus:border-gold/50" />
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40">URL Slug</Label>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit, Trash2, Search, Loader2, Camera } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Loader2, Camera, Eye } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,6 +129,7 @@ function AdminBlogs() {
             <TableRow className="hover:bg-transparent border-onyx/5">
               <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Article Title</TableHead>
               <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Category</TableHead>
+              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">SEO Status</TableHead>
               <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Publication Date</TableHead>
               <TableHead className="text-right py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Actions</TableHead>
             </TableRow>
@@ -136,7 +137,7 @@ function AdminBlogs() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-20">
+                <TableCell colSpan={5} className="text-center py-20">
                   <div className="flex flex-col items-center gap-4">
                     <Loader2 className="animate-spin h-10 w-10 text-gold/40" />
                     <span className="text-[10px] uppercase tracking-[0.3em] text-onyx/20">Accessing Archives...</span>
@@ -145,7 +146,7 @@ function AdminBlogs() {
               </TableRow>
             ) : filteredBlogs?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-20 text-onyx/40 italic font-serif">
+                <TableCell colSpan={5} className="text-center py-20 text-onyx/40 italic font-serif">
                   The journal is currently quiet. Compose your first story.
                 </TableCell>
               </TableRow>
@@ -156,17 +157,33 @@ function AdminBlogs() {
                   <div className="text-[10px] text-onyx/30 uppercase tracking-widest mt-1">Slug: {blog.slug}</div>
                 </TableCell>
                 <TableCell className="py-6 px-8 uppercase tracking-widest text-[10px] text-onyx/60">{blog.category}</TableCell>
+                <TableCell className="py-6 px-8">
+                  {blog.meta_title || blog.meta_description ? (
+                    <span className="px-2 py-1 bg-green-50 text-green-600 text-[9px] font-bold uppercase tracking-widest rounded border border-green-100">Configured</span>
+                  ) : (
+                    <span className="px-2 py-1 bg-gray-50 text-gray-400 text-[9px] font-bold uppercase tracking-widest rounded border border-gray-100">Default</span>
+                  )}
+                </TableCell>
                 <TableCell className="py-6 px-8 italic font-serif text-onyx/50">{blog.date}</TableCell>
                 <TableCell className="text-right py-6 px-8">
                   <div className="flex justify-end gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => handleOpenDialog(blog)}
-                      className="hover:bg-onyx hover:text-ivory rounded-full transition-all"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
+                      <a 
+                        href={`/blog/${blog.slug}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center h-8 w-8 hover:bg-onyx hover:text-ivory rounded-full transition-all text-onyx/40"
+                        title="View Live Article"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </a>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleOpenDialog(blog)}
+                        className="hover:bg-onyx hover:text-ivory rounded-full transition-all"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -192,49 +209,59 @@ function AdminBlogs() {
           <DialogHeader>
             <DialogTitle>{editingBlog ? 'Edit Article' : 'Compose New Article'}</DialogTitle>
           </DialogHeader>
-          <form className="space-y-4" onSubmit={async (e) => {
-            e.preventDefault();
-            const form = e.currentTarget;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            let imageUrl = editingBlog?.image || "";
-            const imageFile = formData.get("image_file") as File;
+          <form 
+            key={editingBlog?.slug || 'new'}
+            className="space-y-4" 
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const formData = new FormData(form);
+              const data = Object.fromEntries(formData.entries());
+              
+              let imageUrl = editingBlog?.image || "";
+              const imageFile = formData.get("image_file") as File;
 
-            if (imageFile && imageFile.size > 0) {
-              setIsUploading(true);
-              const fileData = new FormData();
-              fileData.append("files", imageFile);
-              try {
-                const res = await fetch(`${API_BASE}/uploads/`, {
-                  method: "POST",
-                  body: fileData
-                });
-                if (res.ok) {
-                  const result = await res.json();
-                  imageUrl = result.urls[0];
-                } else {
-                  toast.error("Image upload failed");
+              if (imageFile && imageFile.size > 0) {
+                setIsUploading(true);
+                const fileData = new FormData();
+                fileData.append("files", imageFile);
+                try {
+                  const res = await fetch(`${API_BASE}/uploads/`, {
+                    method: "POST",
+                    body: fileData
+                  });
+                  if (res.ok) {
+                    const result = await res.json();
+                    imageUrl = result.urls[0];
+                  } else {
+                    toast.error("Image upload failed");
+                    setIsUploading(false);
+                    return;
+                  }
+                } catch (err) {
+                  toast.error("Image upload error");
                   setIsUploading(false);
                   return;
+                } finally {
+                  setIsUploading(false);
                 }
-              } catch (err) {
-                toast.error("Image upload error");
-                setIsUploading(false);
-                return;
-              } finally {
-                setIsUploading(false);
               }
-            }
 
-            const payload = {
-              ...data,
-              image: imageUrl,
-              content: (data.content as string).split('\n\n').map(p => p.trim()).filter(p => p),
-            };
-            delete (payload as any).image_file;
-            upsertMutation.mutate(payload);
-          }}>
+              const payload = {
+                slug: editingBlog?.slug || (data.slug as string),
+                title: data.title as string,
+                excerpt: data.excerpt as string,
+                category: data.category as string,
+                readTime: data.readTime as string,
+                date: data.date as string,
+                image: imageUrl,
+                content: (data.content as string).split('\n\n').map(p => p.trim()).filter(p => p),
+                meta_title: (data.meta_title as string) || "",
+                meta_description: (data.meta_description as string) || "",
+                keywords: (data.keywords as string) || "",
+              };
+              upsertMutation.mutate(payload);
+            }}>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="slug">Slug (URL identifier)</Label>
@@ -292,6 +319,24 @@ function AdminBlogs() {
             <div className="space-y-2">
               <Label htmlFor="content">Content (Separate paragraphs with double enter)</Label>
               <Textarea id="content" name="content" className="min-h-[200px]" defaultValue={editingBlog?.content?.join('\n\n')} required />
+            </div>
+
+            <div className="pt-6 mt-6 border-t border-onyx/5">
+              <h3 className="text-sm font-medium text-onyx mb-4 uppercase tracking-widest">Search Engine Optimization (SEO)</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="meta_title">Meta Title</Label>
+                  <Input id="meta_title" name="meta_title" defaultValue={editingBlog?.meta_title} placeholder="Leave blank to use blog title" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="meta_description">Meta Description</Label>
+                  <Textarea id="meta_description" name="meta_description" defaultValue={editingBlog?.meta_description} placeholder="Leave blank to use blog excerpt" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="keywords">Keywords (Comma separated)</Label>
+                  <Input id="keywords" name="keywords" defaultValue={editingBlog?.keywords} placeholder="jewellery, luxury, gold, etc." />
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={upsertMutation.isPending}>

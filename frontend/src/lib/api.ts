@@ -53,6 +53,9 @@ export type BlogPost = {
   date: string;
   image: string;
   content: string[];
+  meta_title?: string;
+  meta_description?: string;
+  keywords?: string;
 };
 
 export type Review = {

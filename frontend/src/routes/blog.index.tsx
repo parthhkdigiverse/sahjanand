@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from "@tanstack/react-query";
-import { fetchBlogs, type BlogPost } from "@/lib/api";
+import { fetchBlogs, type BlogPost, getImageUrl } from "@/lib/api";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/blog/")({
@@ -49,7 +49,7 @@ function BlogIndex() {
         >
           <div className="overflow-hidden img-zoom aspect-[4/3]">
             <img
-              src={featured.image}
+              src={getImageUrl(featured.image)}
               alt={featured.title}
               className="h-full w-full object-cover"
             />
@@ -90,7 +90,7 @@ function BlogIndex() {
             >
               <div className="overflow-hidden img-zoom aspect-[4/5] mb-5">
                 <img
-                  src={post.image}
+                  src={getImageUrl(post.image)}
                   alt={post.title}
                   className="h-full w-full object-cover"
                 />

@@ -37,6 +37,10 @@ class BlogBase(BaseModel):
     date: str
     image: str
     content: List[str]
+    # SEO Fields
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+    keywords: Optional[str] = None
 
 class BlogCreate(BlogBase):
     pass
