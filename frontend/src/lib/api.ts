@@ -362,6 +362,8 @@ export type AboutData = {
   promise_heading: string;
   promise_eyebrow: string;
   promises: PromiseItem[];
+  cta_text: string;
+  cta_link: string;
 };
 
 export async function fetchAboutData(): Promise<AboutData> {

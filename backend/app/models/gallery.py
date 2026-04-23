@@ -50,3 +50,8 @@ class GallerySettings(BaseModel):
     eyebrow: str = "Atelier Gallery"
     heading: str = "Moments of Brilliance"
     subheading: str = "A visual journey through our atelier and the craft behind each creation."
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        extra='ignore'
+    )

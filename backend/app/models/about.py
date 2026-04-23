@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 
 class PromiseItem(BaseModel):
@@ -26,6 +26,14 @@ class AboutData(BaseModel):
         PromiseItem(title="Conflict-Free Diamonds", description="All our diamonds are traced to source and certified to GIA standards."),
         PromiseItem(title="Lifetime Service", description="Free cleaning, polishing and re-sizing — for as long as the piece is yours.")
     ]
+    
+    cta_text: str = "Shop the Collection"
+    cta_link: str = "/shop"
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        extra='ignore'
+    )
 
 class AboutPage(AboutData):
     id: str = "about"

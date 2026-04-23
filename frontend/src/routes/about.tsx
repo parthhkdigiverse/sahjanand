@@ -27,7 +27,9 @@ function About() {
     story_paragraphs: [],
     promise_heading: "Every piece, made to last.",
     promise_eyebrow: "Our Promise",
-    promises: []
+    promises: [],
+    cta_text: "Shop the Collection",
+    cta_link: "/shop"
   };
 
   return (
@@ -140,11 +142,11 @@ function About() {
               transition={{ delay: 0.5 }}
             >
               <Link
-                to="/shop"
+                to={data.cta_link || "/shop"}
                 className="sheen inline-flex items-center gap-3 mt-12 px-9 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-all duration-500 shadow-luxe"
                 style={{ backgroundColor: "var(--onyx)", color: "var(--ivory)" }}
               >
-                Shop the Collection →
+                {data.cta_text || "Shop the Collection"} →
               </Link>
             </motion.div>
           </div>

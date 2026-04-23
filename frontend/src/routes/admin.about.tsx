@@ -46,7 +46,9 @@ function AdminAbout() {
     story_paragraphs: [],
     promise_heading: "",
     promise_eyebrow: "",
-    promises: []
+    promises: [],
+    cta_text: "",
+    cta_link: ""
   });
 
   const [previews, setPreviews] = useState<{hero?: string, promise?: string}>({});
@@ -401,6 +403,41 @@ function AdminAbout() {
                     </motion.div>
                   ))}
                 </AnimatePresence>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* CTA SECTION */}
+        <Card className="border-gold/20 shadow-luxe overflow-hidden">
+          <CardHeader className="bg-ivory/30 border-b border-gold/10 pb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-10 w-10 rounded-full bg-gold/10 flex items-center justify-center text-gold">
+                <ChevronRight size={20} />
+              </div>
+              <div>
+                <CardTitle className="font-serif text-2xl text-onyx">Call to Action</CardTitle>
+                <CardDescription>The final invitation to explore your collection</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-10 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 font-bold ml-1">Button Text</Label>
+                <Input 
+                  value={formData.cta_text} 
+                  onChange={e => setFormData({...formData, cta_text: e.target.value})}
+                  placeholder="Shop the Collection"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 font-bold ml-1">Button Link (URL)</Label>
+                <Input 
+                  value={formData.cta_link} 
+                  onChange={e => setFormData({...formData, cta_link: e.target.value})}
+                  placeholder="/shop"
+                />
               </div>
             </div>
           </CardContent>

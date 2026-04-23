@@ -13,7 +13,7 @@ async def get_gallery_settings():
     settings = await db.gallery_settings.find_one({})
     if not settings:
         return GallerySettings()
-    return settings
+    return GallerySettings(**settings)
 
 @router.put("/settings", response_model=GallerySettings)
 async def update_gallery_settings(settings: GallerySettings = Body(...), admin: str = Depends(get_current_admin)):

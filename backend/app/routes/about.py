@@ -45,5 +45,7 @@ async def update_about_data(data: AboutData = Body(...), admin: str = Depends(ge
         upsert=True,
         return_document=True
     )
-    
-    return result
+    if not result:
+        raise HTTPException(status_code=404, detail="About page not found")
+        
+    return AboutData(**result)
