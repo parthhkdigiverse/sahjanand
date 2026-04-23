@@ -264,6 +264,15 @@ CATEGORIES = [
     }
 ]
 
+INSTAGRAM_POSTS = [
+    {"image_url": "/assets/insta-1.jpg", "link": "#", "order": 0},
+    {"image_url": "/assets/insta-2.jpg", "link": "#", "order": 1},
+    {"image_url": "/assets/insta-3.jpg", "link": "#", "order": 2},
+    {"image_url": "/assets/insta-4.jpg", "link": "#", "order": 3},
+    {"image_url": "/assets/insta-5.jpg", "link": "#", "order": 4},
+    {"image_url": "/assets/insta-6.jpg", "link": "#", "order": 5},
+]
+
 async def seed():
     client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
     db = client.get_default_database()
@@ -274,6 +283,7 @@ async def seed():
     await db.reviews.delete_many({})
     await db.testimonials.delete_many({})
     await db.categories.delete_many({})
+    await db.instagram.delete_many({})
     
     print(f"Seeding {len(PRODUCTS)} products...")
     await db.products.insert_many(PRODUCTS)
@@ -289,6 +299,9 @@ async def seed():
     
     print(f"Seeding {len(CATEGORIES)} categories...")
     await db.categories.insert_many(CATEGORIES)
+
+    print(f"Seeding {len(INSTAGRAM_POSTS)} instagram posts...")
+    await db.instagram.insert_many(INSTAGRAM_POSTS)
     
     print("Seeding complete!")
     client.close()

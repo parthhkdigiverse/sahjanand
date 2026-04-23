@@ -11,7 +11,8 @@ import {
   X,
   Star,
   Quote,
-  FolderTree
+  FolderTree,
+  Instagram
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -62,6 +63,7 @@ function AdminLayout() {
     { label: "Offers & Leads", icon: MessageSquare, href: "/admin/offers" },
     { label: "Reviews", icon: Star, href: "/admin/reviews" },
     { label: "Testimonials", icon: Quote, href: "/admin/testimonials" },
+    { label: "Instagram Feed", icon: Instagram, href: "/admin/instagram" },
   ];
 
   const currentPath = navItems.find(item => item.href === location.pathname)?.label || "Overview";

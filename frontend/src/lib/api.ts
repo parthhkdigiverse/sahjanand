@@ -94,6 +94,13 @@ export type OfferLead = {
   created_at: string;
 };
 
+export type InstagramPost = {
+  _id: string;
+  image_url: string;
+  link: string;
+  order: number;
+};
+
 export async function fetchProducts(): Promise<Product[]> {
   const res = await fetch(`${API_BASE}/products/`);
   if (!res.ok) throw new Error("Failed to fetch products");
@@ -252,5 +259,11 @@ export async function deleteOfferLead(id: string, token: string) {
     method: "DELETE",
     headers: { "Authorization": `Bearer ${token}` }
   });
+  return res.json();
+}
+
+export async function fetchInstagramPosts(): Promise<InstagramPost[]> {
+  const res = await fetch(`${API_BASE}/instagram/`);
+  if (!res.ok) return [];
   return res.json();
 }
