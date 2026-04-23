@@ -60,6 +60,7 @@ function AdminLayout() {
     { label: "Hero Slides", icon: Star, href: "/admin/hero" },
     { label: "Categories", icon: FolderTree, href: "/admin/categories" },
     { label: "Gallery", icon: Camera, href: "/admin/gallery" },
+    { label: "Policies", icon: FolderTree, href: "/admin/policies" },
     { label: "Products", icon: Package, href: "/admin/products" },
     { label: "About Page", icon: FileText, href: "/admin/about" },
     { label: "Blogs", icon: FileText, href: "/admin/blogs" },

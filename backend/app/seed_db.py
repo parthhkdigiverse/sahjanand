@@ -1,6 +1,7 @@
 import asyncio
 import motor.motor_asyncio
 import os
+import sys
 import dns.resolver
 from dotenv import load_dotenv
 
@@ -335,7 +336,135 @@ GALLERY = [
         "image": "/assets/insta-5.jpg",
         "category": "High Jewellery",
         "description": "The final result of weeks of meticulous work.",
-        "order": 8
+        "order": 5
+    }
+]
+
+policies_data = [
+    {
+        "slug": "exchange-policy",
+        "title": "Exchange Policy",
+        "intro": "We want you to love every piece you bring home. If you wish to exchange, we make it simple and transparent.",
+        "sections": [
+            {
+                "heading": "Eligibility",
+                "body": [
+                    "Exchange is available within 15 days of delivery.",
+                    "The piece must be unworn, undamaged, and in its original packaging with the certificate and invoice.",
+                    "Customised, engraved, and made-to-order pieces are not eligible for exchange."
+                ]
+            },
+            {
+                "heading": "How It Works",
+                "body": [
+                    "Visit any Maison Aurum boutique or contact our concierge to initiate an exchange.",
+                    "Your piece will be inspected by our atelier within 3 working days.",
+                    "On approval, you may exchange for any item of equal or higher value, paying only the difference."
+                ]
+            },
+            {
+                "heading": "Value Guarantee",
+                "body": [
+                    "Gold and diamond jewellery is exchanged at the prevailing market rate of the day.",
+                    "Making charges are deducted at 10% on first exchange and waived for repeat clients."
+                ]
+            }
+        ]
+    },
+    {
+        "slug": "return-refund-policy",
+        "title": "Return & Refund Policy",
+        "intro": "Your trust matters. If a piece is not right for you, we offer a clear return and refund process.",
+        "sections": [
+            {
+                "heading": "Return Window",
+                "body": [
+                    "Returns are accepted within 7 days of delivery for ready-to-wear pieces.",
+                    "All returns must include the original invoice, certificate, and packaging."
+                ]
+            },
+            {
+                "heading": "Refund Process",
+                "body": [
+                    "Once we receive and verify your return, refunds are processed within 7 working days.",
+                    "Refunds are issued to the original payment method.",
+                    "A 5% processing fee may apply on COD orders."
+                ]
+            },
+            {
+                "heading": "Non-Returnable Items",
+                "body": [
+                    "Customised, engraved, resized, or altered pieces.",
+                    "Pieces purchased on final sale or as part of a bundle offer."
+                ]
+            }
+        ]
+    },
+    {
+        "slug": "privacy-policy",
+        "title": "Privacy Policy",
+        "intro": "We respect your privacy. This policy explains what we collect, why, and how we protect it.",
+        "sections": [
+            {
+                "heading": "Information We Collect",
+                "body": [
+                    "Personal details such as name, contact, and shipping address provided during purchase.",
+                    "Order history, preferences, and feedback shared with our atelier.",
+                    "Browsing data through cookies to improve your experience on our site."
+                ]
+            },
+            {
+                "heading": "How We Use It",
+                "body": [
+                    "To process orders, deliver pieces, and provide after-sales care.",
+                    "To share updates on new collections, exclusive previews, and offers, only with your consent.",
+                    "To improve our boutique and digital experience."
+                ]
+            },
+            {
+                "heading": "Your Rights",
+                "body": [
+                    "You may request access, correction, or deletion of your data at any time.",
+                    "Write to privacy@maisonaurum.com and we will respond within 7 working days.",
+                    "We never sell your information to third parties."
+                ]
+            }
+        ]
+    },
+    {
+        "slug": "terms-and-conditions",
+        "title": "Terms & Conditions",
+        "intro": "Please read these terms carefully. By using our site or buying from us, you agree to them.",
+        "sections": [
+            {
+                "heading": "General",
+                "body": [
+                    "All purchases are subject to availability and acceptance of order by Maison Aurum.",
+                    "Prices, photographs, and descriptions are for guidance and may vary slightly from the final piece.",
+                    "All pieces are handcrafted, so minor variations are part of their character."
+                ]
+            },
+            {
+                "heading": "Payment",
+                "body": [
+                    "We accept all major cards, UPI, net banking, and approved EMI options.",
+                    "Full payment is required before dispatch unless an instalment plan is agreed in writing."
+                ]
+            },
+            {
+                "heading": "Intellectual Property",
+                "body": [
+                    "All designs, photographs, and content on this site belong to Maison Aurum.",
+                    "Reproduction without written permission is not permitted."
+                ]
+            },
+            {
+                "heading": "Governing Law",
+                "body": [
+                    "These terms are governed by the laws of India and subject to the jurisdiction of Mumbai courts."
+                ]
+            }
+        ]
     }
 ]
 
@@ -380,9 +509,29 @@ async def seed():
         "heading": "Moments of Brilliance",
         "subheading": "A visual journey through our atelier and the craft behind each creation."
     })
+
+    print(f"Seeding {len(policies_data)} policies...")
+    await db.policies.insert_many(policies_data)
     
     print("Seeding complete!")
     client.close()
 
+async def seed_policies():
+    client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+    db = client.get_default_database()
+
+    print("Clearing existing policies...")
+    await db.policies.delete_many({})
+
+    print(f"Seeding {len(policies_data)} policies...")
+    await db.policies.insert_many(policies_data)
+
+    print("Policies seeding complete!")
+    client.close()
+
 if __name__ == "__main__":
-    asyncio.run(seed())
+    import asyncio
+    if len(sys.argv) > 1 and sys.argv[1] == "policies":
+        asyncio.run(seed_policies())
+    else:
+        asyncio.run(seed())
