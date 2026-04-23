@@ -30,7 +30,7 @@ async def upload_files(files: List[UploadFile] = File(...), admin: str = Depends
             
             # Since frontend serves this via api prefix currently, 
             # We'll serve files at /uploads
-            uploaded_urls.append(f"http://localhost:{settings.BACKEND_PORT}/uploads/{new_filename}")
+            uploaded_urls.append(f"/uploads/{new_filename}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload {file.filename}: {str(e)}")
             

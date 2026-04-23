@@ -1,11 +1,14 @@
-const getApiBase = () => {
+const getBackendBase = () => {
   if (typeof window !== 'undefined') {
-    return `http://${window.location.hostname}:8002/api`;
+    return `http://${window.location.hostname}:8002`;
   }
-  return "http://localhost:8002/api";
+  return "http://localhost:8002";
 };
 
+const getApiBase = () => `${getBackendBase()}/api`;
+
 export const API_BASE = getApiBase();
+export const BACKEND_BASE = getBackendBase();
 
 export const getImageUrl = (path: string) => {
   if (!path) return '';
@@ -16,11 +19,12 @@ export const getImageUrl = (path: string) => {
   // Ensure it starts with a slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
-  // If it doesn't specify a known folder, assume uploads
-  if (!cleanPath.startsWith('/uploads') && !cleanPath.startsWith('/assets')) {
-    return `/uploads${cleanPath}`;
+  // If it's an uploaded file or asset, prepend backend base
+  if (cleanPath.startsWith('/uploads')) {
+    return `${BACKEND_BASE}${cleanPath}`;
   }
   
+  // Local assets are served from the frontend itself
   return cleanPath;
 };
 
