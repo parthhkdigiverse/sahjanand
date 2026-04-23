@@ -31,3 +31,12 @@ Thumbs.db
 
 # Bun
 bun.lockb
+
+# Local Uploads
+backend/uploads/
+uploads/
+
+# Temp scripts
+fix_images.py
+backend_test.log
+backend_output.log
