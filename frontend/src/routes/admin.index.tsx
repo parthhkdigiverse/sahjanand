@@ -2,12 +2,28 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { Package, FileText, MessageSquare, TrendingUp } from "lucide-react";
+import { Package, FileText, MessageSquare, TrendingUp, Sparkles, ArrowUpRight, Activity, Clock, Settings as SettingsIcon } from "lucide-react";
 import { API_BASE } from "@/lib/api";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
 
 function AdminDashboard() {
   const navigate = useNavigate({ from: "/admin/" });
@@ -33,106 +49,130 @@ function AdminDashboard() {
   });
 
   const stats = [
-    { title: "Total Products", value: products?.length || 0, icon: Package, color: "text-gold" },
-    { title: "Gallery Items", value: galleryItems?.length || 0, icon: TrendingUp, color: "text-gold" },
-    { title: "Blog Posts", value: blogs?.length || 0, icon: FileText, color: "text-gold" },
-    { title: "New Inquiries", value: "12", icon: MessageSquare, color: "text-gold" },
-    { title: "Current Rate (22K)", value: goldPrices ? `₹${goldPrices.price_22k.toLocaleString('en-IN')}` : "Loading...", icon: TrendingUp, color: "text-gold" },
+    { title: "Total Products", value: products?.length || 0, icon: Package, trend: "Inventory" },
+    { title: "Gallery Items", value: galleryItems?.length || 0, icon: Sparkles, trend: "Visuals" },
+    { title: "Total Blogs", value: blogs?.length || 0, icon: FileText, trend: "Editorial" },
+    { title: "Gold Rate (22K)", value: goldPrices ? `₹${goldPrices.price_22k.toLocaleString('en-IN')}` : "Fetching...", icon: TrendingUp, trend: "Real-time" },
   ];
 
   return (
-    <div className="space-y-12">
-      <header className="flex justify-between items-end">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-serif text-onyx tracking-wide">Executive Dashboard</h1>
-          <p className="text-onyx/40 font-light uppercase tracking-[0.2em] text-xs">Atelier Performance & Inventory Overview</p>
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-10"
+    >
+      {/* Welcome Section */}
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-serif text-onyx tracking-tight">Welcome to Dashboard</h1>
+          <p className="text-onyx/40 text-sm font-light uppercase tracking-[0.3em]">Management Console • Maison Aurum</p>
         </div>
-        <div className="text-right">
-          <div className="text-2xl font-serif text-onyx">April 22, 2026</div>
-          <div className="text-[10px] text-onyx/30 uppercase tracking-widest">System Status: Optimal</div>
+        <div className="flex items-center gap-4 bg-onyx/5 px-6 py-3 rounded-2xl border border-onyx/5">
+          <div className="flex flex-col text-right">
+            <span className="text-xs font-medium text-onyx/40 uppercase tracking-widest">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+          </div>
+          <div className="h-10 w-[1px] bg-onyx/10" />
+          <Clock className="text-gold" size={20} />
         </div>
-      </header>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* Primary Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <Card key={i} className="border-none shadow-card hover:shadow-luxe transition-all duration-500 overflow-hidden group">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
-              <CardTitle className="text-[10px] font-medium uppercase tracking-[0.2em] text-onyx/40 group-hover:text-gold transition-colors">{stat.title}</CardTitle>
-              <stat.icon className={`h-4 w-4 ${stat.color} opacity-40 group-hover:opacity-100 transition-all duration-500`} />
-            </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="text-3xl font-serif text-onyx">{stat.value}</div>
-              <div className="mt-4 h-1 w-full bg-onyx/5 rounded-full overflow-hidden">
-                <div className="h-full bg-gold w-2/3 group-hover:w-full transition-all duration-1000" />
-              </div>
-            </CardContent>
-            {/* Decorative gradient corner */}
-            <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-gold/5 rounded-full blur-2xl group-hover:bg-gold/20 transition-all duration-500" />
-          </Card>
+          <motion.div key={i} variants={item}>
+            <Card className="border-none shadow-sm hover:shadow-xl transition-all duration-500 rounded-3xl overflow-hidden group bg-white/50 backdrop-blur-sm border border-white/20">
+              <CardContent className="p-8 relative">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="p-3 bg-onyx/5 rounded-2xl group-hover:bg-gold/10 transition-colors">
+                    <stat.icon className="h-5 w-5 text-gold group-hover:scale-110 transition-transform duration-500" />
+                  </div>
+                  <span className="text-[10px] font-medium text-onyx/30 group-hover:text-gold/60 transition-colors uppercase tracking-widest">{stat.trend}</span>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-[10px] font-semibold text-onyx/40 uppercase tracking-[0.2em]">{stat.title}</h3>
+                  <p className="text-4xl font-serif text-onyx tracking-tight">{stat.value}</p>
+                </div>
+                {/* Visual Accent */}
+                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ArrowUpRight size={16} className="text-gold" />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <Card className="lg:col-span-2 border-none shadow-card h-full">
-          <CardHeader className="border-b border-onyx/5 py-6">
-            <CardTitle className="font-serif text-xl text-onyx tracking-wide">System Activity Log</CardTitle>
-          </CardHeader>
-          <CardContent className="py-10">
-            <div className="space-y-8">
-              {[1, 2, 3].map((_, i) => (
-                <div key={i} className="flex gap-6 items-start">
-                  <div className="h-2 w-2 mt-2 rounded-full bg-gold" />
-                  <div className="space-y-1">
-                    <p className="text-sm text-onyx/70">New product <span className="font-medium text-onyx">"Éclat d'Or Ring"</span> added to inventory.</p>
-                    <p className="text-[10px] text-onyx/30 uppercase tracking-widest">2 hours ago — By Admin</p>
+      {/* Main Content Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <motion.div variants={item} className="lg:col-span-2">
+          <Card className="border-none shadow-sm rounded-3xl h-full overflow-hidden bg-white/50 backdrop-blur-sm border border-white/20">
+            <CardHeader className="p-8 border-b border-onyx/5 flex flex-row items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Activity size={18} className="text-gold" />
+                <CardTitle className="font-serif text-2xl text-onyx">Recent Activity</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="space-y-8">
+                {[
+                  { action: "New product added", item: "Diamond Ring", time: "2 hours ago", status: "Active" },
+                  { action: "Newsletter sent", item: "Spring Collection", time: "5 hours ago", status: "Sent" },
+                  { action: "Price updated", item: "24K Gold", time: "Yesterday", status: "Updated" },
+                ].map((log, i) => (
+                  <div key={i} className="flex gap-6 items-center group">
+                    <div className="h-12 w-12 rounded-2xl bg-onyx/5 flex items-center justify-center text-onyx/40 group-hover:bg-gold group-hover:text-onyx transition-all duration-500">
+                      <Clock size={18} />
+                    </div>
+                    <div className="flex-1 flex justify-between items-center">
+                      <div className="space-y-1">
+                        <p className="text-sm text-onyx font-medium">{log.action}: <span className="text-gold">"{log.item}"</span></p>
+                        <p className="text-[10px] text-onyx/30 uppercase tracking-widest">{log.time}</p>
+                      </div>
+                      <span className="px-3 py-1 rounded-full bg-sage/10 text-sage text-[8px] uppercase tracking-widest font-bold">{log.status}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-              <p className="text-xs text-gold font-medium uppercase tracking-widest pt-4 cursor-pointer hover:underline">View all system logs →</p>
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
         
-        <Card className="border-none shadow-card bg-onyx text-ivory overflow-hidden relative">
-          {/* Subtle gold sheen background */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl" />
-          <CardHeader className="py-6 border-b border-white/5 relative z-10">
-            <CardTitle className="font-serif text-xl tracking-wide">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 py-8 relative z-10">
-            <button className="p-6 glass-dark border border-white/10 rounded-xl hover:border-gold hover:scale-[1.02] transition-all text-left group">
-              <div className="flex justify-between items-center">
-                <div className="space-y-1">
-                  <div className="font-serif text-lg group-hover:text-gold transition-colors">New Product</div>
-                  <div className="text-[10px] text-ivory/30 uppercase tracking-widest">Inventory Management</div>
-                </div>
-                <Package className="h-5 w-5 text-gold/40 group-hover:text-gold group-hover:rotate-12 transition-all" />
-              </div>
-            </button>
-            <button className="p-6 glass-dark border border-white/10 rounded-xl hover:border-gold hover:scale-[1.02] transition-all text-left group">
-              <div className="flex justify-between items-center">
-                <div className="space-y-1">
-                  <div className="font-serif text-lg group-hover:text-gold transition-colors">Publish Article</div>
-                  <div className="text-[10px] text-ivory/30 uppercase tracking-widest">Journal Editorial</div>
-                </div>
-                <FileText className="h-5 w-5 text-gold/40 group-hover:text-gold group-hover:rotate-12 transition-all" />
-              </div>
-            </button>
-            <button 
-              onClick={() => navigate({ to: "/admin/gallery" })}
-              className="p-6 glass-dark border border-white/10 rounded-xl hover:border-gold hover:scale-[1.02] transition-all text-left group"
-            >
-              <div className="flex justify-between items-center">
-                <div className="space-y-1">
-                  <div className="font-serif text-lg group-hover:text-gold transition-colors">Manage Gallery</div>
-                  <div className="text-[10px] text-ivory/30 uppercase tracking-widest">Visual Storytelling</div>
-                </div>
-                <TrendingUp className="h-5 w-5 text-gold/40 group-hover:text-gold group-hover:rotate-12 transition-all" />
-              </div>
-            </button>
-          </CardContent>
-        </Card>
+        <motion.div variants={item}>
+          <Card className="border-none shadow-2xl bg-onyx text-ivory rounded-3xl h-full overflow-hidden relative">
+            {/* Cinematic Overlay */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 rounded-full blur-[100px]" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-gold/5 rounded-full blur-[80px]" />
+            
+            <CardHeader className="p-8 border-b border-white/5 relative z-10">
+              <CardTitle className="font-serif text-2xl tracking-wide flex items-center gap-3">
+                <Sparkles size={20} className="text-gold" />
+                Quick Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 space-y-4 relative z-10">
+              {[
+                { label: "Add Product", sub: "Inventory", icon: Package, href: "/admin/products" },
+                { label: "Write Blog", sub: "Editorial", icon: FileText, href: "/admin/blogs" },
+                { label: "Add Gallery", sub: "Visuals", icon: TrendingUp, href: "/admin/gallery" },
+                { label: "Settings", sub: "Config", icon: SettingsIcon, href: "/admin/settings" },
+              ].map((action, i) => (
+                <button 
+                  key={i}
+                  onClick={() => navigate({ to: action.href as any })}
+                  className="w-full p-5 bg-white/5 border border-white/5 rounded-2xl hover:border-gold/50 hover:bg-white/10 transition-all text-left group flex items-center justify-between"
+                >
+                  <div className="space-y-1">
+                    <div className="font-serif text-lg text-ivory group-hover:text-gold transition-colors">{action.label}</div>
+                    <div className="text-[8px] text-ivory/30 uppercase tracking-[0.2em]">{action.sub}</div>
+                  </div>
+                  <action.icon className="h-5 w-5 text-gold/30 group-hover:text-gold group-hover:scale-110 transition-all" />
+                </button>
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

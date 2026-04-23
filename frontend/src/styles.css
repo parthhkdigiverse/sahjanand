@@ -289,4 +289,46 @@
   .animate-shimmer {
     animation: shimmer 2.4s ease-in-out infinite;
   }
+
+  .glass-luxe {
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 15px rgba(176, 139, 86, 0.3);
+  }
+
+  .text-shadow-gold {
+    text-shadow: 0 0 10px rgba(176, 139, 86, 0.4);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
+
+  .admin-sheet {
+    @apply bg-white/70 backdrop-blur-md border border-onyx/5 shadow-xl rounded-[2.5rem] overflow-hidden;
+  }
+
+  .admin-table-row {
+    @apply hover:bg-ivory/40 transition-colors border-onyx/5;
+  }
+
+  .admin-btn-gold {
+    @apply bg-gold text-onyx hover:bg-gold-deep transition-all duration-300 rounded-2xl font-bold tracking-widest uppercase text-[10px] px-6 py-3 shadow-lg hover:shadow-gold/20 flex items-center gap-2;
+  }
 }

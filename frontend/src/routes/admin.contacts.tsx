@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2, Mail, Phone, Calendar, Loader2, Ticket, MessageSquare, Tag, Package, User, InboxIcon } from "lucide-react";
+import { Trash2, Mail, Phone, Calendar, Loader2, Ticket, MessageSquare, Tag, Package, User, InboxIcon, Search, Filter, Download, ArrowUpRight, ExternalLink } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useState } from "react";
 import { API_BASE } from "@/lib/api";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Route = createFileRoute("/admin/contacts")({
   component: AdminContacts,
@@ -40,6 +40,7 @@ type OfferLead = {
 function AdminContacts() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("inquiries");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { data: inquiries, isLoading: inquiriesLoading } = useQuery<Inquiry[]>({
     queryKey: ["contacts"],
@@ -83,251 +84,236 @@ function AdminContacts() {
     onError: () => toast.error("Error removing lead"),
   });
 
-  const generalCount = inquiries?.filter(i => i.type === "GENERAL").length ?? 0;
-  const productCount = inquiries?.filter(i => i.type === "PRODUCT").length ?? 0;
+  const filteredInquiries = inquiries?.filter(i => 
+    i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    i.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    i.subject.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredLeads = leads?.filter(l => 
+    l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    l.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    l.offer_code.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="space-y-8 animate-fade-up">
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-8 rounded-2xl shadow-card border border-onyx/5">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-serif text-onyx tracking-wide">Customer Communications</h1>
-          <p className="text-onyx/40 text-[10px] uppercase tracking-[0.2em]">Managing client requests and marketing leads</p>
-        </div>
-        <div className="flex gap-3 flex-wrap">
-          <div className="h-11 px-5 bg-onyx text-ivory rounded-lg flex items-center gap-2 text-xs uppercase tracking-widest border border-white/5 shadow-luxe">
-            <Mail className="h-4 w-4 text-gold" />
-            <span>Inquiries: {inquiries?.length ?? 0}</span>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4 flex-1 max-w-xl">
+          <div className="relative flex-1 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-onyx/20 h-4 w-4 group-focus-within:text-gold transition-colors" />
+            <input 
+              className="w-full h-12 pl-12 pr-4 bg-white border border-onyx/5 rounded-xl shadow-sm placeholder:text-onyx/20 outline-none focus:border-gold/30 transition-all text-sm font-medium" 
+              placeholder="Search..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <div className="h-11 px-5 bg-gold text-onyx rounded-lg flex items-center gap-2 text-xs uppercase tracking-widest shadow-luxe">
-            <Ticket className="h-4 w-4" />
-            <span>Leads: {leads?.length ?? 0}</span>
-          </div>
         </div>
-      </header>
+      </div>
 
       <Tabs defaultValue="inquiries" onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-white p-1 h-14 rounded-xl border border-onyx/5 shadow-sm w-full sm:w-auto">
+        <TabsList className="bg-white p-1 h-12 rounded-xl border border-onyx/5 shadow-sm w-full sm:w-auto flex items-stretch">
           <TabsTrigger
             value="inquiries"
-            className="px-8 h-full rounded-lg data-[state=active]:bg-onyx data-[state=active]:text-ivory text-[10px] uppercase tracking-widest transition-all"
+            className="px-8 flex-1 sm:flex-none rounded-lg data-[state=active]:bg-onyx data-[state=active]:text-gold text-[10px] uppercase tracking-widest transition-all font-bold"
           >
-            General Inquiries
+            Inquiries ({inquiries?.length ?? 0})
           </TabsTrigger>
           <TabsTrigger
             value="leads"
-            className="px-8 h-full rounded-lg data-[state=active]:bg-onyx data-[state=active]:text-ivory text-[10px] uppercase tracking-widest transition-all"
+            className="px-8 flex-1 sm:flex-none rounded-lg data-[state=active]:bg-onyx data-[state=active]:text-gold text-[10px] uppercase tracking-widest transition-all font-bold"
           >
-            Marketing Leads
+            Offers & Leads ({leads?.length ?? 0})
           </TabsTrigger>
         </TabsList>
 
-        {/* ── Inquiries Tab ── */}
         <TabsContent value="inquiries" className="space-y-4 outline-none">
-          {/* Stats row */}
-          {!inquiriesLoading && inquiries && inquiries.length > 0 && (
-            <div className="flex gap-4 flex-wrap">
-              <div className="flex items-center gap-2 text-xs text-onyx/50 bg-white border border-onyx/5 rounded-lg px-4 py-2 shadow-sm">
-                <MessageSquare className="h-3 w-3 text-gold" />
-                <span>{generalCount} general {generalCount === 1 ? "inquiry" : "inquiries"}</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-onyx/50 bg-white border border-onyx/5 rounded-lg px-4 py-2 shadow-sm">
-                <Package className="h-3 w-3 text-gold" />
-                <span>{productCount} product {productCount === 1 ? "inquiry" : "inquiries"}</span>
-              </div>
-            </div>
-          )}
-
           {inquiriesLoading ? (
-            <div className="flex flex-col items-center justify-center py-32 gap-4">
-              <Loader2 className="animate-spin h-10 w-10 text-gold/40" />
-              <span className="text-[10px] uppercase tracking-[0.3em] text-onyx/20">Loading inquiries...</span>
+            <div className="flex flex-col items-center justify-center py-24 gap-4">
+              <Loader2 className="animate-spin h-8 w-8 text-gold/40" />
+              <span className="text-[10px] uppercase tracking-widest text-onyx/20 font-bold">Loading...</span>
             </div>
-          ) : !inquiries || inquiries.length === 0 ? (
-            <Card className="border-none shadow-card py-20 bg-ivory/50">
-              <CardContent className="flex flex-col items-center gap-4 text-center">
-                <InboxIcon className="h-12 w-12 text-onyx/10" />
-                <p className="font-serif text-onyx/40 italic">No messages in the inbox at this time.</p>
-              </CardContent>
-            </Card>
+          ) : !filteredInquiries || filteredInquiries.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-onyx/5 p-20 flex flex-col items-center gap-4 text-center shadow-sm">
+              <InboxIcon className="h-12 w-12 text-onyx/5" />
+              <p className="font-serif text-onyx/30 italic">No inquiries found.</p>
+            </div>
           ) : (
             <div className="space-y-4">
-              {inquiries.map((inquiry) => (
-                <Card
-                  key={inquiry._id}
-                  className="border border-onyx/5 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
-                >
-                  <CardHeader className="flex flex-row items-center justify-between py-4 px-6 bg-secondary/10">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${inquiry.type === "PRODUCT" ? "bg-gold" : "bg-onyx/30"}`} />
-                      <div className="flex flex-col">
-                        <span className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold">
-                          {inquiry.type === "PRODUCT" ? "Product Inquiry" : "General Inquiry"}
-                        </span>
-                        <CardTitle className="text-lg font-serif text-onyx">
-                          {inquiry.subject.replace("Product Inquiry: ", "")}
-                        </CardTitle>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right hidden sm:block">
-                        <p className="text-[10px] uppercase tracking-widest text-onyx/40">
-                          {new Date(inquiry.created_at).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-onyx/20 hover:text-red-500 hover:bg-red-50"
-                        onClick={() => {
-                          if (confirm("Delete this inquiry?")) {
-                            deleteInquiryMutation.mutate(inquiry._id);
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardHeader>
+              <AnimatePresence mode="popLayout">
+                {filteredInquiries.map((inquiry, idx) => (
+                  <motion.div
+                    key={inquiry._id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card className="rounded-3xl border-onyx/5 shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                      <div className="flex flex-col sm:flex-row min-h-[200px]">
+                        <div className={`w-full sm:w-2 ${inquiry.type === "PRODUCT" ? "bg-gold" : "bg-onyx/10"}`} />
+                        <div className="flex-1 p-6 sm:p-8">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className={`text-[9px] uppercase tracking-widest font-black ${inquiry.type === "PRODUCT" ? "text-gold" : "text-onyx/40"}`}>
+                                  {inquiry.type === "PRODUCT" ? "Product Inquiry" : "General Inquiry"}
+                                </span>
+                                <span className="text-[9px] text-onyx/20">•</span>
+                                <span className="text-[9px] uppercase tracking-widest text-onyx/40 font-bold">
+                                  {new Date(inquiry.created_at).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}
+                                </span>
+                              </div>
+                              <h3 className="text-xl font-serif text-onyx">
+                                {inquiry.subject.replace("Product Inquiry: ", "")}
+                              </h3>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all opacity-0 group-hover:opacity-100"
+                              onClick={() => {
+                                if (confirm("Delete this inquiry?")) {
+                                  deleteInquiryMutation.mutate(inquiry._id);
+                                }
+                              }}
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
 
-                  <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
-                      <div className="flex flex-wrap gap-8">
-                        <div className="space-y-1">
-                          <p className="text-[9px] uppercase tracking-widest text-onyx/40">Customer</p>
-                          <p className="text-sm font-medium">{inquiry.name}</p>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 py-6 border-y border-onyx/5">
+                            <div className="space-y-1">
+                              <p className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Customer</p>
+                              <p className="text-sm font-bold text-onyx">{inquiry.name}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Email</p>
+                              <a href={`mailto:${inquiry.email}`} className="text-sm text-gold hover:underline font-bold">{inquiry.email}</a>
+                            </div>
+                            {inquiry.phone && (
+                              <div className="space-y-1">
+                                <p className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Phone</p>
+                                <p className="text-sm font-bold text-onyx">{inquiry.phone}</p>
+                              </div>
+                            )}
+                            {inquiry.product_name && (
+                              <div className="space-y-1">
+                                <p className="text-[8px] uppercase tracking-widest text-onyx/30 font-black">Product</p>
+                                <p className="text-sm text-onyx/60 font-medium italic font-serif">{inquiry.product_name}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="relative mb-6">
+                            <p className="text-base font-serif italic text-onyx/70 leading-relaxed pl-4 border-l-2 border-gold/20">
+                              "{inquiry.message}"
+                            </p>
+                          </div>
+
+                          <div className="flex justify-end">
+                            <a
+                              href={`mailto:${inquiry.email}?subject=Re: ${encodeURIComponent(inquiry.subject)}`}
+                              className="bg-onyx text-ivory hover:bg-gold hover:text-onyx px-6 py-2.5 rounded-xl text-[10px] uppercase tracking-widest font-black transition-all flex items-center gap-2"
+                            >
+                              <Mail size={14} />
+                              Reply
+                            </a>
+                          </div>
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] uppercase tracking-widest text-onyx/40">Email Address</p>
-                          <a href={`mailto:${inquiry.email}`} className="text-sm text-gold hover:underline">{inquiry.email}</a>
-                        </div>
-                        {inquiry.phone && (
-                          <div className="space-y-1">
-                            <p className="text-[9px] uppercase tracking-widest text-onyx/40">Phone Number</p>
-                            <p className="text-sm font-medium">{inquiry.phone}</p>
-                          </div>
-                        )}
-                        {inquiry.preferred_date && (
-                          <div className="space-y-1">
-                            <p className="text-[9px] uppercase tracking-widest text-onyx/40">Requested Date</p>
-                            <p className="text-sm font-medium">{inquiry.preferred_date}</p>
-                          </div>
-                        )}
-                        {inquiry.product_name && (
-                          <div className="space-y-1">
-                            <p className="text-[9px] uppercase tracking-widest text-onyx/40">Regarding</p>
-                            <p className="text-sm text-onyx/70">{inquiry.product_name}</p>
-                          </div>
-                        )}
                       </div>
-                      
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="leads" className="space-y-4 outline-none">
+          {leadsLoading ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-4">
+              <Loader2 className="animate-spin h-8 w-8 text-gold/40" />
+            </div>
+          ) : !filteredLeads || filteredLeads.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-onyx/5 p-20 flex flex-col items-center gap-4 text-center shadow-sm">
+              <Ticket className="h-12 w-12 text-onyx/5" />
+              <p className="font-serif text-onyx/30 italic">No leads found.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredLeads.map((lead, idx) => (
+                <motion.div
+                  key={lead._id}
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.05 }}
+                >
+                  <Card className="rounded-3xl border-onyx/5 shadow-sm hover:shadow-lg transition-all p-6 sm:p-8 group relative overflow-hidden bg-white">
+                    <div className="relative z-10 space-y-6">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Offer Code</span>
+                            <span className="px-2 py-0.5 rounded-md bg-gold/10 text-gold text-[10px] font-black tracking-widest border border-gold/10">
+                              {lead.offer_code}
+                            </span>
+                          </div>
+                          <h3 className="font-serif text-2xl text-onyx">{lead.name}</h3>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all opacity-0 group-hover:opacity-100"
+                          onClick={() => {
+                            if (confirm("Remove this lead?")) {
+                              deleteLeadMutation.mutate(lead._id);
+                            }
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+
+                      <div className="space-y-3 pt-4 border-t border-onyx/5">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[9px] uppercase tracking-widest text-onyx/30 font-black">Email</span>
+                          <a href={`mailto:${lead.email}`} className="text-sm font-bold text-gold hover:underline">{lead.email}</a>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[9px] uppercase tracking-widest text-onyx/30 font-black">Phone</span>
+                          <span className="text-sm font-bold text-onyx">{lead.phone}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[9px] uppercase tracking-widest text-onyx/30 font-black">Captured</span>
+                          <span className="text-xs font-medium text-onyx/40">
+                            {lead.created_at ? new Date(lead.created_at).toLocaleDateString("en-IN", { 
+                              day: '2-digit', month: 'short', year: 'numeric'
+                            }) : "N/A"}
+                          </span>
+                        </div>
+                      </div>
+
                       <a
-                        href={`mailto:${inquiry.email}?subject=Re: ${encodeURIComponent(inquiry.subject)}`}
-                        className="inline-flex items-center gap-2 bg-onyx text-ivory px-5 py-2 rounded-lg text-[10px] uppercase tracking-widest hover:bg-gold hover:text-onyx transition-all shadow-sm"
+                        href={`mailto:${lead.email}?subject=Welcome to Maison Aurum&body=Hello ${lead.name}, thank you for your interest in Maison Aurum. Your welcome code ${lead.offer_code} is ready to use.`}
+                        className="w-full bg-onyx text-ivory hover:bg-gold hover:text-onyx h-12 flex items-center justify-center rounded-xl text-[10px] uppercase tracking-widest font-black transition-all gap-2"
                       >
-                        <Mail className="h-3.5 w-3.5" /> Reply
+                        <Mail size={14} />
+                        Contact Lead
                       </a>
                     </div>
-
-                    <div className="bg-secondary/5 rounded-lg p-5 border border-onyx/5">
-                      <p className="text-onyx/80 leading-relaxed text-sm whitespace-pre-wrap italic">
-                        "{inquiry.message}"
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           )}
         </TabsContent>
-
-        {/* ── Marketing Leads Tab ── */}
-        <TabsContent value="leads" className="space-y-4 outline-none">
-          {leadsLoading ? (
-            <div className="flex flex-col items-center justify-center py-32 gap-4">
-              <Loader2 className="animate-spin h-10 w-10 text-gold/40" />
-            </div>
-          ) : !leads || leads.length === 0 ? (
-            <Card className="border-none shadow-card py-20 bg-ivory/50">
-              <CardContent className="flex flex-col items-center gap-4 text-center">
-                <Ticket className="h-12 w-12 text-onyx/10" />
-                <p className="font-serif text-onyx/40 italic">No marketing leads captured yet.</p>
-              </CardContent>
-            </Card>
-          ) : (
-          <div className="space-y-4">
-            {leads.map((lead) => (
-              <Card
-                key={lead._id}
-                className="border border-onyx/5 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
-              >
-                <CardHeader className="flex flex-row items-center justify-between py-4 px-6 bg-gold/5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-gold" />
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase tracking-widest text-gold font-bold">
-                        Welcome Offer Claimed
-                      </span>
-                      <CardTitle className="text-lg font-serif text-onyx">
-                        {lead.name}
-                      </CardTitle>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="bg-gold/10 text-gold text-[10px] font-bold px-3 py-1 rounded border border-gold/20 tracking-widest">
-                      {lead.offer_code}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-onyx/20 hover:text-red-500 hover:bg-red-50"
-                      onClick={() => {
-                        if (confirm("Remove this lead?")) {
-                          deleteLeadMutation.mutate(lead._id);
-                        }
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="flex flex-wrap gap-8">
-                      <div className="space-y-1">
-                        <p className="text-[9px] uppercase tracking-widest text-onyx/40">Email Address</p>
-                        <a href={`mailto:${lead.email}`} className="text-sm text-gold hover:underline">{lead.email}</a>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-[9px] uppercase tracking-widest text-onyx/40">Phone Number</p>
-                        <p className="text-sm font-medium">{lead.phone}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-[9px] uppercase tracking-widest text-onyx/40">Date Captured</p>
-                        <p className="text-sm text-onyx/70">
-                          {lead.created_at ? new Date(lead.created_at).toLocaleDateString("en-IN", { 
-                            day: '2-digit', month: 'short', year: 'numeric', 
-                            hour: '2-digit', minute: '2-digit' 
-                          }) : "N/A"}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <a
-                      href={`mailto:${lead.email}?subject=Welcome to Maison Aurum&body=Hello ${lead.name}, thank you for your interest in Maison Aurum. Your welcome code ${lead.offer_code} is ready to use.`}
-                      className="inline-flex items-center gap-2 border border-onyx text-onyx px-5 py-2 rounded-lg text-[10px] uppercase tracking-widest hover:bg-onyx hover:text-ivory transition-all"
-                    >
-                      <Mail className="h-3.5 w-3.5" /> Contact Lead
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          )}
-        </TabsContent>
       </Tabs>
-    </div>
+    </motion.div>
   );
 }
