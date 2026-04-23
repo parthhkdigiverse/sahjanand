@@ -10,6 +10,8 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
+  const navigate = useNavigate({ from: "/admin/" });
+
   const { data: goldPrices } = useQuery({
     queryKey: ["gold-prices"],
     queryFn: () => fetch(`${API_BASE}/gold-prices/`).then(res => res.json())
