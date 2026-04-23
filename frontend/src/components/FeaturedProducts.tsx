@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts, type Product } from "@/lib/api";
+import { fetchProducts, type Product, getImageUrl } from "@/lib/api";
 import { 
   Carousel, 
   CarouselContent, 
@@ -22,7 +22,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
     >
       <div className="relative aspect-square overflow-hidden bg-[#F9F8F6]">
         <img
-          src={product.image}
+          src={getImageUrl(product.image)}
           alt={product.name}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"

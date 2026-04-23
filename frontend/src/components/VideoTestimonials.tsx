@@ -3,7 +3,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTestimonials } from "@/lib/api";
+import { fetchTestimonials, getImageUrl } from "@/lib/api";
 
 export function VideoTestimonials() {
   const { data: testimonials = [], isLoading } = useQuery({
@@ -46,7 +46,7 @@ export function VideoTestimonials() {
                   className="group relative block aspect-[3/4] w-full overflow-hidden img-zoom text-left"
                 >
                   <img
-                    src={t.image}
+                    src={getImageUrl(t.image)}
                     alt={t.name}
                     loading="lazy"
                     className="h-full w-full object-cover"
@@ -107,7 +107,7 @@ export function VideoTestimonials() {
             style={{ backgroundColor: "var(--onyx)" }}
           >
             <img
-              src={testimonials[open].image}
+              src={getImageUrl(testimonials[open].image)}
               alt={testimonials[open].name}
               className="absolute inset-0 h-full w-full object-cover opacity-50"
             />

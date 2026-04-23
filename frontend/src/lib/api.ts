@@ -7,6 +7,23 @@ const getApiBase = () => {
 
 export const API_BASE = getApiBase();
 
+export const getImageUrl = (path: string) => {
+  if (!path) return '';
+  // If it's a full URL or data URI, return as is
+  if (path.startsWith('http') || path.startsWith('data:')) {
+    return path;
+  }
+  // Ensure it starts with a slash
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  
+  // If it doesn't specify a known folder, assume uploads
+  if (!cleanPath.startsWith('/uploads') && !cleanPath.startsWith('/assets')) {
+    return `/uploads${cleanPath}`;
+  }
+  
+  return cleanPath;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -100,6 +117,8 @@ export async function fetchBlog(slug: string): Promise<BlogPost> {
 export type ContactInquiry = {
   name: string;
   email: string;
+  phone?: string;
+  preferred_date?: string;
   subject: string;
   message: string;
   type: "GENERAL" | "PRODUCT";

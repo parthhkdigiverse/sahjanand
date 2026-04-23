@@ -35,6 +35,8 @@ class PyObjectId(ObjectId):
 class ContactBase(BaseModel):
     name: str
     email: EmailStr
+    phone: Optional[str] = None
+    preferred_date: Optional[str] = None
     subject: str
     message: str
     type: Literal["GENERAL", "PRODUCT"] = "GENERAL"

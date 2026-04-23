@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit2, Trash2, Loader2, ArrowUp, ArrowDown, Camera } from "lucide-react";
-import { fetchHeroSlides, HeroSlide, API_BASE } from "@/lib/api";
+import { fetchHeroSlides, HeroSlide, API_BASE, getImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -105,7 +105,7 @@ function AdminHero() {
       link_url: slide.link_url,
       order: slide.order,
     });
-    setImagePreview(slide.image);
+    setImagePreview(getImageUrl(slide.image));
     setIsDialogOpen(true);
   };
 
@@ -122,7 +122,7 @@ function AdminHero() {
         const result = await res.json();
         const imageUrl = result.urls[0];
         setFormData(prev => ({ ...prev, image: imageUrl }));
-        setImagePreview(imageUrl);
+        setImagePreview(getImageUrl(imageUrl));
         toast.success("Image uploaded");
       } else {
         toast.error("Upload failed");
@@ -153,7 +153,7 @@ function AdminHero() {
           <Card key={slide._id} className="overflow-hidden border-l-4 border-l-gold">
             <div className="flex flex-col md:flex-row">
               <div className="w-full md:w-48 h-48 md:h-auto relative">
-                <img src={slide.image} alt={slide.title} className="absolute inset-0 w-full h-full object-cover" />
+                <img src={getImageUrl(slide.image)} alt={slide.title} className="absolute inset-0 w-full h-full object-cover" />
               </div>
               <div className="flex-1 p-6">
                 <div className="flex justify-between">
@@ -200,7 +200,7 @@ function AdminHero() {
                 >
                   {imagePreview ? (
                     <>
-                      <img src={imagePreview} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <img src={getImageUrl(imagePreview)} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-onyx/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[1px]">
                         <Camera className="h-6 w-6 text-gold" />
                       </div>

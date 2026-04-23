@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { fetchHeroSlides, HeroSlide } from "@/lib/api";
+import { fetchHeroSlides, HeroSlide, getImageUrl } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import hero1 from "@/assets/hero-1.jpg";
 
@@ -50,7 +50,7 @@ export function HeroCarousel() {
           {activeSlides.map((s, i) => (
             <div key={i} className="relative h-full w-full flex-[0_0_100%]">
               <img
-                src={s.image}
+                src={getImageUrl(s.image)}
                 alt={s.title}
                 className="absolute inset-0 h-full w-full object-cover"
                 loading={i === 0 ? "eager" : "lazy"}

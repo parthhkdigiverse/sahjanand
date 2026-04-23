@@ -13,6 +13,7 @@ export function InquiryModal({ product, isOpen, onClose }: InquiryModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     message: `Greetings, I am captivated by the ${product.name} and would like to learn more about its bespoke details and availability.`,
   });
   const [submitted, setSubmitted] = useState(false);
@@ -24,7 +25,7 @@ export function InquiryModal({ product, isOpen, onClose }: InquiryModalProps) {
       setTimeout(() => {
         setSubmitted(false);
         onClose();
-        setFormData({ name: "", email: "", message: "" });
+        setFormData({ name: "", email: "", phone: "", message: "" });
       }, 3000);
     },
   });
@@ -103,6 +104,18 @@ export function InquiryModal({ product, isOpen, onClose }: InquiryModalProps) {
                       placeholder="alex@example.com"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] tracking-widest text-gray-500 uppercase font-bold ml-1">Mobile Number</label>
+                  <input
+                    required
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-white border border-gray-200 px-4 py-3 text-sm focus:border-gold outline-none transition-colors duration-300"
+                    placeholder="E.g. +91 98765 43210"
+                  />
                 </div>
 
                 <div className="space-y-2">

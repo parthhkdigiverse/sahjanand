@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { submitContact } from "@/lib/api";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -19,7 +20,37 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    date: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsSubmitting(true);
+      await submitContact({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        preferred_date: formData.date,
+        subject: `Appointment Request: ${formData.date}`,
+        message: formData.message,
+        type: "GENERAL"
+      });
+      setSent(true);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className="pt-32 pb-24 container-luxe">
@@ -68,35 +99,65 @@ function Contact() {
             <>
               <p className="divider-gold mb-5">Book a Visit</p>
               <h2 className="font-serif text-3xl mb-8">Make an Appointment</h2>
-              <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
-                {[
-                  { l: "Full Name", t: "text" },
-                  { l: "Email", t: "email" },
-                  { l: "Phone", t: "tel" },
-                  { l: "Preferred Date", t: "date" },
-                ].map((f) => (
-                  <div key={f.l}>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">{f.l}</label>
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Full Name</label>
                     <input
                       required
-                      type={f.t}
+                      type="text"
+                      value={formData.name}
+                      onChange={e => setFormData({...formData, name: e.target.value})}
                       className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
                     />
                   </div>
-                ))}
-                <div>
-                  <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Message (optional)</label>
-                  <textarea
-                    rows={4}
-                    className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors resize-none"
-                  />
+                  <div>
+                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Email</label>
+                    <input
+                      required
+                      type="email"
+                      value={formData.email}
+                      onChange={e => setFormData({...formData, email: e.target.value})}
+                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Phone</label>
+                    <input
+                      required
+                      type="tel"
+                      value={formData.phone}
+                      onChange={e => setFormData({...formData, phone: e.target.value})}
+                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Preferred Date</label>
+                    <input
+                      required
+                      type="date"
+                      value={formData.date}
+                      onChange={e => setFormData({...formData, date: e.target.value})}
+                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">Message (optional)</label>
+                    <textarea
+                      rows={4}
+                      value={formData.message}
+                      onChange={e => setFormData({...formData, message: e.target.value})}
+                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors resize-none"
+                    />
+                  </div>
                 </div>
                 <button
                   type="submit"
-                  className="sheen w-full mt-6 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors"
+                  disabled={isSubmitting}
+                  className="sheen w-full mt-6 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors disabled:opacity-50"
                   style={{ backgroundColor: "var(--onyx)", color: "var(--ivory)" }}
                 >
-                  Book Appointment →
+                  {isSubmitting ? "Sending..." : "Book Appointment →"}
                 </button>
               </form>
             </>

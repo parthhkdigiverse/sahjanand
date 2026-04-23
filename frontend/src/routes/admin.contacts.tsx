@@ -18,6 +18,8 @@ type Inquiry = {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
+  preferred_date?: string;
   subject: string;
   message: string;
   type: "GENERAL" | "PRODUCT";
@@ -153,98 +155,84 @@ function AdminContacts() {
               {inquiries.map((inquiry) => (
                 <Card
                   key={inquiry._id}
-                  className="border-none shadow-card hover:shadow-luxe transition-all duration-500 overflow-hidden relative group"
+                  className="border border-onyx/5 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                 >
-                  {/* Gold accent bar */}
-                  <div className="absolute top-0 left-0 w-1 h-full bg-gold opacity-30 group-hover:opacity-100 transition-opacity rounded-l-xl" />
-
-                  <CardHeader className="flex flex-row items-start justify-between py-5 px-8 border-b border-onyx/5 bg-onyx/[0.015]">
-                    <div className="space-y-1.5 flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <CardTitle className="text-xl font-serif text-onyx tracking-wide truncate">
-                          {inquiry.subject}
+                  <CardHeader className="flex flex-row items-center justify-between py-4 px-6 bg-secondary/10">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${inquiry.type === "PRODUCT" ? "bg-gold" : "bg-onyx/30"}`} />
+                      <div className="flex flex-col">
+                        <span className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold">
+                          {inquiry.type === "PRODUCT" ? "Product Inquiry" : "General Inquiry"}
+                        </span>
+                        <CardTitle className="text-lg font-serif text-onyx">
+                          {inquiry.subject.replace("Product Inquiry: ", "")}
                         </CardTitle>
-                        <Badge
-                          variant="secondary"
-                          className={inquiry.type === "PRODUCT"
-                            ? "bg-gold/15 text-gold border-gold/20 text-[9px] uppercase tracking-widest"
-                            : "bg-onyx/5 text-onyx/50 text-[9px] uppercase tracking-widest"
-                          }
-                        >
-                          {inquiry.type === "PRODUCT" ? (
-                            <><Package className="h-2.5 w-2.5 mr-1" />Product</>
-                          ) : (
-                            <><MessageSquare className="h-2.5 w-2.5 mr-1" />General</>
-                          )}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-onyx/40 flex-wrap">
-                        <span className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
-                          <span className="font-medium text-gold">{inquiry.name}</span>
-                        </span>
-                        <span className="h-1 w-1 bg-onyx/10 rounded-full" />
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(inquiry.created_at).toLocaleString("en-IN", {
-                            day: "2-digit", month: "short", year: "numeric",
-                            hour: "2-digit", minute: "2-digit"
-                          })}
-                        </span>
                       </div>
                     </div>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-onyx/20 hover:text-red-500 hover:bg-red-50 rounded-full shrink-0 ml-2"
-                      onClick={() => {
-                        if (confirm("Permanently delete this inquiry?")) {
-                          deleteInquiryMutation.mutate(inquiry._id);
-                        }
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right hidden sm:block">
+                        <p className="text-[10px] uppercase tracking-widest text-onyx/40">
+                          {new Date(inquiry.created_at).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-onyx/20 hover:text-red-500 hover:bg-red-50"
+                        onClick={() => {
+                          if (confirm("Delete this inquiry?")) {
+                            deleteInquiryMutation.mutate(inquiry._id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </CardHeader>
 
-                  <CardContent className="px-8 py-6 space-y-5">
-                    {/* Contact info */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-5 border-b border-onyx/5">
-                      <a
-                        href={`mailto:${inquiry.email}`}
-                        className="flex items-center gap-3 text-sm text-onyx hover:text-gold transition-colors group/link"
-                      >
-                        <div className="h-8 w-8 rounded-full bg-gold/10 flex items-center justify-center shrink-0 group-hover/link:bg-gold/20 transition-colors">
-                          <Mail className="h-3.5 w-3.5 text-gold" />
+                  <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+                      <div className="flex flex-wrap gap-8">
+                        <div className="space-y-1">
+                          <p className="text-[9px] uppercase tracking-widest text-onyx/40">Customer</p>
+                          <p className="text-sm font-medium">{inquiry.name}</p>
                         </div>
-                        <span className="truncate">{inquiry.email}</span>
-                      </a>
-                      {inquiry.product_name && (
-                        <div className="flex items-center gap-3 text-sm text-onyx">
-                          <div className="h-8 w-8 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
-                            <Tag className="h-3.5 w-3.5 text-gold" />
+                        <div className="space-y-1">
+                          <p className="text-[9px] uppercase tracking-widest text-onyx/40">Email Address</p>
+                          <a href={`mailto:${inquiry.email}`} className="text-sm text-gold hover:underline">{inquiry.email}</a>
+                        </div>
+                        {inquiry.phone && (
+                          <div className="space-y-1">
+                            <p className="text-[9px] uppercase tracking-widest text-onyx/40">Phone Number</p>
+                            <p className="text-sm font-medium">{inquiry.phone}</p>
                           </div>
-                          <span className="truncate">Re: {inquiry.product_name}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Message */}
-                    <div className="bg-ivory/60 border border-onyx/5 rounded-xl p-5">
-                      <p className="text-onyx/70 leading-relaxed font-serif text-base whitespace-pre-wrap italic">
-                        "{inquiry.message}"
-                      </p>
-                    </div>
-
-                    {/* Quick reply button */}
-                    <div className="flex justify-end">
+                        )}
+                        {inquiry.preferred_date && (
+                          <div className="space-y-1">
+                            <p className="text-[9px] uppercase tracking-widest text-onyx/40">Requested Date</p>
+                            <p className="text-sm font-medium">{inquiry.preferred_date}</p>
+                          </div>
+                        )}
+                        {inquiry.product_name && (
+                          <div className="space-y-1">
+                            <p className="text-[9px] uppercase tracking-widest text-onyx/40">Regarding</p>
+                            <p className="text-sm text-onyx/70">{inquiry.product_name}</p>
+                          </div>
+                        )}
+                      </div>
+                      
                       <a
                         href={`mailto:${inquiry.email}?subject=Re: ${encodeURIComponent(inquiry.subject)}`}
-                        className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-gold hover:text-gold/80 transition-colors border border-gold/20 hover:border-gold/50 rounded-lg px-4 py-2"
+                        className="inline-flex items-center gap-2 bg-onyx text-ivory px-5 py-2 rounded-lg text-[10px] uppercase tracking-widest hover:bg-gold hover:text-onyx transition-all shadow-sm"
                       >
-                        <Mail className="h-3.5 w-3.5" /> Reply via Email
+                        <Mail className="h-3.5 w-3.5" /> Reply
                       </a>
+                    </div>
+
+                    <div className="bg-secondary/5 rounded-lg p-5 border border-onyx/5">
+                      <p className="text-onyx/80 leading-relaxed text-sm whitespace-pre-wrap italic">
+                        "{inquiry.message}"
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -267,37 +255,32 @@ function AdminContacts() {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4">
-              {leads.map((lead) => (
-                <Card
-                  key={lead._id}
-                  className="border-none shadow-card hover:shadow-luxe transition-all duration-500 overflow-hidden relative group"
-                >
-                  <div className="absolute top-0 left-0 w-1 h-full bg-onyx opacity-20 group-hover:opacity-80 transition-opacity rounded-l-xl" />
-
-                  <CardHeader className="flex flex-row items-center justify-between py-5 px-8 border-b border-onyx/5">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="bg-gold/15 text-gold text-[10px] font-semibold px-2.5 py-1 rounded-md uppercase tracking-widest">
-                          {lead.offer_code}
-                        </span>
-                        <CardTitle className="text-lg font-serif text-onyx tracking-wide">
-                          {lead.name}
-                        </CardTitle>
-                      </div>
-                      <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-onyx/40">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(lead.created_at).toLocaleString("en-IN", {
-                          day: "2-digit", month: "short", year: "numeric",
-                          hour: "2-digit", minute: "2-digit"
-                        })}
-                      </div>
+          <div className="space-y-4">
+            {leads.map((lead) => (
+              <Card
+                key={lead._id}
+                className="border border-onyx/5 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+              >
+                <CardHeader className="flex flex-row items-center justify-between py-4 px-6 bg-gold/5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-gold" />
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase tracking-widest text-gold font-bold">
+                        Welcome Offer Claimed
+                      </span>
+                      <CardTitle className="text-lg font-serif text-onyx">
+                        {lead.name}
+                      </CardTitle>
                     </div>
-
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="bg-gold/10 text-gold text-[10px] font-bold px-3 py-1 rounded border border-gold/20 tracking-widest">
+                      {lead.offer_code}
+                    </div>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-onyx/20 hover:text-red-500 hover:bg-red-50 rounded-full"
+                      className="text-onyx/20 hover:text-red-500 hover:bg-red-50"
                       onClick={() => {
                         if (confirm("Remove this lead?")) {
                           deleteLeadMutation.mutate(lead._id);
@@ -306,30 +289,42 @@ function AdminContacts() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </CardHeader>
+                  </div>
+                </CardHeader>
 
-                  <CardContent className="px-8 py-5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <a
-                        href={`mailto:${lead.email}`}
-                        className="flex items-center gap-3 text-sm text-onyx hover:text-gold transition-colors group/link"
-                      >
-                        <div className="h-8 w-8 rounded-full bg-gold/10 flex items-center justify-center shrink-0 group-hover/link:bg-gold/20 transition-colors">
-                          <Mail className="h-3.5 w-3.5 text-gold" />
-                        </div>
-                        <span className="truncate">{lead.email}</span>
-                      </a>
-                      <div className="flex items-center gap-3 text-sm text-onyx">
-                        <div className="h-8 w-8 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
-                          <Phone className="h-3.5 w-3.5 text-gold" />
-                        </div>
-                        <span>{lead.phone}</span>
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex flex-wrap gap-8">
+                      <div className="space-y-1">
+                        <p className="text-[9px] uppercase tracking-widest text-onyx/40">Email Address</p>
+                        <a href={`mailto:${lead.email}`} className="text-sm text-gold hover:underline">{lead.email}</a>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[9px] uppercase tracking-widest text-onyx/40">Phone Number</p>
+                        <p className="text-sm font-medium">{lead.phone}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[9px] uppercase tracking-widest text-onyx/40">Date Captured</p>
+                        <p className="text-sm text-onyx/70">
+                          {lead.created_at ? new Date(lead.created_at).toLocaleDateString("en-IN", { 
+                            day: '2-digit', month: 'short', year: 'numeric', 
+                            hour: '2-digit', minute: '2-digit' 
+                          }) : "N/A"}
+                        </p>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    
+                    <a
+                      href={`mailto:${lead.email}?subject=Welcome to Maison Aurum&body=Hello ${lead.name}, thank you for your interest in Maison Aurum. Your welcome code ${lead.offer_code} is ready to use.`}
+                      className="inline-flex items-center gap-2 border border-onyx text-onyx px-5 py-2 rounded-lg text-[10px] uppercase tracking-widest hover:bg-onyx hover:text-ivory transition-all"
+                    >
+                      <Mail className="h-3.5 w-3.5" /> Contact Lead
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
           )}
         </TabsContent>
       </Tabs>

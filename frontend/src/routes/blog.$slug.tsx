@@ -128,23 +128,6 @@ function BlogPost() {
               ))}
             </div>
 
-            <div className="mt-20 pt-12 border-t border-gold/10 flex flex-col items-center">
-              <div className="w-12 h-px bg-gold mb-8 mb-8" />
-              <p className="text-[10px] tracking-[0.5em] text-gold font-bold uppercase mb-4">
-                WRITTEN BY
-              </p>
-              <p className="font-serif text-3xl text-gray-900 tracking-tight">
-                The Maison Aurum Atelier
-              </p>
-              <div className="mt-12 flex gap-4">
-                <Link
-                  to="/shop"
-                  className="px-8 py-3 bg-onyx text-ivory text-[10px] tracking-luxe hover:bg-gold transition-colors duration-500 uppercase font-bold"
-                >
-                  Explore Collection
-                </Link>
-              </div>
-            </div>
           </div>
           
           <div className="hidden lg:block" />
