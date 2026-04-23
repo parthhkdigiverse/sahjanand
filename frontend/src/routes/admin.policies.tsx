@@ -11,7 +11,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useState } from "react";
 import { toast } from "sonner";
 import { authService } from "@/services/auth";
-import { motion, AnimatePresence } from "framer-motion";
 
 export const Route = createFileRoute("/admin/policies")({
   component: AdminPolicies,

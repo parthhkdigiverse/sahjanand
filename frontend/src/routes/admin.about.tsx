@@ -28,7 +28,6 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { authenticatedFetch } from "@/services/auth";
 import { authService } from "@/services/auth";
-import { motion, AnimatePresence } from "framer-motion";
 
 export const Route = createFileRoute("/admin/about")({
   component: AdminAbout,
@@ -266,14 +265,9 @@ function AdminAbout() {
                   <Plus size={14} /> Add Paragraph
                 </Button>
               </div>
-              <AnimatePresence mode="popLayout">
                 <div className="space-y-4">
                   {formData.story_paragraphs.map((p, i) => (
-                    <motion.div 
-                      key={i} 
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
+                    <div 
                       className="group relative"
                     >
                       <Textarea 
@@ -291,10 +285,9 @@ function AdminAbout() {
                       >
                         <Trash2 size={16} />
                       </Button>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
-              </AnimatePresence>
             </div>
           </CardContent>
         </Card>
@@ -361,14 +354,8 @@ function AdminAbout() {
                 </Button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <AnimatePresence mode="popLayout">
                   {formData.promises.map((p, i) => (
-                    <motion.div 
-                      key={i}
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
+                    <div 
                       className="group relative p-6 rounded-2xl border border-gold/10 bg-ivory/10 hover:border-gold/40 hover:bg-white hover:shadow-luxe transition-all duration-500"
                     >
                       <Button 
@@ -400,9 +387,8 @@ function AdminAbout() {
                           />
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
-                </AnimatePresence>
               </div>
             </div>
           </CardContent>
