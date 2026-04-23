@@ -40,53 +40,71 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  /* Brand Tokens — New Palette */
+  --color-onyx: var(--onyx);
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
   --color-gold-deep: var(--gold-deep);
   --color-ivory: var(--ivory);
-  --color-champagne: var(--champagne);
-  --color-onyx: var(--onyx);
+  --color-grey: var(--grey);
+  --color-sage: var(--sage);
+  --color-lake: var(--lake);
+  --color-brick: var(--brick);
+  --color-stone: var(--stone);
+  --color-forest: var(--forest);
+  --color-road: var(--road);
 }
 
 :root {
   --radius: 0.125rem;
 
-  /* Brand — refined elegant palette */
-  --gold: oklch(0.72 0.11 76);
-  --gold-soft: oklch(0.88 0.05 82);
-  --gold-deep: oklch(0.55 0.11 68);
-  --ivory: oklch(0.987 0.006 88);
-  --champagne: oklch(0.95 0.022 84);
-  --onyx: oklch(0.16 0.005 60);
+  /* Primary Definitions (Strict adherence to palette) */
+  --onyx: oklch(0.282 0.003 260);    /* Charcoal #2E2E2E */
+  --gold: oklch(0.628 0.088 81);     /* Warm Gold #B08B56 */
+  --ivory: oklch(0.963 0.005 85);    /* Off-White #F6F3EF */
+  --grey: oklch(0.674 0.002 260);     /* Cool Grey #9A9A9A */
+  
+  /* Accents */
+  --sage: oklch(0.735 0.038 145);   /* Sage Green #A4B49E */
+  --lake: oklch(0.675 0.065 230);   /* Lake Blue #6FA2B8 */
+  --brick: oklch(0.495 0.115 35);   /* Brick Red #A44E3F */
+  --stone: oklch(0.805 0.025 85);   /* Natural Stone #D4C7B3 */
+  --forest: oklch(0.355 0.04 165);  /* Forest Green #355042 */
+  --road: oklch(0.675 0.05 85);     /* Road Tan #B89E81 */
 
-  /* Semantic */
+  /* Legacy compatibility (Internal pointers) */
+  --gold-soft: oklch(0.85 0.03 85);
+  --gold-deep: oklch(0.5 0.07 75);
+  --champagne: var(--stone);
+
+  /* Semantic Mappings */
   --background: var(--ivory);
   --foreground: var(--onyx);
-  --card: oklch(1 0 0);
+  --card: var(--ivory);
   --card-foreground: var(--onyx);
-  --popover: oklch(1 0 0);
+  --popover: var(--ivory);
   --popover-foreground: var(--onyx);
   --primary: var(--onyx);
   --primary-foreground: var(--ivory);
-  --secondary: var(--champagne);
+  --secondary: var(--stone);
   --secondary-foreground: var(--onyx);
-  --muted: oklch(0.965 0.008 85);
-  --muted-foreground: oklch(0.42 0.008 70);
+  --muted: oklch(0.93 0.003 260);
+  --muted-foreground: var(--grey);
   --accent: var(--gold);
-  --accent-foreground: var(--onyx);
+  --accent-foreground: var(--ivory);
   --destructive: oklch(0.55 0.2 27);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.91 0.012 82);
-  --input: oklch(0.91 0.012 82);
+  --border: oklch(0.282 0.003 260 / 0.08);
+  --input: oklch(0.282 0.003 260 / 0.08);
   --ring: var(--gold);
 
-  /* Gradients & shadows */
-  --gradient-gold: linear-gradient(135deg, oklch(0.86 0.08 82), oklch(0.68 0.13 72));
+  /* Gradients & shadows (Updated for consistency) */
+  --gradient-gold: linear-gradient(135deg, var(--gold), oklch(0.5 0.07 75));
   --gradient-sheen: linear-gradient(110deg, transparent 35%, oklch(1 0 0 / 0.4) 50%, transparent 65%);
-  --gradient-overlay: linear-gradient(180deg, oklch(0.18 0 0 / 0) 40%, oklch(0.18 0 0 / 0.7) 100%);
-  --shadow-soft: 0 10px 40px -20px oklch(0.18 0 0 / 0.25);
-  --shadow-luxe: 0 30px 80px -30px oklch(0.58 0.12 70 / 0.35);
-  --shadow-card: 0 1px 2px oklch(0.18 0 0 / 0.04), 0 12px 30px -16px oklch(0.18 0 0 / 0.12);
+  --gradient-overlay: linear-gradient(180deg, oklch(0.28 0 0 / 0) 40%, oklch(0.28 0 0 / 0.7) 100%);
+  --shadow-soft: 0 10px 40px -20px oklch(0.28 0 0 / 0.25);
+  --shadow-luxe: 0 30px 80px -30px oklch(0.63 0.09 81 / 0.35);
+  --shadow-card: 0 1px 2px oklch(0.28 0 0 / 0.04), 0 12px 30px -16px oklch(0.28 0 0 / 0.12);
 
   --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -94,16 +112,16 @@
 .dark {
   --background: var(--onyx);
   --foreground: var(--ivory);
-  --card: oklch(0.22 0.005 60);
+  --card: oklch(0.22 0.002 260);
   --card-foreground: var(--ivory);
-  --popover: oklch(0.22 0.005 60);
+  --popover: oklch(0.22 0.002 260);
   --popover-foreground: var(--ivory);
   --primary: var(--gold);
   --primary-foreground: var(--onyx);
-  --secondary: oklch(0.27 0.01 60);
+  --secondary: oklch(0.32 0.005 260);
   --secondary-foreground: var(--ivory);
-  --muted: oklch(0.27 0.01 60);
-  --muted-foreground: oklch(0.7 0.02 70);
+  --muted: oklch(0.32 0.005 260);
+  --muted-foreground: var(--grey);
   --accent: var(--gold);
   --accent-foreground: var(--onyx);
   --border: oklch(1 0 0 / 12%);
@@ -176,10 +194,10 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
   .glass-gold {
-    background: rgba(201, 161, 74, 0.05);
+    background: rgba(176, 139, 86, 0.05);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(201, 161, 74, 0.2);
+    border: 1px solid rgba(176, 139, 86, 0.2);
   }
   .container-luxe {
     width: 100%;
