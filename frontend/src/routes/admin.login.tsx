@@ -72,8 +72,9 @@ function AdminLogin() {
           className="text-center mb-16"
         >
           <div className="inline-block relative">
-            <span className="font-serif text-6xl tracking-[0.3em] text-gold text-shadow-gold block mb-2 uppercase">MAISON</span>
-            <span className="text-[10px] uppercase tracking-[1em] text-ivory/30 mt-6 block">Admin Portal</span>
+            <span className="text-[12px] uppercase tracking-[0.8em] text-gold/60 block mb-3 font-black">SHREE</span>
+            <span className="font-serif text-5xl md:text-6xl tracking-[0.2em] text-gold text-shadow-gold block mb-2 uppercase">SAHAJANAND</span>
+            <span className="text-[10px] uppercase tracking-[1em] text-ivory/30 mt-8 block">Admin Portal</span>
           </div>
         </motion.div>
 
