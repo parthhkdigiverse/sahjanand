@@ -1,10 +1,13 @@
 import { authenticatedFetch } from "@/services/auth";
 
+declare const __BACKEND_PORT__: string;
+
 const getBackendBase = () => {
+  const port = typeof __BACKEND_PORT__ !== 'undefined' ? __BACKEND_PORT__ : "8002";
   if (typeof window !== 'undefined') {
-    return `http://${window.location.hostname}:8002`;
+    return `http://${window.location.hostname}:${port}`;
   }
-  return "http://localhost:8002";
+  return `http://localhost:${port}`;
 };
 
 const getApiBase = () => `${getBackendBase()}/api`;
