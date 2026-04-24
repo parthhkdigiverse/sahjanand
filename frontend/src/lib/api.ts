@@ -5,7 +5,18 @@ declare const __BACKEND_PORT__: string;
 const getBackendBase = () => {
   const port = typeof __BACKEND_PORT__ !== 'undefined' ? __BACKEND_PORT__ : "8002";
   if (typeof window !== 'undefined') {
-    return `http://${window.location.hostname}:${port}`;
+    const hostname = window.location.hostname;
+    
+    // For deployment on a domain (like sahjanand.hkdigiverse.com), 
+    // use a relative path to let the reverse proxy (Nginx) handle the routing.
+    // This solves HTTPS/Mixed content issues without needing SSL configs in the backend.
+    if (hostname !== 'localhost' && !hostname.match(/^\d/)) {
+      return ""; // Use relative URL
+    }
+    
+    // For local development or IP-based access, stay with the explicit port
+    const protocol = window.location.protocol;
+    return `${protocol}//${hostname}:${port}`;
   }
   return `http://localhost:${port}`;
 };

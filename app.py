@@ -21,6 +21,7 @@ def load_env():
                         os.environ[key] = value
 
 def run_app():
+    start_time = time.time()
     load_env()
     
     backend_port = os.environ.get("BACKEND_PORT", "8002")
@@ -96,6 +97,9 @@ def run_app():
     if not is_windows:
         signal.signal(signal.SIGTERM, signal_handler)
 
+    # Check backend health periodically
+    backend_checked = False
+    
     try:
         while True:
             time.sleep(1)
@@ -105,6 +109,18 @@ def run_app():
             if frontend_process.poll() is not None:
                 print("Frontend process terminated unexpectedly.")
                 break
+                
+            if not backend_checked and time.time() - start_time > 5:
+                # Simple attempt to check if backend is listening
+                import urllib.request
+                try:
+                    with urllib.request.urlopen(f"http://127.0.0.1:{backend_port}/health", timeout=1) as response:
+                        if response.getcode() == 200:
+                            print("Backend self-test: SUCCESS (Backend is responding)")
+                            backend_checked = True
+                except Exception:
+                    # Might not be ready yet
+                    pass
     except KeyboardInterrupt:
         pass
     finally:
