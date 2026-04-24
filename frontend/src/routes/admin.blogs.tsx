@@ -214,10 +214,10 @@ function AdminBlogs() {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             
-            let imageUrl = editingBlog?.image || "";
-            const imageFile = formData.get("image_file") as File;
+            let imageUrl = imagePreview || "";
+            const imageFile = (form.querySelector('input[name="image_file"]') as HTMLInputElement)?.files?.[0];
 
-            if (imageFile && imageFile.size > 0) {
+            if (imageFile && imagePreview?.startsWith('blob:')) {
               setIsUploading(true);
               const fileData = new FormData();
               fileData.append("files", imageFile);
@@ -230,6 +230,9 @@ function AdminBlogs() {
                   const result = await res.json();
                   imageUrl = result.urls[0];
                 }
+              } catch (error) {
+                toast.error("Failed to upload image");
+                return;
               } finally {
                 setIsUploading(false);
               }
@@ -288,22 +291,53 @@ function AdminBlogs() {
               </div>
             </div>
 
-            <div className="space-y-2 pt-4 border-t border-onyx/5">
-              <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Cover Image</Label>
-              <div className="h-48 w-full bg-onyx/5 rounded-2xl flex items-center justify-center overflow-hidden border border-onyx/5 relative group">
-                {imagePreview ? <img src={getImageUrl(imagePreview)} className="h-full w-full object-cover" /> : <Camera size={24} className="text-onyx/20" />}
-                <Input 
+            <div className="space-y-4 pt-4 border-t border-onyx/5">
+              <div className="flex items-center justify-between">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Cover Image</Label>
+              </div>
+              
+              <div className="h-64 w-full bg-onyx/5 rounded-2xl flex items-center justify-center overflow-hidden border border-onyx/5 relative group cursor-pointer shadow-inner">
+                {imagePreview ? (
+                  <img src={getImageUrl(imagePreview)} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    <Camera size={32} className="text-onyx/10" />
+                    <div className="text-center">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-onyx/30 font-black">No Image Selected</p>
+                      <p className="text-[8px] text-onyx/20 mt-1">Click anywhere to upload a cover image</p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* INVISIBLE FILE INPUT COVERING ENTIRE AREA */}
+                <input 
                   name="image_file" 
                   type="file" 
                   accept="image/*" 
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="absolute inset-0 opacity-0 cursor-pointer z-10"
                   onChange={(e) => {
                     if (e.target.files?.[0]) {
-                      setImagePreview(URL.createObjectURL(e.target.files[0]));
+                      const file = e.target.files[0];
+                      setImagePreview(URL.createObjectURL(file));
                     }
                   }}
                 />
-                {isUploading && <div className="absolute inset-0 bg-onyx/40 flex items-center justify-center"><Loader2 className="animate-spin text-gold" /></div>}
+
+                {/* OVERLAY BUTTON */}
+                <div className="absolute inset-0 bg-onyx/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[2px] z-0">
+                  <div className="bg-white/90 text-onyx text-[10px] uppercase tracking-[0.2em] font-black px-8 py-3 rounded-xl shadow-2xl transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                    {imagePreview ? "Change Image" : "Upload Image"}
+                  </div>
+                </div>
+
+                {isUploading && (
+                  <div className="absolute inset-0 bg-onyx/60 flex items-center justify-center z-20 backdrop-blur-md">
+                    <div className="flex flex-col items-center gap-3">
+                      <Loader2 className="animate-spin text-gold h-8 w-8" />
+                      <span className="text-[10px] uppercase tracking-widest text-gold font-bold">Uploading...</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
