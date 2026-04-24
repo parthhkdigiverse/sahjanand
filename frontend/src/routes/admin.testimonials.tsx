@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Loader2, Quote, Play, Plus, Edit2, Camera, Settings } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
-import { fetchSettings, API_BASE } from "@/lib/api";
+import { fetchSettings, API_BASE, getImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -210,40 +210,40 @@ function AdminTestimonials() {
       </div>
 
       {/* Section Header Settings */}
-      <Card className="bg-onyx/5 border-gold/20">
-        <CardHeader>
-          <CardTitle className="text-lg font-serif flex items-center gap-2">
+      <Card className="border-onyx/5 shadow-card rounded-2xl overflow-hidden bg-white">
+        <CardHeader className="bg-[#FAF9F6] border-b border-onyx/5 p-8">
+          <CardTitle className="font-serif text-xl text-onyx flex items-center gap-2">
             <Settings className="h-4 w-4 text-gold" /> Section Header Settings
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="test_heading">Section Heading</Label>
+        <CardContent className="p-8 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 ml-1">Section Heading</Label>
               <Input
-                id="test_heading"
                 value={settingsData.testimonials_heading}
                 onChange={(e) => setSettingsData({ ...settingsData, testimonials_heading: e.target.value })}
                 placeholder="What Our Clients Say"
+                className="h-12 bg-ivory/20 border-onyx/5 focus:border-gold/50"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="test_subheading">Section Subheading</Label>
+            <div className="space-y-3">
+              <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 ml-1">Section Subheading</Label>
               <Input
-                id="test_subheading"
                 value={settingsData.testimonials_subheading}
                 onChange={(e) => setSettingsData({ ...settingsData, testimonials_subheading: e.target.value })}
                 placeholder="Real stories from real patrons"
+                className="h-12 bg-ivory/20 border-onyx/5 focus:border-gold/50"
               />
             </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-2">
             <Button
               onClick={() => updateSettingsMutation.mutate(settingsData)}
               disabled={updateSettingsMutation.isPending}
-              className="bg-onyx text-white hover:bg-onyx/90"
+              className="admin-btn-gold h-12 px-10 text-[10px] shadow-xl"
             >
-              {updateSettingsMutation.isPending ? "Updating..." : "Update Header Settings"}
+              {updateSettingsMutation.isPending ? "Syncing..." : "Update Header Settings"}
             </Button>
           </div>
         </CardContent>
@@ -265,7 +265,7 @@ function AdminTestimonials() {
               >
                 {imagePreview ? (
                   <>
-                    <img src={imagePreview} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" alt="preview" />
+                    <img src={getImageUrl(imagePreview)} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" alt="preview" />
                     <div className="absolute inset-0 bg-onyx/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[1px]">
                       <Camera className="h-6 w-6 text-gold" />
                     </div>
@@ -350,8 +350,8 @@ function AdminTestimonials() {
         ) : testimonials.map((testimonial) => (
           <Card key={testimonial._id} className="overflow-hidden flex flex-col border-gold/10 hover:border-gold/30 transition-colors">
             <div className="relative h-48 bg-gray-100">
-              <img
-                src={testimonial.image}
+                <img
+                src={getImageUrl(testimonial.image)}
                 alt={testimonial.name}
                 className="w-full h-full object-cover"
               />

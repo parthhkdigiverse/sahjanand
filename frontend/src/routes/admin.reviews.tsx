@@ -6,7 +6,7 @@ import { fetchReviews, fetchSettings, API_BASE } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,15 +48,17 @@ function AdminReviews() {
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
-    queryFn: async () => {
-      const data = await fetchSettings();
-      setSettingsData({
-        reviews_heading: data.reviews_heading || "",
-        reviews_subheading: data.reviews_subheading || "",
-      });
-      return data;
-    }
+    queryFn: fetchSettings,
   });
+
+  useEffect(() => {
+    if (settings) {
+      setSettingsData({
+        reviews_heading: settings.reviews_heading || "",
+        reviews_subheading: settings.reviews_subheading || "",
+      });
+    }
+  }, [settings]);
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (updatedSettings: typeof settingsData) => {
@@ -174,38 +176,38 @@ function AdminReviews() {
         </Button>
       </div>
 
-      <Card className="bg-onyx/5 border-gold/20">
-        <CardHeader>
-          <CardTitle className="text-lg font-serif">Section Header Settings</CardTitle>
+      <Card className="border-onyx/5 shadow-card rounded-2xl overflow-hidden bg-white">
+        <CardHeader className="bg-[#FAF9F6] border-b border-onyx/5 p-8">
+          <CardTitle className="font-serif text-xl text-onyx">Section Header Settings</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="rev_heading">Section Heading</Label>
+        <CardContent className="p-8 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 ml-1">Section Heading</Label>
               <Input 
-                id="rev_heading" 
                 value={settingsData.reviews_heading} 
                 onChange={(e) => setSettingsData({...settingsData, reviews_heading: e.target.value})}
                 placeholder="What Our Customers Say"
+                className="h-12 bg-ivory/20 border-onyx/5 focus:border-gold/50"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="rev_subheading">Section Subheading</Label>
+            <div className="space-y-3">
+              <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 ml-1">Section Subheading</Label>
               <Input 
-                id="rev_subheading" 
                 value={settingsData.reviews_subheading} 
                 onChange={(e) => setSettingsData({...settingsData, reviews_subheading: e.target.value})}
                 placeholder="4.9 / 5 · Verified by Google · 2,400+ reviews"
+                className="h-12 bg-ivory/20 border-onyx/5 focus:border-gold/50"
               />
             </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-2">
             <Button 
               onClick={() => updateSettingsMutation.mutate(settingsData)} 
               disabled={updateSettingsMutation.isPending}
-              className="bg-onyx text-white hover:bg-onyx/90"
+              className="admin-btn-gold h-12 px-10 text-[10px] shadow-xl"
             >
-              {updateSettingsMutation.isPending ? "Updating..." : "Update Header Settings"}
+              {updateSettingsMutation.isPending ? "Syncing..." : "Update Header Settings"}
             </Button>
           </div>
         </CardContent>

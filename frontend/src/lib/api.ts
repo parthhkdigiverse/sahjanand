@@ -12,8 +12,8 @@ const getApiBase = () => `${getBackendBase()}/api`;
 export const API_BASE = getApiBase();
 export const BACKEND_BASE = getBackendBase();
 
-export const getImageUrl = (path: string) => {
-  if (!path) return '';
+export const getImageUrl = (path: string | undefined | null) => {
+  if (!path) return undefined;
   // If it's a full URL, data URI, or blob URI, return as is
   if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) {
     return path;
@@ -38,7 +38,7 @@ export type Product = {
   image: string;
   images?: string[];
   weight: string;
-  material: string;
+  material?: string;
   description: string;
   features?: string[];
   featured?: boolean;
@@ -231,6 +231,8 @@ export async function updateGallerySettings(data: GallerySettings, token: string
 }
 
 export type SiteSettings = {
+  offer_heading: string;
+  offer_subheading: string;
   offer_description: string;
   offer_image?: string;
   popup_eyebrow: string;
@@ -246,6 +248,8 @@ export type SiteSettings = {
   offer_button_text: string;
   offer_footer_text: string;
   contact_address: string;
+  promise_title: string;
+  promise_text: string;
   contact_phone: string;
   contact_email: string;
   instagram_url: string;
@@ -253,6 +257,13 @@ export type SiteSettings = {
   twitter_url: string;
   youtube_url: string;
   whatsapp_number: string;
+  instagram_eyebrow: string;
+  instagram_heading: string;
+  instagram_subheading: string;
+  reviews_heading: string;
+  reviews_subheading: string;
+  testimonials_heading: string;
+  testimonials_subheading: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {

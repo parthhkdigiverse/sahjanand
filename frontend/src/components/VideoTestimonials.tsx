@@ -3,7 +3,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTestimonials, getImageUrl } from "@/lib/api";
+import { fetchTestimonials, getImageUrl, fetchSettings } from "@/lib/api";
 
 export function VideoTestimonials() {
   const { data: testimonials = [], isLoading } = useQuery({
@@ -11,6 +11,11 @@ export function VideoTestimonials() {
     queryFn: fetchTestimonials,
   });
   
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
+
   const [open, setOpen] = useState<number | null>(null);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" }, [
     Autoplay({ delay: 1500, stopOnInteraction: false, stopOnMouseEnter: true }),
@@ -29,8 +34,8 @@ export function VideoTestimonials() {
   return (
     <section className="container-luxe py-24 md:py-32">
       <div className="text-center mb-14">
-        <p className="divider-gold mb-5">Our Customers</p>
-        <h2 className="font-serif text-4xl md:text-5xl">Real Stories</h2>
+        <p className="divider-gold mb-5">{settings?.testimonials_subheading || "Our Customers"}</p>
+        <h2 className="font-serif text-4xl md:text-5xl">{settings?.testimonials_heading || "Real Stories"}</h2>
       </div>
 
       <div className="relative">

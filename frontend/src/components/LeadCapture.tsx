@@ -41,9 +41,13 @@ export function LeadCapture() {
       <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch shadow-luxe overflow-hidden bg-card">
         {/* LEFT — offer text + CTA */}
         <div className="relative p-10 md:p-16 lg:p-20 flex flex-col justify-center">
-          <p className="divider-gold mb-6">Welcome Offer</p>
+          <p className="divider-gold mb-6">{settings?.offer_subheading || "Welcome Offer"}</p>
           <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-5">
-            Get <span className="italic text-gold">10% Off</span><br />
+            {settings?.offer_heading ? (
+              <span dangerouslySetInnerHTML={{ __html: settings.offer_heading.replace(/(10% Off)/g, '<span class="italic text-gold">$1</span>') }} />
+            ) : (
+              <>Get <span className="italic text-gold">10% Off</span></>
+            )}
           </h2>
           <p className="text-foreground/70 max-w-md mb-10 leading-relaxed">
             {settings?.offer_description || "A small thank-you for choosing us. Share your details and we'll send your discount code straight to your inbox."}

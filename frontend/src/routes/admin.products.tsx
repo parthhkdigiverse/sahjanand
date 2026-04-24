@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Product, fetchCategories, Category, API_BASE } from "@/lib/api";
+import { Product, fetchCategories, Category, API_BASE, getImageUrl } from "@/lib/api";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/admin/products")({
@@ -166,7 +166,7 @@ function AdminProducts() {
               <TableRow key={product.id} className="hover:bg-ivory/20 transition-colors border-onyx/5 group">
                 <TableCell className="py-6 px-8">
                   <div className="h-16 w-16 rounded-lg overflow-hidden border border-onyx/5 shadow-sm">
-                    <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                    <img src={getImageUrl(product.image)} alt={product.name} className="h-full w-full object-cover" />
                   </div>
                 </TableCell>
                 <TableCell className="py-6 px-8">
@@ -216,9 +216,9 @@ function AdminProducts() {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-          <div className="bg-onyx p-8 text-ivory">
-            <h2 className="font-serif text-2xl tracking-wide">{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
-          </div>
+          <DialogHeader className="bg-onyx p-8 text-ivory space-y-0">
+            <DialogTitle className="font-serif text-2xl tracking-wide">{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+          </DialogHeader>
           
           <form className="p-8 space-y-6 bg-white max-h-[80vh] overflow-y-auto" onSubmit={async (e) => {
             e.preventDefault();
@@ -233,7 +233,7 @@ function AdminProducts() {
             if (imageFile && imageFile.size > 0) {
               const fileData = new FormData();
               fileData.append("files", imageFile);
-              const res = await fetch(`${API_BASE}/uploads/`, {
+              const res = await authenticatedFetch(`${API_BASE}/uploads/`, {
                 method: "POST",
                 body: fileData
               });
@@ -248,7 +248,7 @@ function AdminProducts() {
               if (file && file.size > 0) {
                 const fileData = new FormData();
                 fileData.append("files", file);
-                const res = await fetch(`${API_BASE}/uploads/`, {
+                const res = await authenticatedFetch(`${API_BASE}/uploads/`, {
                   method: "POST",
                   body: fileData
                 });
@@ -287,7 +287,12 @@ function AdminProducts() {
                   required 
                   className="h-12 rounded-xl"
                   onChange={(e) => {
-                    const slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                    const slug = e.target.value
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, '-')
+                      .replace(/(^-|-$)+/g, '');
                     const idInput = document.getElementById("id") as HTMLInputElement;
                     if (idInput) idInput.value = slug;
                   }}
@@ -323,10 +328,6 @@ function AdminProducts() {
                 <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Weight</Label>
                 <Input name="weight" defaultValue={editingProduct?.weight} required className="h-12 rounded-xl" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Material Composition</Label>
-                <Input name="material" defaultValue={editingProduct?.material} required className="h-12 rounded-xl" />
-              </div>
             </div>
 
             <div className="space-y-4 pt-4 border-t border-onyx/5">
@@ -334,7 +335,7 @@ function AdminProducts() {
               <div className="grid grid-cols-5 gap-4">
                 <div className="space-y-2 col-span-2">
                   <div className="h-32 w-full bg-onyx/5 rounded-2xl flex items-center justify-center overflow-hidden border border-onyx/5">
-                    {mainPreview ? <img src={mainPreview} className="h-full w-full object-cover" /> : <span className="text-[9px] uppercase tracking-widest text-onyx/20 font-bold">Main Image</span>}
+                    {mainPreview ? <img src={getImageUrl(mainPreview)} className="h-full w-full object-cover" /> : <span className="text-[9px] uppercase tracking-widest text-onyx/20 font-bold">Main Image</span>}
                   </div>
                   <Input 
                     name="image_file" 
@@ -352,7 +353,7 @@ function AdminProducts() {
                   {[0, 1, 2, 3].map(i => (
                     <div key={i} className="space-y-1">
                       <div className="h-14 w-full bg-onyx/5 rounded-xl flex items-center justify-center overflow-hidden border border-onyx/5">
-                        {addlPreviews[i] ? <img src={addlPreviews[i]!} className="h-full w-full object-cover" /> : <span className="text-[8px] uppercase text-onyx/20">Extra {i+1}</span>}
+                        {addlPreviews[i] ? <img src={getImageUrl(addlPreviews[i]!)} className="h-full w-full object-cover" /> : <span className="text-[8px] uppercase text-onyx/20">Extra {i+1}</span>}
                       </div>
                       <input 
                         name={`images_files_${i}`} 

@@ -134,6 +134,37 @@ function AdminSettings() {
             </CardContent>
           </Card>
 
+          <Card className="border-onyx/5 shadow-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 bg-gold/10 rounded flex items-center justify-center">
+                  <div className="h-1.5 w-1.5 bg-gold rounded-full" />
+                </div>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider">Atelier Promise</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">Promise Heading</Label>
+                <Input 
+                  value={formData.promise_title || ""}
+                  onChange={(e) => setFormData({...formData, promise_title: e.target.value})}
+                  className="h-10 bg-onyx/[0.02] border-onyx/10 focus:border-gold/50 text-sm"
+                  placeholder="Atelier Promise"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">Promise Text</Label>
+                <textarea 
+                  value={formData.promise_text || ""}
+                  onChange={(e) => setFormData({...formData, promise_text: e.target.value})}
+                  className="w-full min-h-[100px] p-3 rounded-lg bg-onyx/[0.02] border border-onyx/10 focus:border-gold/50 text-sm outline-none transition-all resize-none"
+                  placeholder="Every piece is hallmarked..."
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="border-onyx/5 shadow-sm md:row-span-2">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-2">

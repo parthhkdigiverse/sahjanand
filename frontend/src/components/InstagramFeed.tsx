@@ -1,6 +1,6 @@
 import { Instagram } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchInstagramPosts, getImageUrl } from "@/lib/api";
+import { fetchInstagramPosts, getImageUrl, fetchSettings } from "@/lib/api";
 
 export function InstagramFeed() {
   const { data: posts } = useQuery({
@@ -8,13 +8,18 @@ export function InstagramFeed() {
     queryFn: fetchInstagramPosts,
   });
 
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
+
   if (!posts || posts.length === 0) return null;
   return (
     <section className="container-luxe py-24 md:py-32">
       <div className="text-center mb-14">
-        <p className="divider-gold mb-5">@maisonaurum</p>
-        <h2 className="font-serif text-4xl md:text-5xl mb-3">Follow Us on Instagram</h2>
-        <p className="text-sm text-muted-foreground">A glimpse into our world</p>
+        <p className="divider-gold mb-5">{settings?.instagram_eyebrow || "@maisonaurum"}</p>
+        <h2 className="font-serif text-4xl md:text-5xl mb-3">{settings?.instagram_heading || "Follow Us on Instagram"}</h2>
+        <p className="text-sm text-muted-foreground">{settings?.instagram_subheading || "A glimpse into our world"}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">

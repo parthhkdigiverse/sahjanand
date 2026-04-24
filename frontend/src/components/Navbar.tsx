@@ -65,14 +65,9 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Right: nav + search */}
+          {/* Right: empty for now or phone link */}
           <div className="flex items-center justify-end gap-6 text-foreground">
-            <button
-              aria-label="Search"
-              className="hover:text-gold transition-colors"
-            >
-              <Search size={18} />
-            </button>
+            {/* Search removed at user request */}
           </div>
         </div>
       </div>

@@ -54,7 +54,7 @@ export function FeaturedProducts() {
     queryFn: fetchProducts,
   });
 
-  const featured = products || [];
+  const featured = products?.filter((p: any) => p.featured) || [];
 
   return (
     <section className="bg-secondary/20 py-24 md:py-32">

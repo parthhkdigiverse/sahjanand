@@ -35,11 +35,11 @@ export function GoogleReviews() {
         <div className="text-center mb-14">
           <p className="divider-gold mb-5">Reviews</p>
           <h2 className="font-serif text-4xl md:text-5xl mb-3">
-            What Our Customers Say
+            {settings?.reviews_heading || "What Our Customers Say"}
           </h2>
           <p className="text-sm text-muted-foreground inline-flex items-center gap-2 mt-2">
             <BadgeCheck size={14} className="text-gold" />
-            4.9 / 5 · Verified by Google · 2,400+ reviews
+            {settings?.reviews_subheading || "4.9 / 5 · Verified by Google · 2,400+ reviews"}
           </p>
         </div>
 

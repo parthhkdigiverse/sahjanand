@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit2, Trash2, Loader2, Camera, ExternalLink } from "lucide-react";
-import { fetchInstagramPosts, InstagramPost, API_BASE, getImageUrl } from "@/lib/api";
+import { fetchInstagramPosts, InstagramPost, API_BASE, getImageUrl, fetchSettings } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { authenticatedFetch } from "@/services/auth";
 
@@ -27,6 +27,45 @@ function AdminInstagram() {
     image_url: "",
     link: "#",
     order: 0,
+  });
+
+  // Settings State
+  const [headerData, setHeaderData] = useState({
+    instagram_eyebrow: "",
+    instagram_heading: "",
+    instagram_subheading: "",
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
+
+  useEffect(() => {
+    if (settings) {
+      setHeaderData({
+        instagram_eyebrow: settings.instagram_eyebrow || "",
+        instagram_heading: settings.instagram_heading || "",
+        instagram_subheading: settings.instagram_subheading || "",
+      });
+    }
+  }, [settings]);
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (updated: any) => {
+      const fullSettings = { ...settings, ...updated };
+      const res = await authenticatedFetch(`${API_BASE}/settings/`, {
+        method: "PUT",
+        body: JSON.stringify(fullSettings),
+      });
+      if (!res.ok) throw new Error("Failed to update settings");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+      toast.success("Header settings updated");
+    },
+    onError: () => toast.error("Error updating settings"),
   });
 
   const { data: posts, isLoading } = useQuery({
@@ -137,6 +176,55 @@ function AdminInstagram() {
         </Button>
       </div>
 
+      <Card className="border-onyx/5 shadow-card rounded-2xl overflow-hidden">
+        <CardHeader className="bg-[#FAF9F6] border-b border-onyx/5 p-8">
+          <CardTitle className="font-serif text-xl text-onyx">Header Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="p-8 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="space-y-3">
+              <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 ml-1">Eyebrow (@tag)</Label>
+              <Input 
+                value={headerData.instagram_eyebrow} 
+                onChange={e => setHeaderData({...headerData, instagram_eyebrow: e.target.value})} 
+                className="h-12 bg-ivory/20 border-onyx/5 focus:border-gold/50"
+              />
+            </div>
+            <div className="space-y-3">
+              <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 ml-1">Main Heading</Label>
+              <Input 
+                value={headerData.instagram_heading} 
+                onChange={e => setHeaderData({...headerData, instagram_heading: e.target.value})} 
+                className="h-12 bg-ivory/20 border-onyx/5 focus:border-gold/50"
+              />
+            </div>
+            <div className="space-y-3">
+              <Label className="text-[10px] uppercase tracking-[0.2em] text-onyx/40 ml-1">Subheading</Label>
+              <Input 
+                value={headerData.instagram_subheading} 
+                onChange={e => setHeaderData({...headerData, instagram_subheading: e.target.value})} 
+                className="h-12 bg-ivory/20 border-onyx/5 focus:border-gold/50"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end pt-2">
+            <Button 
+              onClick={() => updateSettingsMutation.mutate(headerData)}
+              disabled={updateSettingsMutation.isPending}
+              className="admin-btn-gold h-12 px-10 text-[10px] shadow-xl"
+            >
+              {updateSettingsMutation.isPending ? "Saving..." : "Update Header"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <h2 className="font-serif text-2xl text-onyx">Post Collection</h2>
+          <div className="h-px flex-1 bg-onyx/5" />
+        </div>
+
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-32 gap-4">
           <Loader2 className="animate-spin h-12 w-12 text-gold/40" />
@@ -148,7 +236,7 @@ function AdminInstagram() {
             <Card key={post._id} className="group relative aspect-square overflow-hidden rounded-xl border-none shadow-card hover:shadow-luxe transition-all duration-500">
               <img 
                 src={getImageUrl(post.image_url)} 
-                alt="Instagram post" 
+                alt={`Feed ${post.order}`} 
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
               />
               <div className="absolute inset-0 bg-onyx/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-4 backdrop-blur-[2px]">
@@ -200,6 +288,7 @@ function AdminInstagram() {
           )}
         </div>
       )}
+      </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-md bg-ivory border-none shadow-luxe">
@@ -217,7 +306,7 @@ function AdminInstagram() {
               >
                 {imagePreview ? (
                   <>
-                    <img src={imagePreview} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <img src={getImageUrl(imagePreview)} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-onyx/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Camera className="h-8 w-8 text-gold" />
                     </div>

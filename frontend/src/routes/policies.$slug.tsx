@@ -108,20 +108,7 @@ function PolicyPage() {
               ))}
             </div>
 
-            <div className="mt-16 pt-12 border-t border-onyx/5 text-sm text-onyx/40">
-              <p>
-                For any clarifications regarding our policies, please contact our Legal Atelier at{" "}
-                <a
-                  href="mailto:care@maisonaurum.com"
-                  className="text-gold hover:underline transition-all"
-                >
-                  care@maisonaurum.com
-                </a>
-              </p>
-              <p className="mt-4 text-[10px] tracking-widest uppercase">
-                Last updated: 2026 Edition
-              </p>
-            </div>
+
 
             {/* Continue reading */}
             {others.length > 0 && (

@@ -290,7 +290,7 @@ function AdminGallery() {
             if (imageFile && imageFile.size > 0) {
               const fileData = new FormData();
               fileData.append("files", imageFile);
-              const res = await fetch(`${API_BASE}/uploads/`, {
+              const res = await authenticatedFetch(`${API_BASE}/uploads/`, {
                 method: "POST",
                 body: fileData
               });

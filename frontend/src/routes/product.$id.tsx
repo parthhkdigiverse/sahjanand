@@ -146,7 +146,14 @@ function ProductPage() {
               <h1 className="font-serif text-4xl lg:text-5xl lg:leading-tight mb-4 text-gray-900">
                 {product.name}
               </h1>
-              {/* Price hidden at user request */}
+
+              <div className="flex items-center gap-6 mb-8 text-[11px] tracking-[0.2em] font-bold uppercase">
+                <p className="text-gold">
+                  Weight: <span className="text-gray-900 ml-1">{product.weight}</span>
+                </p>
+                <div className="h-3 w-[1px] bg-gray-200" />
+                <p className="text-gray-400">Certified Hallmarked</p>
+              </div>
 
               <div className="space-y-6 mb-10">
                 <p className="text-gray-600 leading-relaxed max-w-xl">
@@ -189,10 +196,10 @@ function ProductPage() {
               {/* Atelier Promise Box */}
               <div className="bg-[#FAF9F6] border-l-[3px] border-gold p-6 lg:p-8">
                 <p className="text-[9px] tracking-[0.3em] font-bold text-gold uppercase mb-2">
-                  Atelier Promise
+                  {settings?.promise_title || "Atelier Promise"}
                 </p>
                 <p className="text-xs text-gray-600 leading-relaxed italic text-balance">
-                  Every piece is hallmarked, certified and accompanied by a lifetime care service.
+                  {settings?.promise_text || "Every piece is hallmarked, certified and accompanied by a lifetime care service."}
                 </p>
               </div>
             </div>

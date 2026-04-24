@@ -37,7 +37,7 @@ class ProductBase(BaseModel):
     image: str
     images: List[str] = []
     weight: str
-    material: str
+    material: Optional[str] = None
     description: str
     features: List[str] = []
     featured: bool = False
