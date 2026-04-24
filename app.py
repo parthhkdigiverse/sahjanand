@@ -24,10 +24,11 @@ def run_app():
     
     backend_port = os.environ.get("BACKEND_PORT", "8002")
     frontend_port = os.environ.get("FRONTEND_PORT", "3535")
+    host = os.environ.get("HOST", "0.0.0.0")
 
     print(f"Starting Sahjanand Application...")
-    print(f"Backend: http://0.0.0.0:{backend_port}")
-    print(f"Frontend: http://0.0.0.0:{frontend_port}")
+    print(f"Backend: http://{host}:{backend_port}")
+    print(f"Frontend: http://{host}:{frontend_port}")
 
     # Determine command for frontend
     frontend_runner = "npm"
@@ -43,7 +44,7 @@ def run_app():
         creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP
 
     # Start Backend
-    backend_cmd = [sys.executable, "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", backend_port]
+    backend_cmd = [sys.executable, "-m", "uvicorn", "backend.app.main:app", "--host", host, "--port", backend_port]
     if os.environ.get("DEBUG", "False").lower() == "true":
         backend_cmd.append("--reload")
 
@@ -55,7 +56,7 @@ def run_app():
     )
 
     # Start Frontend
-    frontend_cmd = [frontend_runner, "run", "dev", "--", "--host", "0.0.0.0", "--port", frontend_port]
+    frontend_cmd = [frontend_runner, "run", "dev", "--", "--host", host, "--port", frontend_port]
     
     print(f"Launching Frontend: {' '.join(frontend_cmd)}")
     frontend_process = subprocess.Popen(
