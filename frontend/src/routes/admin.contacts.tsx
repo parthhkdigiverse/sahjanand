@@ -299,10 +299,7 @@ function AdminContacts() {
                       <CardHeader className="pb-3">
                         <div className="flex justify-between items-start">
                           <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[8px] font-black tracking-[0.2em] text-gold uppercase px-2 py-0.5 bg-gold/5 rounded border border-gold/10">
-                                {lead.offer_code}
-                              </span>
+                            <div className="flex items-center gap-2 h-4">
                               {!lead.is_read && (
                                 <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" />
                               )}
@@ -373,14 +370,6 @@ function AdminContacts() {
                         </div>
                       </CardContent>
                       
-                      <CardFooter className="pt-0 pb-5">
-                        <a 
-                          href={`mailto:${lead.email || ""}?subject=Welcome Offer - Sahajanand Jewellers`}
-                          className="w-full h-10 bg-onyx text-ivory text-[9px] uppercase tracking-[0.2em] font-black rounded-xl flex items-center justify-center gap-2 hover:bg-gold hover:text-onyx transition-all shadow-luxe"
-                        >
-                          Send Response
-                        </a>
-                      </CardFooter>
                     </Card>
                   </motion.div>
                 ))}
