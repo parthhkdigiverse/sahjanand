@@ -188,10 +188,16 @@ function AdminTestimonials() {
       toast.error("Image, name and quote are required");
       return;
     }
+    
+    const payload = {
+      ...formData,
+      image: cleanImageUrl(formData.image)
+    };
+
     if (editingTestimonial) {
-      updateMutation.mutate({ id: editingTestimonial._id, data: formData });
+      updateMutation.mutate({ id: editingTestimonial._id, data: payload as any });
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(payload as any);
     }
   };
 

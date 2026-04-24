@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Category, fetchCategories, API_BASE, getImageUrl } from "@/lib/api";
+import { Category, fetchCategories, API_BASE, getImageUrl, cleanImageUrl } from "@/lib/api";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/admin/categories")({
@@ -241,7 +241,7 @@ function AdminCategories() {
 
             const payload = {
               ...data,
-              image: imageUrl
+              image: cleanImageUrl(imageUrl)
             };
             delete payload.image_file;
 

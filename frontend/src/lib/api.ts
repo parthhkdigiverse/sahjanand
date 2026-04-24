@@ -17,20 +17,38 @@ export const BACKEND_BASE = getBackendBase();
 
 export const getImageUrl = (path: string | undefined | null) => {
   if (!path) return undefined;
-  // If it's a full URL, data URI, or blob URI, return as is
-  if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) {
+  // If it's a data URI or blob URI, return as is
+  if (path.startsWith('data:') || path.startsWith('blob:')) {
     return path;
   }
-  // Ensure it starts with a slash
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
-  // If it's an uploaded file or asset, prepend backend base
+  // If it's already a full URL pointing elsewhere, return as is
+  if (path.startsWith('http') && !path.includes(BACKEND_BASE) && !path.includes('localhost')) {
+    return path;
+  }
+
+  // Get the relative path
+  let cleanPath = path;
+  if (path.includes('/uploads/')) {
+    cleanPath = path.substring(path.indexOf('/uploads/'));
+  } else if (!path.startsWith('/')) {
+    cleanPath = `/${path}`;
+  }
+  
+  // Prepend backend base for uploaded files
   if (cleanPath.startsWith('/uploads')) {
     return `${BACKEND_BASE}${cleanPath}`;
   }
   
-  // Local assets are served from the frontend itself
   return cleanPath;
+};
+
+export const cleanImageUrl = (url: string | undefined | null) => {
+  if (!url) return "";
+  if (url.includes('/uploads/')) {
+    return url.substring(url.indexOf('/uploads/'));
+  }
+  return url;
 };
 
 export type Product = {

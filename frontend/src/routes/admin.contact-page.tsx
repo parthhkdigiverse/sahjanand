@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchContactPageData, updateContactPageData, ContactPageData, getImageUrl, API_BASE } from "@/lib/api";
+import { fetchContactPageData, updateContactPageData, ContactPageData, getImageUrl, API_BASE, cleanImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -97,7 +97,7 @@ function AdminContactPage() {
         // Send the complete merged data
         const payload = {
             ...formData,
-            hero_image: finalHeroImage
+            hero_image: cleanImageUrl(finalHeroImage)
         } as ContactPageData;
 
         mutation.mutate(payload);

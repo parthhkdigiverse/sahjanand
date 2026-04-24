@@ -144,7 +144,7 @@ function AdminOffers() {
       });
       if (res.ok) {
         const result = await res.json();
-        const imageUrl = result.urls[0];
+        const imageUrl = cleanImageUrl(result.urls[0]);
         setSettingsData(prev => ({ ...prev, offer_image: imageUrl }));
         setImagePreview(imageUrl);
         toast.success("Image uploaded");

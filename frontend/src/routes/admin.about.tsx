@@ -16,6 +16,7 @@ import {
   updateAboutData, 
   API_BASE,
   getImageUrl,
+  cleanImageUrl,
   type AboutData,
   type PromiseItem
 } from "@/lib/api";
@@ -71,7 +72,14 @@ function AdminAbout() {
   }, [aboutData]);
 
   const updateMutation = useMutation({
-    mutationFn: (data: AboutData) => updateAboutData(data, token),
+    mutationFn: (data: AboutData) => {
+      const cleanedData = {
+        ...data,
+        hero_image: cleanImageUrl(data.hero_image),
+        promise_image: cleanImageUrl(data.promise_image),
+      };
+      return updateAboutData(cleanedData, token);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["about-data"] });
       toast.success("About page updated successfully");

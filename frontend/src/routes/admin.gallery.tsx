@@ -23,7 +23,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { type GalleryItem, type GallerySettings, API_BASE, getImageUrl, fetchGallerySettings, updateGallerySettings } from "@/lib/api";
+import { type GalleryItem, type GallerySettings, API_BASE, getImageUrl, cleanImageUrl, fetchGallerySettings, updateGallerySettings } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/gallery")({
   component: AdminGallery,
@@ -302,7 +302,7 @@ function AdminGallery() {
 
             const payload = {
               ...data,
-              image: imageUrl,
+              image: cleanImageUrl(imageUrl),
               order: parseInt(data.order as string) || 0,
             };
             

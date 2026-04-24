@@ -250,6 +250,9 @@ function AdminBlogs() {
               }
             }
 
+            // CRITICAL: Ensure we store relative paths, not full URLs with localhost
+            imageUrl = cleanImageUrl(imageUrl);
+
             const payload = {
               slug: editingBlog?.slug || (data.slug as string),
               title: data.title as string,
@@ -257,7 +260,7 @@ function AdminBlogs() {
               category: data.category as string,
               readTime: data.readTime as string,
               date: data.date as string,
-              image: imageUrl,
+              image: cleanImageUrl(imageUrl),
               content: (data.content as string).split('\n\n').map(p => p.trim()).filter(p => p),
               meta_title: (data.meta_title as string) || "",
               meta_description: (data.meta_description as string) || "",

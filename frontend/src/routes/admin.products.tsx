@@ -263,8 +263,8 @@ function AdminProducts() {
 
             const payload = {
               ...data,
-              image: mainImageUrl,
-              images: additionalUrls,
+              image: cleanImageUrl(mainImageUrl),
+              images: additionalUrls.map(url => cleanImageUrl(url)).filter(Boolean),
               featured: data.featured === 'on',
               features: (data.features as string).split(',').map(f => f.trim()).filter(f => f),
             };

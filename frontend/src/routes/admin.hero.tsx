@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit2, Trash2, Loader2, ArrowUp, ArrowDown, Camera } from "lucide-react";
-import { fetchHeroSlides, HeroSlide, API_BASE, getImageUrl } from "@/lib/api";
+import { fetchHeroSlides, HeroSlide, API_BASE, getImageUrl, cleanImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -40,17 +40,21 @@ function AdminHero() {
 
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
+      const payload = {
+        ...data,
+        image: cleanImageUrl(data.image)
+      };
       if (editingSlide) {
         const res = await authenticatedFetch(`${API_BASE}/hero/${editingSlide._id}`, {
           method: "PUT",
-          body: JSON.stringify(data),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error("Failed to update slide");
         return res.json();
       } else {
         const res = await authenticatedFetch(`${API_BASE}/hero/`, {
           method: "POST",
-          body: JSON.stringify(data),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error("Failed to create slide");
         return res.json();
