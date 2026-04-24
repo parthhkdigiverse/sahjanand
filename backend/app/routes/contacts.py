@@ -38,3 +38,18 @@ async def delete_contact(id: str, admin: str = Depends(get_current_admin)):
         raise HTTPException(status_code=404, detail="Inquiry not found")
         
     return {"message": "Inquiry deleted successfully"}
+
+@router.patch("/{id}/toggle-read")
+async def toggle_read(id: str, is_read: bool = Body(..., embed=True), admin: str = Depends(get_current_admin)):
+    db = get_database()
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+        
+    result = await db.contacts.update_one(
+        {"_id": ObjectId(id)},
+        {"$set": {"is_read": is_read}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Inquiry not found")
+        
+    return {"message": "Inquiry status updated"}

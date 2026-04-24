@@ -1,19 +1,30 @@
-import { useState } from "react";
-import { X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Loader2 } from "lucide-react";
 import offerImg from "@/assets/offer.jpg";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { fetchSettings, submitOfferLead, getImageUrl } from "@/lib/api";
+import { fetchSettings, submitOfferLead, getImageUrl, FormField } from "@/lib/api";
 import { toast } from "sonner";
 
 export function LeadCapture() {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
+  const [formData, setFormData] = useState<Record<string, string>>({ name: "", phone: "" });
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
     queryFn: fetchSettings,
   });
+
+  useEffect(() => {
+    // Initialize form data with empty strings for all configured fields
+    if (settings?.form_fields) {
+      const initial: Record<string, string> = {};
+      settings.form_fields.forEach(field => {
+        initial[field.id] = "";
+      });
+      setFormData(initial);
+    }
+  }, [settings]);
 
   const leadMutation = useMutation({
     mutationFn: submitOfferLead,
@@ -22,7 +33,14 @@ export function LeadCapture() {
       setTimeout(() => {
         setOpen(false);
         setSubmitted(false);
-        setFormData({ name: "", email: "", phone: "" });
+        // Reset form
+        if (settings?.form_fields) {
+          const reset: Record<string, string> = {};
+          settings.form_fields.forEach(field => {
+            reset[field.id] = "";
+          });
+          setFormData(reset);
+        }
       }, 2500);
     },
     onError: () => toast.error("Something went wrong. Please try again."),
@@ -30,10 +48,35 @@ export function LeadCapture() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    leadMutation.mutate({
-      ...formData,
-      offer_code: "WELCOME10"
+    
+    // Extract constant fields and dynamic data
+    const payload: any = {
+      name: formData["name"] || "",
+      phone: formData["phone"] || "",
+      offer_code: "WELCOME10",
+      data: {}
+    };
+
+    // Any field that isn't name or phone goes into 'data'
+    // but we also keep email as a first-class field if it exists
+    Object.keys(formData).forEach(key => {
+      if (key === "name" || key === "phone") return;
+      
+      const field = settings?.form_fields.find(f => f.id === key);
+      if (field) {
+        if (field.type === "email") {
+          payload.email = formData[key];
+        } else {
+          payload.data[field.label] = formData[key];
+        }
+      }
     });
+
+    leadMutation.mutate(payload);
+  };
+
+  const handleInputChange = (id: string, value: string) => {
+    setFormData(prev => ({ ...prev, [id]: value }));
   };
 
   return (
@@ -121,51 +164,33 @@ export function LeadCapture() {
                   {settings?.popup_description || "Just a few details and your code is yours."}
                 </p>
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  <div>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">
-                      Name
-                    </label>
-                    <input
-                      required
-                      value={formData.name}
-                      onChange={e => setFormData({...formData, name: e.target.value})}
-                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">
-                      Phone
-                    </label>
-                    <input
-                      required
-                      type="tel"
-                      value={formData.phone}
-                      onChange={e => setFormData({...formData, phone: e.target.value})}
-                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[0.65rem] tracking-luxe text-muted-foreground">
-                      Email
-                    </label>
-                    <input
-                      required
-                      type="email"
-                      value={formData.email}
-                      onChange={e => setFormData({...formData, email: e.target.value})}
-                      className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors"
-                    />
-                  </div>
+                  {settings?.form_fields.map((field) => (
+                    <div key={field.id}>
+                      <label className="text-[0.65rem] tracking-luxe text-muted-foreground uppercase font-bold">
+                        {field.label}
+                      </label>
+                      <input
+                        required={field.required}
+                        type={field.type}
+                        value={formData[field.id] || ""}
+                        onChange={e => handleInputChange(field.id, e.target.value)}
+                        className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors text-sm"
+                        placeholder={`Enter your ${field.label.toLowerCase()}`}
+                      />
+                    </div>
+                  ))}
+                  
                   <button
                     type="submit"
                     disabled={leadMutation.isPending}
-                    className="sheen w-full mt-6 py-4 bg-onyx text-ivory text-xs tracking-luxe hover:bg-gold hover:text-onyx transition-colors disabled:opacity-50"
+                    className="sheen w-full mt-6 py-4 bg-onyx text-ivory text-[10px] uppercase tracking-luxe hover:bg-gold hover:text-onyx transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     style={{
                       backgroundColor: "var(--onyx)",
                       color: "var(--ivory)",
                     }}
                   >
-                    {leadMutation.isPending ? "Sending..." : (settings?.popup_button_text || "Send My Code")}
+                    {leadMutation.isPending && <Loader2 size={14} className="animate-spin" />}
+                    {leadMutation.isPending ? "Sending Request..." : (settings?.popup_button_text || "Send My Code")}
                   </button>
                 </form>
               </>
