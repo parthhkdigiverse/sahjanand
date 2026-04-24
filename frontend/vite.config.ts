@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
       server: {
         port: parseInt(env.FRONTEND_PORT || "3535"),
         strictPort: true,
+        host: true,
       },
     },
   };

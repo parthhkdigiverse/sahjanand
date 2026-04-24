@@ -108,29 +108,68 @@ export function VideoTestimonials() {
           </button>
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-3xl aspect-video bg-onyx border border-ivory/10"
+            className="relative w-full max-w-4xl aspect-video bg-onyx border border-ivory/10 shadow-2xl overflow-hidden rounded-xl"
             style={{ backgroundColor: "var(--onyx)" }}
           >
-            <img
-              src={getImageUrl(testimonials[open].image)}
-              alt={testimonials[open].name}
-              className="absolute inset-0 h-full w-full object-cover opacity-50"
-            />
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center text-ivory p-8"
-              style={{ color: "var(--ivory)" }}
-            >
-              <div className="h-20 w-20 rounded-full bg-gold flex items-center justify-center mb-6 cursor-pointer hover:scale-110 transition-transform">
-                <Play size={28} className="ml-1 fill-onyx text-onyx" style={{ color: "var(--onyx)" }} />
-              </div>
-              <p className="font-serif text-3xl text-center max-w-xl">
-                "{testimonials[open].quote}"
-              </p>
-              <p className="mt-4 text-xs tracking-luxe text-gold">— {testimonials[open].name}</p>
-            </div>
+            {testimonials[open].video_url ? (
+              <iframe
+                src={(() => {
+                  const url = testimonials[open].video_url;
+                  if (!url) return "";
+                  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+                    const id = url.includes("v=") ? url.split("v=")[1].split("&")[0] : url.split("/").pop();
+                    return `https://www.youtube.com/embed/${id}?autoplay=1`;
+                  }
+                  if (url.includes("vimeo.com")) {
+                    const id = url.split("/").pop();
+                    return `https://player.vimeo.com/video/${id}?autoplay=1`;
+                  }
+                  return url;
+                })()}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <>
+                <img
+                  src={getImageUrl(testimonials[open].image)}
+                  alt={testimonials[open].name}
+                  className="absolute inset-0 h-full w-full object-cover opacity-30"
+                />
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center text-ivory p-8 md:p-16"
+                  style={{ color: "var(--ivory)" }}
+                >
+                  <Quote size={40} className="text-gold/20 mb-8" />
+                  <p className="font-serif text-2xl md:text-4xl text-center max-w-2xl leading-relaxed">
+                    "{testimonials[open].quote}"
+                  </p>
+                  <div className="mt-8 flex flex-col items-center">
+                    <div className="h-px w-12 bg-gold/50 mb-4" />
+                    <p className="text-[10px] tracking-[0.4em] text-gold uppercase font-bold">{testimonials[open].name}</p>
+                    <p className="text-[9px] tracking-[0.2em] text-ivory/40 uppercase mt-1">Valued Patron</p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
     </section>
+  );
+}
+
+function Quote({ size, className }: { size: number; className?: string }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="currentColor" 
+      className={className}
+    >
+      <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM14.017 21H10.017V21C10.017 22.1046 9.12157 23 8.017 23H5.017C3.91243 23 3.017 22.1046 3.017 21V11C3.017 9.89543 3.91243 9 5.017 9H10.017V9C11.1216 9 12.017 9.89543 12.017 11V16C12.017 17.1046 11.1216 18 10.017 18H8.017C6.91243 18 6.017 18.8954 6.017 20V21H14.017ZM0 18V21C0 22.1046 0.89543 23 2 23H5C6.10457 23 7 22.1046 7 21V11C7 9.89543 6.10457 9 5 9H0V9C0 7.89543 0.89543 7 2 7H5C6.10457 7 7 6.10457 7 5V2C7 0.89543 6.10457 0 5 0H2C0.89543 0 0 0.89543 0 2V18Z" />
+    </svg>
   );
 }

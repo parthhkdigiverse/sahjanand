@@ -26,8 +26,8 @@ def run_app():
     frontend_port = os.environ.get("FRONTEND_PORT", "3535")
 
     print(f"Starting Sahjanand Application...")
-    print(f"Backend Port: {backend_port}")
-    print(f"Frontend Port: {frontend_port}")
+    print(f"Backend: http://0.0.0.0:{backend_port}")
+    print(f"Frontend: http://0.0.0.0:{frontend_port}")
 
     # Determine command for frontend
     frontend_runner = "npm"
@@ -43,7 +43,11 @@ def run_app():
         creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP
 
     # Start Backend
-    backend_cmd = [sys.executable, "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", backend_port, "--reload"]
+    backend_cmd = [sys.executable, "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", backend_port]
+    if os.environ.get("DEBUG", "False").lower() == "true":
+        backend_cmd.append("--reload")
+
+    print(f"Launching Backend: {' '.join(backend_cmd)}")
     backend_process = subprocess.Popen(
         backend_cmd,
         env=os.environ.copy(),
@@ -51,19 +55,14 @@ def run_app():
     )
 
     # Start Frontend
-    # On Windows, we use shell=True for npm/bun as they are scripts
-    frontend_cmd = [frontend_runner, "run", "dev"]
-    # Pass port to frontend as well just in case config doesn't pick it up
-    if frontend_runner == "npm":
-        frontend_cmd += ["--", "--port", frontend_port]
-    else:
-        frontend_cmd += ["--port", frontend_port]
-
+    frontend_cmd = [frontend_runner, "run", "dev", "--", "--host", "0.0.0.0", "--port", frontend_port]
+    
+    print(f"Launching Frontend: {' '.join(frontend_cmd)}")
     frontend_process = subprocess.Popen(
         frontend_cmd,
         cwd=str(Path(__file__).parent / "frontend"),
         env=os.environ.copy(),
-        shell=is_windows,
+        shell=is_windows, # Necessary on Windows for npm/bun
         creationflags=creation_flags
     )
 
