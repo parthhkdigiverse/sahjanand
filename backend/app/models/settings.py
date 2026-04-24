@@ -1,5 +1,13 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
+
+class FormField(BaseModel):
+    id: str
+    name: str
+    label: str
+    type: str = "text"
+    required: bool = False
+    is_constant: bool = False
 
 class SettingsBase(BaseModel):
     offer_heading: str = "Handcrafted with Soul"
@@ -12,6 +20,13 @@ class SettingsBase(BaseModel):
     popup_button_text: str = "Send My Code"
     offer_button_text: str = "Get My Offer"
     offer_footer_text: str = "Limited time · One per customer"
+
+    # Form Configuration
+    form_fields: List[FormField] = [
+        FormField(id="name", name="name", label="Name", type="text", required=True, is_constant=True),
+        FormField(id="phone", name="phone", label="Phone", type="tel", required=True, is_constant=True),
+        FormField(id="email", name="email", label="Email", type="email", required=True, is_constant=False),
+    ]
 
     # Contact & Footer Settings
     contact_address: str = "14 Marine Drive, Mumbai · 400001, India"

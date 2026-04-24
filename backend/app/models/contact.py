@@ -42,6 +42,7 @@ class ContactBase(BaseModel):
     type: Literal["GENERAL", "PRODUCT"] = "GENERAL"
     product_id: Optional[str] = None
     product_name: Optional[str] = None
+    is_read: bool = False
 
 
 class ContactCreate(ContactBase):

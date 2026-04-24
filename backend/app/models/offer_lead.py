@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 from bson import ObjectId
 from pydantic_core import core_schema
 from datetime import datetime
@@ -31,13 +31,19 @@ class PyObjectId(ObjectId):
 
 class OfferLeadBase(BaseModel):
     name: str
-    email: str
     phone: str
+    email: Optional[str] = None
     offer_code: str = "WELCOME10"
+    is_read: bool = False
+    data: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-class OfferLeadCreate(OfferLeadBase):
-    pass
+class OfferLeadCreate(BaseModel):
+    name: str
+    phone: str
+    email: Optional[str] = None
+    offer_code: Optional[str] = "WELCOME10"
+    data: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
 class OfferLead(OfferLeadBase):
     mongo_id: Optional[PyObjectId] = Field(None, alias="_id")

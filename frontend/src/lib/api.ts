@@ -96,9 +96,11 @@ export type HeroSlide = {
 export type OfferLead = {
   _id: string;
   name: string;
-  email: string;
+  email?: string;
   phone: string;
   offer_code: string;
+  is_read: boolean;
+  data?: Record<string, any>;
   created_at: string;
 };
 
@@ -233,6 +235,15 @@ export async function updateGallerySettings(data: GallerySettings, token: string
   return res.json();
 }
 
+export type FormField = {
+  id: string;
+  name: string;
+  label: string;
+  type: string;
+  required: boolean;
+  is_constant: boolean;
+};
+
 export type SiteSettings = {
   offer_heading: string;
   offer_subheading: string;
@@ -242,6 +253,7 @@ export type SiteSettings = {
   popup_heading: string;
   popup_description: string;
   popup_button_text: string;
+  form_fields: FormField[];
   // Gold Price Settings
   gold_price_source: 'manual' | 'api';
   manual_price_24k: number;
@@ -334,6 +346,15 @@ export async function deleteOfferLead(id: string, token: string) {
   const res = await authenticatedFetch(`${API_BASE}/offer-leads/${id}`, {
     method: "DELETE",
   });
+  return res.json();
+}
+
+export async function toggleOfferLeadRead(id: string, isRead: boolean) {
+  const res = await authenticatedFetch(`${API_BASE}/offer-leads/${id}/toggle-read`, {
+    method: "PATCH",
+    body: JSON.stringify({ is_read: isRead }),
+  });
+  if (!res.ok) throw new Error("Failed to toggle read status");
   return res.json();
 }
 
