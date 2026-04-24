@@ -104,8 +104,7 @@ function Contact() {
       icon: Clock, 
       t: "Opening Hours", 
       l: [
-        contactData?.opening_hours_line1 || "", 
-        contactData?.opening_hours_line2 || ""
+        contactData?.opening_hours_line1 || ""
       ].filter(Boolean)
     },
   ];

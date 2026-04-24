@@ -427,7 +427,6 @@ export type ContactPageData = {
   concierge_phone: string;
   inquiries_email: string;
   opening_hours_line1: string;
-  opening_hours_line2: string;
   map_embed_url: string;
 };
 

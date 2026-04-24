@@ -17,7 +17,6 @@ class ContactPageData(BaseModel):
     
     # Opening Hours
     opening_hours_line1: Optional[str] = ""
-    opening_hours_line2: Optional[str] = ""
     
     # Map
     map_embed_url: Optional[str] = ""

@@ -301,15 +301,6 @@ function AdminContactPage() {
                       placeholder="Tue – Sat · 11:00 – 19:00"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Hours Line 2</Label>
-                    <Input 
-                      value={formData.opening_hours_line2 || ""}
-                      onChange={(e) => setFormData({...formData, opening_hours_line2: e.target.value})}
-                      className="bg-white border-onyx/5 focus:border-gold/50 h-12"
-                      placeholder="Sun & Mon · Private Appointments Only"
-                    />
-                  </div>
                 </div>
               </div>
 
