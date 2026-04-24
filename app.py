@@ -14,25 +14,29 @@ def load_env():
             for line in f:
                 line = line.strip()
                 if "=" in line and not line.startswith("#"):
-                    key, value = line.split("=", 1)
-                    # Remove potential quotes
-                    value = value.strip().strip('"').strip("'")
-                    os.environ[key] = value
+                    parts = line.split("=", 1)
+                    if len(parts) == 2:
+                        key = parts[0].strip()
+                        value = parts[1].strip().strip('"').strip("'")
+                        os.environ[key] = value
 
 def run_app():
     load_env()
     
     backend_port = os.environ.get("BACKEND_PORT", "8002")
     frontend_port = os.environ.get("FRONTEND_PORT", "3535")
-    app_host = os.environ.get("APP_HOST", os.environ.get("HOST", "0.0.0.0"))
     
-    # Force UVICORN_HOST to match our setup
+    # Force 0.0.0.0 unless specified in APP_HOST
+    app_host = os.environ.get("APP_HOST", "0.0.0.0")
+    
+    # Ensure HOST and UVICORN_HOST are also set to match
+    os.environ["HOST"] = app_host
     os.environ["UVICORN_HOST"] = app_host
 
     print(f"Starting Sahjanand Application...")
-    print(f"Configured Host: {app_host}")
-    print(f"Backend: http://{app_host}:{backend_port}")
-    print(f"Frontend: http://{app_host}:{frontend_port}")
+    print(f"Binding to host: {app_host}")
+    print(f"Backend URL: http://{app_host}:{backend_port}")
+    print(f"Frontend URL: http://{app_host}:{frontend_port}")
 
     # Determine command for frontend
     frontend_runner = "npm"
