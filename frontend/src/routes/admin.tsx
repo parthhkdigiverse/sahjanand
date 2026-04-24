@@ -72,7 +72,7 @@ function AdminLayout() {
     { label: "Contact Page", icon: Phone, href: "/admin/contact-page" },
     { label: "Blogs", icon: FileText, href: "/admin/blogs" },
     { label: "Inquiries", icon: MessageSquare, href: "/admin/contacts" },
-    { label: "Offers & Leads", icon: MessageSquare, href: "/admin/offers" },
+    { label: "Offer Settings", icon: MessageSquare, href: "/admin/offers" },
     { label: "Reviews", icon: Star, href: "/admin/reviews" },
     { label: "Testimonials", icon: Quote, href: "/admin/testimonials" },
     { label: "Instagram Feed", icon: Instagram, href: "/admin/instagram" },
