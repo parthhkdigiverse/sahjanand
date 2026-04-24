@@ -24,11 +24,15 @@ def run_app():
     
     backend_port = os.environ.get("BACKEND_PORT", "8002")
     frontend_port = os.environ.get("FRONTEND_PORT", "3535")
-    host = os.environ.get("HOST", "0.0.0.0")
+    app_host = os.environ.get("APP_HOST", os.environ.get("HOST", "0.0.0.0"))
+    
+    # Force UVICORN_HOST to match our setup
+    os.environ["UVICORN_HOST"] = app_host
 
     print(f"Starting Sahjanand Application...")
-    print(f"Backend: http://{host}:{backend_port}")
-    print(f"Frontend: http://{host}:{frontend_port}")
+    print(f"Configured Host: {app_host}")
+    print(f"Backend: http://{app_host}:{backend_port}")
+    print(f"Frontend: http://{app_host}:{frontend_port}")
 
     # Determine command for frontend
     frontend_runner = "npm"
@@ -44,7 +48,7 @@ def run_app():
         creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP
 
     # Start Backend
-    backend_cmd = [sys.executable, "-m", "uvicorn", "backend.app.main:app", "--host", host, "--port", backend_port]
+    backend_cmd = [sys.executable, "-m", "uvicorn", "backend.app.main:app", "--host", app_host, "--port", backend_port]
     if os.environ.get("DEBUG", "False").lower() == "true":
         backend_cmd.append("--reload")
 
@@ -56,7 +60,7 @@ def run_app():
     )
 
     # Start Frontend
-    frontend_cmd = [frontend_runner, "run", "dev", "--", "--host", host, "--port", frontend_port]
+    frontend_cmd = [frontend_runner, "run", "dev", "--", "--host", app_host, "--port", frontend_port]
     
     print(f"Launching Frontend: {' '.join(frontend_cmd)}")
     frontend_process = subprocess.Popen(
