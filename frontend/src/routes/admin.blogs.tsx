@@ -125,6 +125,7 @@ function AdminBlogs() {
         <Table>
           <TableHeader className="bg-onyx/[0.02]">
             <TableRow className="hover:bg-transparent border-onyx/5">
+              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold w-20">Cover</TableHead>
               <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Title</TableHead>
               <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Category</TableHead>
               <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">SEO Status</TableHead>
@@ -135,7 +136,7 @@ function AdminBlogs() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-24">
+                <TableCell colSpan={6} className="text-center py-24">
                   <div className="flex flex-col items-center gap-4">
                     <Loader2 className="animate-spin h-8 w-8 text-gold/40" />
                     <span className="text-[10px] uppercase tracking-widest text-onyx/20 font-bold">Loading...</span>
@@ -144,12 +145,23 @@ function AdminBlogs() {
               </TableRow>
             ) : filteredBlogs?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-24 text-onyx/30 font-serif text-xl italic">
+                <TableCell colSpan={6} className="text-center py-24 text-onyx/30 font-serif text-xl italic">
                   No blogs found.
                 </TableCell>
               </TableRow>
             ) : filteredBlogs?.map((blog) => (
               <TableRow key={blog.slug} className="hover:bg-ivory/20 transition-colors border-onyx/5 group">
+                <TableCell className="py-4 px-8">
+                  <div className="h-10 w-16 bg-onyx/5 rounded-md overflow-hidden border border-onyx/5 shadow-sm">
+                    {blog.image ? (
+                      <img src={getImageUrl(blog.image)} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center">
+                        <Camera size={12} className="text-onyx/10" />
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
                 <TableCell className="py-6 px-8">
                   <div className="font-serif text-lg text-onyx">{blog.title}</div>
                   <div className="text-[10px] text-onyx/30 uppercase tracking-widest mt-0.5">Slug: {blog.slug}</div>

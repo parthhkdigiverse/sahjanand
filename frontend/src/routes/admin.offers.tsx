@@ -239,6 +239,37 @@ function AdminOffers() {
                   <Label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Banner Description</Label>
                   <Textarea value={settingsData.offer_description} onChange={e => setSettingsData({...settingsData, offer_description: e.target.value})} rows={2} className="text-xs" />
                 </div>
+                <div className="space-y-4 pt-4 border-t border-onyx/5">
+                  <Label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Banner Image</Label>
+                  <div className="h-40 w-full bg-onyx/5 rounded-2xl flex items-center justify-center overflow-hidden border border-onyx/5 relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                    {imagePreview ? (
+                      <img src={getImageUrl(imagePreview)} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-2">
+                        <Camera size={24} className="text-onyx/10" />
+                        <p className="text-[8px] uppercase tracking-widest text-onyx/20 font-bold">No Image</p>
+                      </div>
+                    )}
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      className="hidden" 
+                      accept="image/*" 
+                      onChange={e => e.target.files?.[0] && handleImageUpload(e.target.files[0])} 
+                    />
+                    <div className="absolute inset-0 bg-onyx/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                      <span className="text-ivory text-[9px] uppercase tracking-[0.2em] font-black bg-onyx/60 px-4 py-2 rounded-xl backdrop-blur-sm">
+                        {imagePreview ? "Update Image" : "Upload Image"}
+                      </span>
+                    </div>
+                    {isUploading && (
+                      <div className="absolute inset-0 bg-onyx/60 flex items-center justify-center">
+                        <Loader2 className="animate-spin text-gold" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Button Text</Label>
