@@ -16,11 +16,11 @@ export default defineConfig(({ mode }) => {
         port: frontendPort,
         strictPort: true,
         host: true,
-        hmr: {
-          host: 'sahajanand.hkdigiverse.com',
-          clientPort: 443, // Standard for HTTPS proxy
+        hmr: env.VITE_HMR_HOST ? {
+          host: env.VITE_HMR_HOST,
+          clientPort: 443,
           protocol: 'wss',
-        },
+        } : true,
         proxy: {
           "/api": {
             target: `http://127.0.0.1:${backendPort}`,
