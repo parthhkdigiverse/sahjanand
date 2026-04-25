@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -210,6 +211,9 @@ function AdminCategories() {
             
             <p className="text-[9px] tracking-[0.4em] text-gold font-bold uppercase mb-2 animate-fade-up">Vault Management</p>
             <DialogTitle className="font-serif text-3xl tracking-tight text-onyx mb-4">{editingCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
+            <DialogDescription className="hidden">
+              {editingCategory ? "Manage the details of this jewelry category." : "Define a new category for your jewelry collections."}
+            </DialogDescription>
             <div className="flex items-center justify-center gap-3 opacity-20 scale-75">
               <div className="h-[1px] w-10 bg-onyx" />
               <div className="h-1.5 w-1.5 rotate-45 border border-onyx" />

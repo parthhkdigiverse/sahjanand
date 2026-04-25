@@ -19,12 +19,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Product, fetchCategories, Category, API_BASE, getImageUrl } from "@/lib/api";
+import { Product, fetchCategories, Category, API_BASE, getImageUrl, cleanImageUrl } from "@/lib/api";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/admin/products")({
@@ -218,6 +219,9 @@ function AdminProducts() {
         <DialogContent className="max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
           <DialogHeader className="bg-onyx p-8 text-ivory space-y-0">
             <DialogTitle className="font-serif text-2xl tracking-wide">{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+            <DialogDescription className="hidden">
+              {editingProduct ? "Update the details of this product in your catalog." : "Add a new luxury piece to your collection catalog."}
+            </DialogDescription>
           </DialogHeader>
           
           <form className="p-8 space-y-6 bg-white max-h-[80vh] overflow-y-auto" onSubmit={async (e) => {

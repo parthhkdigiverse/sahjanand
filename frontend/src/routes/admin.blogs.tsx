@@ -19,11 +19,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { BlogPost, API_BASE, getImageUrl } from "@/lib/api";
+import { BlogPost, API_BASE, getImageUrl, cleanImageUrl } from "@/lib/api";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/admin/blogs")({
@@ -218,6 +219,9 @@ function AdminBlogs() {
         <DialogContent className="max-w-4xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
           <DialogHeader className="bg-onyx p-8 text-ivory space-y-0">
             <DialogTitle className="font-serif text-2xl tracking-wide">{editingBlog ? 'Edit Blog' : 'Compose New Blog'}</DialogTitle>
+            <DialogDescription className="hidden">
+              {editingBlog ? "Modify the existing blog post details." : "Create and publish a new blog post to your website."}
+            </DialogDescription>
           </DialogHeader>
           
           <form className="p-8 space-y-6 bg-white max-h-[80vh] overflow-y-auto" onSubmit={async (e) => {

@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -277,6 +278,9 @@ function AdminGallery() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingItem ? 'Edit Gallery Item' : 'Add Gallery Item'}</DialogTitle>
+            <DialogDescription className="hidden">
+              {editingItem ? "Update the details of this gallery item." : "Add a new artistic creation to the gallery."}
+            </DialogDescription>
           </DialogHeader>
           <form className="space-y-6 pt-4" onSubmit={async (e) => {
             e.preventDefault();

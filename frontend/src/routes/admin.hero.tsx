@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { authenticatedFetch } from "@/services/auth";
@@ -179,7 +179,12 @@ function AdminHero() {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
-          <DialogHeader><DialogTitle>{editingSlide ? "Edit Slide" : "Add Slide"}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>{editingSlide ? "Edit Slide" : "Add Slide"}</DialogTitle>
+            <DialogDescription className="hidden">
+              {editingSlide ? "Update the visuals and text for this hero slide." : "Create a new visual presentation for your homepage."}
+            </DialogDescription>
+          </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
             <div className="space-y-4">
               <div className="space-y-2">

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { useState } from "react";
 import { toast } from "sonner";
 import { authService } from "@/services/auth";
@@ -181,6 +181,9 @@ function AdminPolicies() {
               <DialogTitle className="font-serif text-3xl text-onyx">
                 {editingPolicy ? "Update Policy" : "Draft New Policy"}
               </DialogTitle>
+              <DialogDescription className="hidden">
+                {editingPolicy ? "Update the legal or informational content of this policy." : "Draft a new policy or informational page for your website."}
+              </DialogDescription>
             </DialogHeader>
             <div className="flex gap-4">
                <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="uppercase tracking-widest text-[10px]">Discard</Button>

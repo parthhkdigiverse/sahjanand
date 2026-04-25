@@ -2,13 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Loader2, Quote, Play, Plus, Edit2, Camera, Settings } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
-import { fetchSettings, API_BASE, getImageUrl } from "@/lib/api";
+import { fetchSettings, API_BASE, getImageUrl, cleanImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useState, useEffect, useRef } from "react";
 
@@ -260,6 +260,9 @@ function AdminTestimonials() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>{editingTestimonial ? "Edit Testimonial" : "Add Testimonial"}</DialogTitle>
+            <DialogDescription className="hidden">
+              {editingTestimonial ? "Update the client feedback details." : "Add a new client testimonial to the website."}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Image upload */}

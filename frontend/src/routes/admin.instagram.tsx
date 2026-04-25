@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { authenticatedFetch } from "@/services/auth";
@@ -296,6 +296,9 @@ function AdminInstagram() {
             <DialogTitle className="font-serif text-2xl text-onyx">
               {editingPost ? "Edit Feed Post" : "Add New Feed Post"}
             </DialogTitle>
+            <DialogDescription className="hidden">
+              {editingPost ? "Update the link or image for this Instagram feed post." : "Add a new post from your Instagram feed to the website gallery."}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
             <div className="space-y-3">
