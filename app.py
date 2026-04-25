@@ -20,6 +20,18 @@ def load_env():
                         value = parts[1].strip().strip('"').strip("'")
                         os.environ[key] = value
 
+def get_venv_python():
+    """Find the Python executable inside the project's .venv."""
+    venv_dir = Path(__file__).parent / ".venv"
+    if os.name == 'nt':
+        venv_python = venv_dir / "Scripts" / "python.exe"
+    else:
+        venv_python = venv_dir / "bin" / "python3"
+    if venv_python.exists():
+        return str(venv_python)
+    # Fallback to the current interpreter
+    return sys.executable
+
 def run_app():
     start_time = time.time()
     load_env()
@@ -27,8 +39,9 @@ def run_app():
     backend_port = os.environ.get("BACKEND_PORT", "8002")
     frontend_port = os.environ.get("FRONTEND_PORT", "3535")
     
-    # Force 0.0.0.0 unless specified in APP_HOST
-    app_host = os.environ.get("APP_HOST", "0.0.0.0")
+    # Default to 127.0.0.1 for local dev (0.0.0.0 causes EPERM on macOS)
+    # Set APP_HOST=0.0.0.0 in .env on the server for external access
+    app_host = os.environ.get("APP_HOST", "127.0.0.1")
     
     # Ensure HOST and UVICORN_HOST are also set to match
     os.environ["HOST"] = app_host
@@ -52,8 +65,10 @@ def run_app():
     if is_windows:
         creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP
 
-    # Start Backend
-    backend_cmd = [sys.executable, "-m", "uvicorn", "backend.app.main:app", "--host", app_host, "--port", backend_port]
+    # Start Backend (use venv Python so dependencies like uvicorn are available)
+    python_exe = get_venv_python()
+    print(f"Using Python: {python_exe}")
+    backend_cmd = [python_exe, "-m", "uvicorn", "backend.app.main:app", "--host", app_host, "--port", backend_port]
     if os.environ.get("DEBUG", "False").lower() == "true":
         backend_cmd.append("--reload")
 
@@ -65,7 +80,10 @@ def run_app():
     )
 
     # Start Frontend
-    frontend_cmd = [frontend_runner, "run", "dev", "--", "--host", app_host, "--port", frontend_port]
+    frontend_cmd = [frontend_runner, "run", "dev", "--", "--port", frontend_port]
+    # On server, also pass --host to bind to all interfaces
+    if app_host == "0.0.0.0":
+        frontend_cmd.extend(["--host", app_host])
     
     print(f"Launching Frontend: {' '.join(frontend_cmd)}")
     frontend_process = subprocess.Popen(
