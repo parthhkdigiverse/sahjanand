@@ -288,7 +288,7 @@ function AdminCategories() {
               <div className="h-48 w-full bg-[#F9F8F6] rounded-2xl flex items-center justify-center overflow-hidden border border-onyx/5 relative group transition-all">
                 {imagePreview ? (
                   <div className="relative h-full w-full group">
-                    <img src={imagePreview} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src={getImageUrl(imagePreview)} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-onyx/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[1px]">
                       <div className="bg-white px-5 py-2 rounded-full shadow-lg">
                         <p className="text-onyx text-[9px] uppercase tracking-[0.2em] font-bold">Update Artwork</p>

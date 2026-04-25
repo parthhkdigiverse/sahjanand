@@ -13,6 +13,16 @@ export default defineConfig(({ mode }) => {
         port: parseInt(env.FRONTEND_PORT || "3535"),
         strictPort: true,
         host: true,
+        proxy: {
+          "/api": {
+            target: `http://127.0.0.1:${env.BACKEND_PORT || "8002"}`,
+            changeOrigin: true,
+          },
+          "/uploads": {
+            target: `http://127.0.0.1:${env.BACKEND_PORT || "8002"}`,
+            changeOrigin: true,
+          },
+        },
       },
     },
   };
