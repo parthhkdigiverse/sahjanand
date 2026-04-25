@@ -33,8 +33,8 @@ Thumbs.db
 bun.lockb
 
 # Local Uploads
-backend/uploads/
-uploads/
+# backend/uploads/
+# uploads/
 
 # Temp scripts
 fix_images.py
