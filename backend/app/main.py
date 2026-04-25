@@ -70,8 +70,9 @@ app.include_router(policies_route.router, prefix="/api")
 app.include_router(contact_page.router, prefix="/api")
 app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newsletter"])
 
-# Mount uploads directory to serve static files
-UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+# Mount uploads directory from frontend to serve static files
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+UPLOAD_DIR = os.path.join(ROOT_DIR, "frontend", "public", "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 @app.get("/")

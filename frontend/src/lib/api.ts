@@ -51,9 +51,9 @@ export const getImageUrl = (path: string | undefined | null) => {
     cleanPath = `/${path}`;
   }
   
-  // Prepend backend base for uploaded files
+  // Return the relative path for uploaded files
   if (cleanPath.startsWith('/uploads')) {
-    return `${BACKEND_BASE}${cleanPath}`;
+    return cleanPath;
   }
   
   return cleanPath;
