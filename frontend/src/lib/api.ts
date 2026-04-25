@@ -11,6 +11,11 @@ const getBackendBase = () => {
     // use a relative path to let the reverse proxy (Nginx) handle the routing.
     // This solves HTTPS/Mixed content issues without needing SSL configs in the backend.
     if (hostname !== 'localhost' && !hostname.match(/^\d/)) {
+      // Check if we have an explicit override from environment
+      // @ts-ignore - Vite environment variable
+      const envBase = import.meta.env.VITE_API_URL;
+      if (envBase) return envBase;
+      
       return ""; // Use relative URL
     }
     
