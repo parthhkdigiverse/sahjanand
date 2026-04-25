@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
         strictPort: true,
         host: true,
         hmr: {
+          host: 'sahajanand.hkdigiverse.com',
           clientPort: 443, // Standard for HTTPS proxy
           protocol: 'wss',
         },
