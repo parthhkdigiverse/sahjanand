@@ -122,7 +122,7 @@ function AdminGallery() {
   };
 
   const filteredItems = items?.filter(item => 
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    item.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -200,7 +200,7 @@ function AdminGallery() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-onyx/20 h-4 w-4 group-focus-within:text-gold transition-colors" />
           <Input 
             className="pl-12 h-14 bg-white border-onyx/5 rounded-xl shadow-card placeholder:text-onyx/20 focus-visible:ring-gold/30 transition-all" 
-            placeholder="Search by title..." 
+            placeholder="Search by ID..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -216,7 +216,6 @@ function AdminGallery() {
           <TableHeader className="bg-onyx/[0.02]">
             <TableRow className="hover:bg-transparent border-onyx/5">
               <TableHead className="w-[120px] py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Preview</TableHead>
-              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Title</TableHead>
               <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Order</TableHead>
               <TableHead className="text-right py-6 px-8 text-onyx/40 uppercase tracking-widest text-[10px]">Actions</TableHead>
             </TableRow>
@@ -243,10 +242,6 @@ function AdminGallery() {
                   <div className="relative h-16 w-16 group/img">
                     <img src={getImageUrl(item.image)} alt={item.title} className="h-full w-full object-cover rounded shadow-sm border border-onyx/5 transition-transform duration-500 group-hover/img:scale-110" />
                   </div>
-                </TableCell>
-                <TableCell className="py-6 px-8">
-                  <div className="font-serif text-lg text-onyx">{item.title}</div>
-                  <div className="text-[10px] text-onyx/30 uppercase tracking-widest mt-1">ID: {item.id}</div>
                 </TableCell>
                 <TableCell className="py-6 px-8 text-onyx/40 font-medium">{item.order}</TableCell>
                 <TableCell className="text-right py-6 px-8">
@@ -306,6 +301,9 @@ function AdminGallery() {
 
             const payload = {
               ...data,
+              id: editingItem?.id || `gallery-${Date.now()}`,
+              title: editingItem?.title || `Gallery Item ${new Date().toLocaleString()}`,
+              description: editingItem?.description || "",
               image: cleanImageUrl(imageUrl),
               order: parseInt(data.order as string) || 0,
             };
@@ -313,27 +311,7 @@ function AdminGallery() {
             delete payload.image_file;
             upsertMutation.mutate(payload);
           }}>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input 
-                  id="title" 
-                  name="title" 
-                  defaultValue={editingItem?.title} 
-                  required 
-                  onChange={(e) => {
-                    if (!editingItem) {
-                      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                      const idInput = document.getElementById("id") as HTMLInputElement;
-                      if (idInput) idInput.value = slug;
-                    }
-                  }}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="id">Slug ID (unique)</Label>
-                <Input id="id" name="id" defaultValue={editingItem?.id} required readOnly={!!editingItem} placeholder="Auto-generated" />
-              </div>
+            <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="order">Display Order</Label>
                 <Input id="order" name="order" type="number" defaultValue={editingItem?.order || 0} />
@@ -363,10 +341,6 @@ function AdminGallery() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea id="description" name="description" defaultValue={editingItem?.description} placeholder="Brief story about this piece..." />
-            </div>
 
             <DialogFooter>
               <Button type="submit" disabled={upsertMutation.isPending} className="w-full md:w-auto">
