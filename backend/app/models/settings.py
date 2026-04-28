@@ -48,7 +48,7 @@ class SettingsBase(BaseModel):
     reviews_subheading: str = "4.9 / 5 · Verified by Google · 2,400+ reviews"
 
     # Testimonials Section Settings
-    testimonials_heading: str = "Real Stories"
+    testimonials_heading: str = "Voices of Trust"
     testimonials_subheading: str = "Our Customers"
 
     # Gold Price Settings

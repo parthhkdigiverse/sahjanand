@@ -209,32 +209,32 @@ TESTIMONIALS = [
     {
         "image": "/assets/insta-2.jpg",
         "name": "Mira & Aarav",
-        "quote": "The perfect ring for our day."
+        "quote": "The perfect ring for our day.",
+        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     },
     {
         "image": "/assets/insta-3.jpg",
         "name": "Diya Kapoor",
-        "quote": "Every gift from Sahajanand feels special."
+        "quote": "Every gift from Sahajanand feels special.",
+        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     },
     {
         "image": "/assets/insta-5.jpg",
         "name": "Aarti S.",
-        "quote": "I wear my rings daily. They still look new."
+        "quote": "I wear my rings daily. They still look new.",
+        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     },
     {
         "image": "/assets/insta-6.jpg",
         "name": "Nisha Verma",
-        "quote": "A truly memorable shopping experience."
+        "quote": "A truly memorable shopping experience.",
+        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     },
     {
         "image": "/assets/insta-2.jpg",
         "name": "Riya & Karan",
-        "quote": "Heirloom quality. Worth every rupee."
-    },
-    {
-        "image": "/assets/insta-3.jpg",
-        "name": "Sana Malik",
-        "quote": "The detailing is simply breathtaking."
+        "quote": "Heirloom quality. Worth every rupee.",
+        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     }
 ]
 
