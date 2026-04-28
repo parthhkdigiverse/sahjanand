@@ -46,17 +46,17 @@ export function InquiryModal({ product, isOpen, onClose }: InquiryModalProps) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-onyx/80 backdrop-blur-sm animate-in fade-in duration-500"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative w-full max-w-xl bg-ivory border border-gold/20 shadow-luxe shadow-2xl animate-in zoom-in-95 fade-in duration-500 overflow-hidden">
         {/* Accent Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gold" />
 
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-6 right-6 text-onyx/40 hover:text-gold transition-colors duration-300"
         >
@@ -141,7 +141,7 @@ export function InquiryModal({ product, isOpen, onClose }: InquiryModalProps) {
                 </button>
 
                 <p className="text-[9px] text-center text-gray-400 tracking-widest uppercase">
-                  Private & Confidential · Maison Aurum Atelier
+                  Private & Confidential · Sahajanand Jewellers Atelier
                 </p>
               </form>
             </>

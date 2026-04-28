@@ -9,13 +9,13 @@ import mapFallback from "@/assets/insta-5.jpg";
 export const Route = createFileRoute("/contact/animated")({
   head: () => ({
     meta: [
-      { title: "Contact Us — Maison Aurum Mumbai" },
+      { title: "Contact Us — Sahajanand Jewellers Mumbai" },
       {
         name: "description",
         content:
           "Visit our store in Mumbai or book a private appointment with our team. We'd love to hear from you.",
       },
-      { property: "og:title", content: "Contact Us — Maison Aurum" },
+      { property: "og:title", content: "Contact Us — Sahajanand Jewellers" },
       { property: "og:description", content: "Visit our Mumbai store or book an appointment." },
     ],
   }),
@@ -72,7 +72,7 @@ function Contact() {
         <div className="absolute inset-0">
           <img 
             src={heroFallback} 
-            alt="Maison Aurum Atelier" 
+            alt="Sahajanand Jewellers Atelier" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-onyx/60" />
@@ -153,7 +153,7 @@ function Contact() {
                 allowFullScreen={false}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Maison Aurum Location"
+                title="Sahajanand Jewellers Location"
               ></iframe>
             </motion.div>
           </motion.div>

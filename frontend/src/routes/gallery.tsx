@@ -8,17 +8,17 @@ export const Route = createFileRoute("/gallery")({
   component: GalleryPage,
   head: () => ({
     meta: [
-      { title: "Gallery · Maison Aurum" },
+      { title: "Gallery · Sahajanand Jewellers" },
       {
         name: "description",
         content:
-          "Explore our gallery of handcrafted fine jewellery — rings, necklaces, earrings and bracelets by Maison Aurum.",
+          "Explore our gallery of handcrafted fine jewellery — rings, necklaces, earrings and bracelets by Sahajanand Jewellers.",
       },
-      { property: "og:title", content: "Gallery · Maison Aurum" },
+      { property: "og:title", content: "Gallery · Sahajanand Jewellers" },
       {
         property: "og:description",
         content:
-          "A curated visual journey through Maison Aurum's handcrafted fine jewellery.",
+          "A curated visual journey through Sahajanand Jewellers' handcrafted fine jewellery.",
       },
     ],
   }),
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/gallery")({
 
 function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  
+
   const { data: galleryItems = [], isLoading } = useQuery({
     queryKey: ["gallery"],
     queryFn: fetchGalleryItems,
@@ -62,7 +62,7 @@ function GalleryPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           {/* Main Large Image */}
           {featured[0] && (
-            <div 
+            <div
               onClick={() => setSelectedImage(getImageUrl(featured[0].image))}
               className="relative group overflow-hidden bg-white aspect-square md:aspect-auto md:row-span-2 cursor-pointer"
             >
@@ -129,29 +129,29 @@ function GalleryPage() {
 
       {/* Lightbox Modal */}
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 z-[110] bg-onyx/95 backdrop-blur-md flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
           onClick={() => setSelectedImage(null)}
         >
-          <button 
+          <button
             className="absolute top-8 right-8 text-white/60 hover:text-gold transition-colors p-2"
             onClick={() => setSelectedImage(null)}
           >
             <X size={32} strokeWidth={1} />
           </button>
-          
-          <div 
+
+          <div
             className="relative max-w-7xl max-h-full overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500"
             onClick={(e) => e.stopPropagation()}
           >
-            <img 
-              src={selectedImage} 
-              alt="Detailed View" 
+            <img
+              src={selectedImage}
+              alt="Detailed View"
               className="max-w-full max-h-[85vh] md:max-h-[90vh] object-contain border border-white/5"
             />
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-onyx/80 to-transparent">
               <p className="text-[10px] tracking-[0.4em] text-white/40 uppercase text-center font-bold">
-                Maison Aurum · High Jewellery
+                Sahajanand Jewellers · High Jewellery
               </p>
             </div>
           </div>

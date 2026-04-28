@@ -16,7 +16,7 @@ export const Route = createFileRoute("/blog/$slug")({
 
     return {
       meta: [
-        { title: `${title} — Maison Aurum` },
+        { title: `${title} — Sahajanand Jewellers` },
         { name: "description", content: description },
         { name: "keywords", content: keywords },
         { property: "og:title", content: title },
@@ -39,8 +39,8 @@ export const Route = createFileRoute("/blog/$slug")({
     <div className="container-luxe py-40 text-center">
       <p className="divider-gold mx-auto mb-8">Not Found</p>
       <h1 className="font-serif text-5xl mb-6">Article not found</h1>
-      <Link 
-        to="/blog" 
+      <Link
+        to="/blog"
         className="inline-flex items-center gap-3 text-gold tracking-luxe text-[10px] font-bold hover:text-onyx transition-colors duration-300"
       >
         <ArrowLeft size={14} /> BACK TO JOURNAL
@@ -74,7 +74,7 @@ function BlogPost() {
           >
             <ArrowLeft size={12} /> The Journal
           </Link>
-          
+
           <div className="flex items-center justify-center gap-4 mb-8">
             <span className="h-px w-8 bg-gold opacity-40" />
             <p className="text-[10px] tracking-[0.4em] text-gray-500 font-bold uppercase">
@@ -127,8 +127,8 @@ function BlogPost() {
           <div className="prose-luxury animate-fade-up">
             <div className="space-y-10 text-slate-700 leading-[1.85] md:leading-[2.1] text-[17px] md:text-[19px]">
               {post.content.map((para: string, i: number) => (
-                <p 
-                  key={i} 
+                <p
+                  key={i}
                   className={i === 0 ? "first-letter:text-7xl first-letter:font-serif first-letter:text-gold first-letter:float-left first-letter:mr-5 first-letter:mt-2 first-letter:leading-none" : ""}
                 >
                   {para}
@@ -137,7 +137,7 @@ function BlogPost() {
             </div>
 
           </div>
-          
+
           <div className="hidden lg:block" />
         </div>
       </section>
@@ -149,7 +149,7 @@ function BlogPost() {
             <p className="divider-gold mx-auto mb-6">Continue Reading</p>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl">Further Stories</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
             {related.map((p, i) => (
               <Link

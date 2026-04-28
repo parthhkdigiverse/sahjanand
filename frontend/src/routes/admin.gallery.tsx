@@ -5,13 +5,13 @@ import { Plus, Edit, Trash2, Search, Loader2, Image as ImageIcon } from "lucide-
 import { authenticatedFetch } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/ui/table";
 import {
   Dialog,
@@ -36,7 +36,7 @@ function AdminGallery() {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  
+
   // Controlled state for gallery settings
   const [headerSettings, setHeaderSettings] = useState({
     eyebrow: "",
@@ -77,10 +77,10 @@ function AdminGallery() {
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
       const isEdit = !!editingItem;
-      const url = isEdit 
-        ? `${API_BASE}/gallery/${editingItem.id}` 
+      const url = isEdit
+        ? `${API_BASE}/gallery/${editingItem.id}`
         : `${API_BASE}/gallery/`;
-      
+
       const res = await authenticatedFetch(url, {
         method: isEdit ? "PUT" : "POST",
         body: JSON.stringify(data),
@@ -121,7 +121,7 @@ function AdminGallery() {
     setIsDialogOpen(true);
   };
 
-  const filteredItems = items?.filter(item => 
+  const filteredItems = items?.filter(item =>
     item.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -130,9 +130,9 @@ function AdminGallery() {
       <div className="flex justify-between items-center bg-white p-8 rounded-2xl shadow-card border border-onyx/5">
         <div className="space-y-1">
           <h1 className="text-3xl font-serif text-onyx tracking-wide">Gallery Management</h1>
-          <p className="text-onyx/40 text-[10px] uppercase tracking-[0.2em]">Showcasing the artistry of Maison Aurum</p>
+          <p className="text-onyx/40 text-[10px] uppercase tracking-[0.2em]">Showcasing the artistry of Sahajanand Jewellers</p>
         </div>
-        <Button 
+        <Button
           onClick={() => handleOpenDialog()}
           className="bg-onyx text-ivory hover:bg-gold hover:text-onyx h-12 px-8 transition-all duration-500 rounded-lg font-medium tracking-widest uppercase text-xs shadow-luxe sheen"
         >
@@ -146,7 +146,7 @@ function AdminGallery() {
           <Edit className="h-5 w-5 text-gold" />
           <h2 className="text-xl font-serif text-onyx">Gallery Header Content</h2>
         </div>
-        <form 
+        <form
           onSubmit={(e) => {
             e.preventDefault();
             settingsMutation.mutate(headerSettings);
@@ -155,34 +155,34 @@ function AdminGallery() {
         >
           <div className="space-y-2">
             <Label htmlFor="eyebrow">Eyebrow Text</Label>
-            <Input 
-              id="eyebrow" 
-              name="eyebrow" 
-              value={headerSettings.eyebrow} 
+            <Input
+              id="eyebrow"
+              name="eyebrow"
+              value={headerSettings.eyebrow}
               onChange={(e) => setHeaderSettings(prev => ({ ...prev, eyebrow: e.target.value }))}
-              placeholder="ATELIER GALLERY" 
+              placeholder="ATELIER GALLERY"
               disabled={isSettingsLoading}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="heading">Main Heading</Label>
-            <Input 
-              id="heading" 
-              name="heading" 
-              value={headerSettings.heading} 
+            <Input
+              id="heading"
+              name="heading"
+              value={headerSettings.heading}
               onChange={(e) => setHeaderSettings(prev => ({ ...prev, heading: e.target.value }))}
-              placeholder="Moments of Brilliance" 
+              placeholder="Moments of Brilliance"
               disabled={isSettingsLoading}
             />
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label htmlFor="subheading">Subheading / Description</Label>
-            <Textarea 
-              id="subheading" 
-              name="subheading" 
-              value={headerSettings.subheading} 
+            <Textarea
+              id="subheading"
+              name="subheading"
+              value={headerSettings.subheading}
               onChange={(e) => setHeaderSettings(prev => ({ ...prev, subheading: e.target.value }))}
-              placeholder="A visual journey through our atelier..." 
+              placeholder="A visual journey through our atelier..."
               disabled={isSettingsLoading}
             />
           </div>
@@ -198,9 +198,9 @@ function AdminGallery() {
       <div className="flex items-center gap-6">
         <div className="relative flex-1 group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-onyx/20 h-4 w-4 group-focus-within:text-gold transition-colors" />
-          <Input 
-            className="pl-12 h-14 bg-white border-onyx/5 rounded-xl shadow-card placeholder:text-onyx/20 focus-visible:ring-gold/30 transition-all" 
-            placeholder="Search by ID..." 
+          <Input
+            className="pl-12 h-14 bg-white border-onyx/5 rounded-xl shadow-card placeholder:text-onyx/20 focus-visible:ring-gold/30 transition-all"
+            placeholder="Search by ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -249,12 +249,12 @@ function AdminGallery() {
                     <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(item)}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="text-red-500 hover:text-red-600 hover:bg-red-50"
                       onClick={() => {
-                        if(confirm("Are you sure you want to remove this item from the gallery?")) {
+                        if (confirm("Are you sure you want to remove this item from the gallery?")) {
                           deleteMutation.mutate(item.id);
                         }
                       }}
@@ -282,7 +282,7 @@ function AdminGallery() {
             const form = e.currentTarget;
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            
+
             let imageUrl = editingItem?.image || "";
 
             const imageFile = formData.get("image_file") as File;
@@ -307,7 +307,7 @@ function AdminGallery() {
               image: cleanImageUrl(imageUrl),
               order: parseInt(data.order as string) || 0,
             };
-            
+
             delete payload.image_file;
             upsertMutation.mutate(payload);
           }}>
@@ -325,12 +325,12 @@ function AdminGallery() {
                   <img src={getImageUrl(imagePreview)} alt="Preview" className="h-24 w-24 object-cover rounded shadow-sm border border-onyx/5" />
                 )}
                 <div className="flex-1">
-                  <Input 
-                    id="image_file" 
-                    name="image_file" 
-                    type="file" 
-                    accept="image/*" 
-                    required={!editingItem?.image} 
+                  <Input
+                    id="image_file"
+                    name="image_file"
+                    type="file"
+                    accept="image/*"
+                    required={!editingItem?.image}
                     onChange={(e) => {
                       if (e.target.files?.[0]) {
                         setImagePreview(URL.createObjectURL(e.target.files[0]));

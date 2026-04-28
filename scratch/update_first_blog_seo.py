@@ -13,9 +13,9 @@ async def update_first_blog():
     slug = "jewellery-care-tips"
     
     seo_data = {
-        "meta_title": "Expert Jewellery Care Tips | Maintain Your Fine Jewellery - Maison Aurum",
+        "meta_title": "Expert Jewellery Care Tips | Maintain Your Fine Jewellery - Sahajanand Jewellers",
         "meta_description": "Learn how to keep your gold and diamond jewellery shining for generations with our professional care guide. Best practices for cleaning and storage.",
-        "keywords": "jewellery care, gold cleaning, diamond maintenance, luxury jewellery care, Maison Aurum guide"
+        "keywords": "jewellery care, gold cleaning, diamond maintenance, luxury jewellery care, Sahajanand Jewellers guide"
     }
     
     result = await db.blogs.find_one_and_update(

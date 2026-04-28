@@ -23,7 +23,7 @@ export const policies: Policy[] = [
       {
         heading: "How It Works",
         body: [
-          "Visit any Maison Aurum boutique or contact our concierge to initiate an exchange.",
+          "Visit any Sahajanand Jewellers boutique or contact our concierge to initiate an exchange.",
           "Your piece will be inspected by our atelier within 3 working days.",
           "On approval, you may exchange for any item of equal or higher value, paying only the difference.",
         ],
@@ -108,7 +108,7 @@ export const policies: Policy[] = [
       {
         heading: "General",
         body: [
-          "All purchases are subject to availability and acceptance of order by Maison Aurum.",
+          "All purchases are subject to availability and acceptance of order by Sahajanand Jewellers.",
           "Prices, photographs, and descriptions are for guidance and may vary slightly from the final piece.",
           "All pieces are handcrafted, so minor variations are part of their character.",
         ],
@@ -123,7 +123,7 @@ export const policies: Policy[] = [
       {
         heading: "Intellectual Property",
         body: [
-          "All designs, photographs, and content on this site belong to Maison Aurum.",
+          "All designs, photographs, and content on this site belong to Sahajanand Jewellers.",
           "Reproduction without written permission is not permitted.",
         ],
       },
@@ -139,7 +139,7 @@ export const policies: Policy[] = [
     slug: "cancellation-policy",
     title: "Cancellation Policy",
     intro:
-      "We understand plans change. Here is how cancellations work at Maison Aurum.",
+      "We understand plans change. Here is how cancellations work at Sahajanand Jewellers.",
     sections: [
       {
         heading: "Standard Orders",
@@ -168,7 +168,7 @@ export const policies: Policy[] = [
     slug: "authenticity-policy",
     title: "Product Authenticity & Certification",
     intro:
-      "Every Maison Aurum piece is certified, hallmarked, and made to last. Here is our promise.",
+      "Every Sahajanand Jewellers piece is certified, hallmarked, and made to last. Here is our promise.",
     sections: [
       {
         heading: "Hallmarking",
@@ -203,12 +203,12 @@ export const policies: Policy[] = [
     slug: "buyback-policy",
     title: "Buyback & Resale Policy",
     intro:
-      "Your jewellery holds value. We are happy to buy back or exchange your Maison Aurum pieces, anytime.",
+      "Your jewellery holds value. We are happy to buy back or exchange your Sahajanand Jewellers pieces, anytime.",
     sections: [
       {
         heading: "Eligibility",
         body: [
-          "All Maison Aurum pieces with original invoice and certificate are eligible for buyback.",
+          "All Sahajanand Jewellers pieces with original invoice and certificate are eligible for buyback.",
           "Pieces from other brands may also be considered, valued at current market rates.",
         ],
       },

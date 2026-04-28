@@ -7,11 +7,11 @@ export const Route = createFileRoute("/blog/")({
   component: BlogIndex,
   head: () => ({
     meta: [
-      { title: "Journal · Maison Aurum" },
+      { title: "Journal · Sahajanand Jewellers" },
       {
         name: "description",
         content:
-          "Stories, guides, and inspiration from the Maison Aurum atelier — jewellery care, trends, and timeless craft.",
+          "Stories, guides, and inspiration from the Sahajanand Jewellers atelier — jewellery care, trends, and timeless craft.",
       },
     ],
   }),

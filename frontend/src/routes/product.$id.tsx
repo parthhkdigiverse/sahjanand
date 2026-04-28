@@ -32,10 +32,10 @@ function ProductPage() {
         setIsLoading(true);
         const [p, all] = await Promise.all([fetchProduct(id), fetchProducts()]);
         setProduct(p);
-        
+
         const related = all.filter((item: any) => item.id !== p.id && item.category === p.category).slice(0, 4);
         setRelatedProducts(related.length >= 2 ? related : all.filter((item: any) => item.id !== p.id).slice(0, 4));
-        
+
         setError(null);
       } catch (err: any) {
         setError(err.message);
@@ -60,10 +60,10 @@ function ProductPage() {
   }
 
   const galleryImages = product.images?.length > 0 ? product.images : [product.image];
-  
+
   const handleWhatsAppInquiry = () => {
     if (!settings?.whatsapp_number) return;
-    
+
     // Clean number: remove all non-digits
     const cleanNumber = settings.whatsapp_number.replace(/\D/g, "");
     const message = encodeURIComponent(`Hello Sahajanand Jewellers, I'm interested in the ${product.name} (${product.id}). Can you provide more details?`);
@@ -86,8 +86,8 @@ function ProductPage() {
       <section className="pt-32 pb-16 lg:pt-36 lg:pb-24">
         <div className="container-luxe">
           {/* Back Button */}
-          <Link 
-            to="/shop" 
+          <Link
+            to="/shop"
             className="inline-flex items-center gap-2 text-[10px] tracking-[0.3em] font-bold text-gray-400 hover:text-gold transition-colors mb-12 uppercase group"
           >
             <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
@@ -97,7 +97,7 @@ function ProductPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
             {/* Image & Gallery Column */}
             <div className="animate-fade-in">
-              <div 
+              <div
                 className="relative aspect-square bg-secondary overflow-hidden shadow-sm mb-6 cursor-zoom-in"
                 onMouseMove={onMove}
                 onMouseLeave={() => setZoom((z) => ({ ...z, active: false }))}
@@ -113,7 +113,7 @@ function ProductPage() {
                   }}
                 />
               </div>
-              
+
               {/* Thumbnail Gallery */}
               {galleryImages.length > 1 && (
                 <div className="flex gap-5 mt-8">
@@ -121,15 +121,14 @@ function ProductPage() {
                     <button
                       key={idx}
                       onClick={() => setActiveImage(idx)}
-                      className={`relative aspect-square w-24 lg:w-32 overflow-hidden transition-all duration-300 ${
-                        activeImage === idx 
-                        ? "border-[3px] border-gold ring-offset-2" 
-                        : "border-[3px] border-transparent hover:border-gray-200"
-                      }`}
+                      className={`relative aspect-square w-24 lg:w-32 overflow-hidden transition-all duration-300 ${activeImage === idx
+                          ? "border-[3px] border-gold ring-offset-2"
+                          : "border-[3px] border-transparent hover:border-gray-200"
+                        }`}
                     >
-                      <img 
-                        src={img} 
-                        alt="" 
+                      <img
+                        src={img}
+                        alt=""
                         className="h-full w-full object-cover"
                       />
                     </button>
@@ -187,10 +186,10 @@ function ProductPage() {
                 </button>
               </div>
 
-              <InquiryModal 
-                product={product} 
-                isOpen={isInquiryOpen} 
-                onClose={() => setIsInquiryOpen(false)} 
+              <InquiryModal
+                product={product}
+                isOpen={isInquiryOpen}
+                onClose={() => setIsInquiryOpen(false)}
               />
 
               {/* Atelier Promise Box */}
@@ -222,29 +221,29 @@ function ProductPage() {
       </section>
 
       {isLightboxOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-[110] bg-onyx/95 backdrop-blur-md flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
           onClick={() => setIsLightboxOpen(false)}
         >
-          <button 
+          <button
             className="absolute top-8 right-8 text-white/60 hover:text-gold transition-colors p-2"
             onClick={() => setIsLightboxOpen(false)}
           >
             <X size={32} strokeWidth={1} />
           </button>
-          
-          <div 
+
+          <div
             className="relative max-w-7xl max-h-full overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500"
             onClick={(e) => e.stopPropagation()}
           >
-            <img 
-              src={galleryImages[activeImage]} 
-              alt={product.name} 
+            <img
+              src={galleryImages[activeImage]}
+              alt={product.name}
               className="max-w-full max-h-[85vh] md:max-h-[90vh] object-contain border border-white/5"
             />
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-onyx/80 to-transparent">
               <p className="text-[10px] tracking-[0.4em] text-white/40 uppercase text-center font-bold">
-                Maison Aurum · Atelier Series
+                Sahajanand Jewellers · Atelier Series
               </p>
             </div>
           </div>

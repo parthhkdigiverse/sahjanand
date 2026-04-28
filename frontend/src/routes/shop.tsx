@@ -8,12 +8,12 @@ import { ChevronDown } from "lucide-react";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Shop — Maison Aurum Fine Jewellery" },
+      { title: "Shop — Sahajanand Jewellers Fine Jewellery" },
       {
         name: "description",
         content: "Browse all our jewellery — rings, necklaces, earrings and bracelets in gold, diamond and silver.",
       },
-      { property: "og:title", content: "Shop — Maison Aurum" },
+      { property: "og:title", content: "Shop — Sahajanand Jewellers" },
       { property: "og:description", content: "Hand-crafted gold and diamond jewellery." },
     ],
   }),
@@ -78,24 +78,23 @@ function Shop() {
               <h3 className="text-xs tracking-luxe text-gold mb-5">Category</h3>
               {catsLoading ? (
                 <div className="space-y-3 animate-pulse">
-                  {[1,2,3,4].map(i => <div key={i} className="h-4 bg-gray-200 rounded w-1/2" />)}
+                  {[1, 2, 3, 4].map(i => <div key={i} className="h-4 bg-gray-200 rounded w-1/2" />)}
                 </div>
               ) : (
                 <ul className="space-y-3">
                   {categories.map((c) => (
                     <li key={c}>
-                    <button
-                      onClick={() => setCat(c)}
-                      className={`text-sm transition-colors ${
-                        cat === c ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {c}
-                      {cat === c && <span className="ml-2 text-gold">·</span>}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                      <button
+                        onClick={() => setCat(c)}
+                        className={`text-sm transition-colors ${cat === c ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                      >
+                        {c}
+                        {cat === c && <span className="ml-2 text-gold">·</span>}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
 
@@ -106,9 +105,8 @@ function Shop() {
                   <li key={m}>
                     <button
                       onClick={() => setMetal(m)}
-                      className={`text-sm transition-colors ${
-                        metal === m ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
-                      }`}
+                      className={`text-sm transition-colors ${metal === m ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                        }`}
                     >
                       {m}
                     </button>

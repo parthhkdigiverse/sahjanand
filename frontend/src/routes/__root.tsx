@@ -40,8 +40,8 @@ export const Route = createRootRoute({
         content:
           "Discover heirloom-quality gold and diamond jewellery, hand-crafted in our atelier. Rings, necklaces, earrings and bracelets for every occasion.",
       },
-      { name: "author", content: "Maison Aurum" },
-      { property: "og:title", content: "Maison Aurum — Fine Jewellery" },
+      { name: "author", content: "Sahajanand Jewellers" },
+      { property: "og:title", content: "Sahajanand Jewellers — Fine Jewellery" },
       { property: "og:description", content: "Heirloom-quality gold and diamond jewellery, hand-crafted." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
