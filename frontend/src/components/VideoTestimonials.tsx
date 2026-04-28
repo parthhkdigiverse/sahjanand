@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Play, X, ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTestimonials, getImageUrl, fetchSettings } from "@/lib/api";
 
@@ -28,6 +28,21 @@ export function VideoTestimonials() {
   
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const toggleMute = () => {
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    
+    // Broadcast mute command to all iframes
+    const iframes = document.querySelectorAll("iframe");
+    iframes.forEach(iframe => {
+      const message = nextMuted 
+        ? '{"event":"command","func":"mute","args":""}' 
+        : '{"event":"command","func":"unMute","args":""}';
+      iframe.contentWindow?.postMessage(message, "*");
+    });
+  };
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -35,14 +50,7 @@ export function VideoTestimonials() {
     const onSelect = () => {
       const index = emblaApi.selectedScrollSnap();
       setSelectedIndex(index);
-      
-      // Clear active video immediately when scrolling starts
-      setActiveVideoIndex(null);
-      
-      // Delay playing the video until the transition is mostly complete
-      setTimeout(() => {
-        setActiveVideoIndex(index);
-      }, 500); 
+      setActiveVideoIndex(index);
     };
 
     emblaApi.on("select", onSelect);
@@ -59,19 +67,22 @@ export function VideoTestimonials() {
     let id = "";
     if (url.includes("youtube.com") || url.includes("youtu.be")) {
       id = url.includes("v=") ? url.split("v=")[1].split("&")[0] : url.split("/").pop() || "";
-      return `https://www.youtube.com/embed/${id}?autoplay=${autoplay ? 1 : 0}&mute=1&controls=0&loop=1&playlist=${id}&rel=0&modestbranding=1&iv_load_policy=3`;
+      // Removed isMuted from URL to prevent reload
+      return `https://www.youtube.com/embed/${id}?autoplay=${autoplay ? 1 : 0}&controls=1&loop=1&playlist=${id}&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1`;
     }
     if (url.includes("vimeo.com")) {
       id = url.split("/").pop() || "";
-      return `https://player.vimeo.com/video/${id}?autoplay=${autoplay ? 1 : 0}&muted=1&background=1`;
+      // Removed isMuted from URL to prevent reload
+      return `https://player.vimeo.com/video/${id}?autoplay=${autoplay ? 1 : 0}`;
     }
     return url;
   };
 
   // Double the slides if we have a small number, to ensure a smooth infinite loop
-  const displayTestimonials = testimonials.length > 0 && testimonials.length <= 5 
-    ? [...testimonials, ...testimonials] 
-    : testimonials;
+  const displayTestimonials = useMemo(() => {
+    if (testimonials.length === 0) return [];
+    return testimonials.length <= 5 ? [...testimonials, ...testimonials] : testimonials;
+  }, [testimonials]);
 
   return (
     <section className="container-luxe py-24 md:py-32 overflow-hidden">
@@ -100,7 +111,7 @@ export function VideoTestimonials() {
                   }}
                 >
                   <div
-                    className="relative block aspect-[9/16] w-full overflow-hidden rounded-2xl shadow-2xl bg-onyx"
+                    className="relative block aspect-[9/16] w-full overflow-hidden rounded-2xl shadow-2xl bg-onyx group/card"
                   >
                     {/* Background Image (Always present for smooth transition) */}
                     <img
@@ -110,16 +121,25 @@ export function VideoTestimonials() {
                       className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isVideoPlaying ? "opacity-0" : "opacity-100"}`}
                     />
 
-                    {/* Video Player (Fades in when active) */}
+                    {/* Video Player (Always mounted when centered) */}
                     {isCentered && t.video_url && (
-                      <div className={`absolute inset-0 transition-opacity duration-700 ${isVideoPlaying ? "opacity-100" : "opacity-0"}`}>
-                        {isVideoPlaying && (
-                          <iframe
-                            src={getYoutubeEmbedUrl(t.video_url, true)}
-                            className="absolute inset-0 w-full h-full pointer-events-none scale-[1.05]"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          />
-                        )}
+                      <div className="absolute inset-0">
+                        <iframe
+                          src={getYoutubeEmbedUrl(t.video_url, true)}
+                          className="absolute -inset-x-[15%] -inset-y-[15%] w-[130%] h-[130%] pointer-events-none object-cover"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        />
+                        
+                        {/* Individual Mute Toggle */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleMute();
+                          }}
+                          className="absolute top-4 right-4 h-10 w-10 rounded-full bg-onyx/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-ivory hover:bg-gold hover:text-onyx transition-all z-20 pointer-events-auto"
+                        >
+                          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                        </button>
                       </div>
                     )}
                     
