@@ -126,7 +126,7 @@ function Contact() {
                 {[
                   { icon: MapPin, t: "The Boutique", l: ["14 Marine Drive", "Colaba, Mumbai 400001"] },
                   { icon: Phone, t: "Concierge", l: ["+91 22 4000 0000"] },
-                  { icon: Mail, t: "Inquiries", l: ["hello@maisonaurum.com"] },
+                  { icon: Mail, t: "Inquiries", l: ["hello@sahajanandjewellers.com"] },
                   { icon: Clock, t: "Opening Hours", l: ["Tue – Sat · 11:00 – 19:00", "Sun & Mon · Private Appointments Only"] },
                 ].map(({ icon: Icon, t, l }, idx) => (
                   <motion.div variants={FADE_UP} key={idx} className="flex gap-6 group">

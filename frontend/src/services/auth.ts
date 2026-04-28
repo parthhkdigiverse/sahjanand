@@ -1,4 +1,4 @@
-export const STORAGE_KEY = 'maison_aurum_admin_token';
+export const STORAGE_KEY = 'sahajanand_jewellers_admin_token';
 
 export const authService = {
   getToken: () => typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null,

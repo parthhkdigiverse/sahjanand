@@ -77,7 +77,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Sahjanand API", "status": "online"}
+    return {"message": "Welcome to Sahajanand API", "status": "online"}
 
 @app.get("/health")
 async def health():

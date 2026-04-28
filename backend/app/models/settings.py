@@ -31,7 +31,7 @@ class SettingsBase(BaseModel):
     # Contact & Footer Settings
     contact_address: str = "14 Marine Drive, Mumbai · 400001, India"
     contact_phone: str = "+91 22 4000 0000"
-    contact_email: str = "hello@maisonaurum.com"
+    contact_email: str = "hello@sahajanandjewellers.com"
     instagram_url: str = "#"
     facebook_url: str = "#"
     twitter_url: str = "#"
@@ -39,7 +39,7 @@ class SettingsBase(BaseModel):
     whatsapp_number: str = "+91 95123 06199"
 
     # Instagram Section Settings
-    instagram_eyebrow: str = "@maisonaurum"
+    instagram_eyebrow: str = "@sahajanandjewellers"
     instagram_heading: str = "Follow Us on Instagram"
     instagram_subheading: str = "A glimpse into our world"
 

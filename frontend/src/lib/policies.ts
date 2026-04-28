@@ -93,7 +93,7 @@ export const policies: Policy[] = [
         heading: "Your Rights",
         body: [
           "You may request access, correction, or deletion of your data at any time.",
-          "Write to privacy@maisonaurum.com and we will respond within 7 working days.",
+          "Write to privacy@sahajanandjewellers.com and we will respond within 7 working days.",
           "We never sell your information to third parties.",
         ],
       },

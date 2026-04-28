@@ -137,7 +137,7 @@ BLOGS = [
             "Fine jewellery is meant to be worn — but a little care goes a long way. Begin by storing each piece separately in a soft pouch or lined box. This prevents scratches between metals and stones.",
             "Avoid contact with perfume, lotion, and chlorine. Always put your jewellery on last when getting ready, and remove it first when returning home.",
             "For everyday cleaning, gently wipe pieces with a soft microfibre cloth. For a deeper clean, soak gold jewellery in warm water with a drop of mild soap, then dry with a lint-free cloth.",
-            "Bring your jewellery in for a professional polish once a year. Our atelier offers complimentary cleaning and inspection for every piece purchased at Maison Aurum."
+            "Bring your jewellery in for a professional polish once a year. Our atelier offers complimentary cleaning and inspection for every piece purchased at Sahajanand Jewellers."
         ]
     },
     {
@@ -167,7 +167,7 @@ BLOGS = [
             "Buying fine jewellery is an emotional decision — but a few simple rules help you choose with confidence. Start with purpose: is this piece for daily wear, an occasion, or a long-term investment?",
             "For daily wear, choose 18K gold. It's durable and holds gemstones securely. For investment or bridal pieces, 22K and 24K gold offer higher purity.",
             "When buying diamonds, focus on cut first — it's what gives a stone its brilliance. Carat weight matters less than how the diamond catches light.",
-            "Always ask for a certificate. Every Maison Aurum piece comes with a BIS Hallmark and a detailed authenticity card listing metal, weight, and gemstone grades."
+            "Always ask for a certificate. Every Sahajanand Jewellers piece comes with a BIS Hallmark and a detailed authenticity card listing metal, weight, and gemstone grades."
         ]
     }
 ]
@@ -214,7 +214,7 @@ TESTIMONIALS = [
     {
         "image": "/assets/insta-3.jpg",
         "name": "Diya Kapoor",
-        "quote": "Every gift from Aurum feels special."
+        "quote": "Every gift from Sahajanand feels special."
     },
     {
         "image": "/assets/insta-5.jpg",
@@ -311,7 +311,7 @@ GALLERY = [
         "title": "Jewellery Journal",
         "image": "/assets/insta-1.jpg",
         "category": "Lifestyle",
-        "description": "Capturing the essence of Maison Aurum.",
+        "description": "Capturing the essence of Sahajanand Jewellers.",
         "order": 5
     },
     {
@@ -357,7 +357,7 @@ policies_data = [
             {
                 "heading": "How It Works",
                 "body": [
-                    "Visit any Maison Aurum boutique or contact our concierge to initiate an exchange.",
+                    "Visit any Sahajanand Jewellers boutique or contact our concierge to initiate an exchange.",
                     "Your piece will be inspected by our atelier within 3 working days.",
                     "On approval, you may exchange for any item of equal or higher value, paying only the difference."
                 ]
@@ -425,7 +425,7 @@ policies_data = [
                 "heading": "Your Rights",
                 "body": [
                     "You may request access, correction, or deletion of your data at any time.",
-                    "Write to privacy@maisonaurum.com and we will respond within 7 working days.",
+                    "Write to privacy@sahajanandjewellers.com and we will respond within 7 working days.",
                     "We never sell your information to third parties."
                 ]
             }
@@ -439,7 +439,7 @@ policies_data = [
             {
                 "heading": "General",
                 "body": [
-                    "All purchases are subject to availability and acceptance of order by Maison Aurum.",
+                    "All purchases are subject to availability and acceptance of order by Sahajanand Jewellers.",
                     "Prices, photographs, and descriptions are for guidance and may vary slightly from the final piece.",
                     "All pieces are handcrafted, so minor variations are part of their character."
                 ]
@@ -454,7 +454,7 @@ policies_data = [
             {
                 "heading": "Intellectual Property",
                 "body": [
-                    "All designs, photographs, and content on this site belong to Maison Aurum.",
+                    "All designs, photographs, and content on this site belong to Sahajanand Jewellers.",
                     "Reproduction without written permission is not permitted."
                 ]
             },

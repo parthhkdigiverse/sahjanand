@@ -18,7 +18,7 @@ async def seed_contact():
         "boutique_address_line1": "14 Marine Drive",
         "boutique_address_line2": "Colaba, Mumbai 400001",
         "concierge_phone": "+91 22 4000 0000",
-        "inquiries_email": "hello@maisonaurum.com",
+        "inquiries_email": "hello@sahajanandjewellers.com",
         "opening_hours_line1": "Tue – Sat · 11:00 – 19:00",
         "opening_hours_line2": "Sun & Mon · Private Appointments Only",
         "map_embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3774.215577626993!2d72.82298781538337!3d18.921389787176527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7d1e89ce4b87f%3A0xc3ec5bf4d28dc124!2sMarine%20Drive!5e0!3m2!1sen!2sin!4v1682348572883!5m2!1sen!2sin"

@@ -66,7 +66,7 @@ function AdminGallery() {
   }, [settings]);
 
   const settingsMutation = useMutation({
-    mutationFn: (data: any) => updateGallerySettings(data, localStorage.getItem("maison_aurum_admin_token") || ""),
+    mutationFn: (data: any) => updateGallerySettings(data, localStorage.getItem("sahajanand_jewellers_admin_token") || ""),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gallery-settings"] });
       toast.success("Gallery header updated");

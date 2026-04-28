@@ -17,7 +17,7 @@ export function InstagramFeed() {
   return (
     <section className="container-luxe py-24 md:py-32">
       <div className="text-center mb-14">
-        <p className="divider-gold mb-5">{settings?.instagram_eyebrow || "@maisonaurum"}</p>
+        <p className="divider-gold mb-5">{settings?.instagram_eyebrow || "@sahajanandjewellers"}</p>
         <h2 className="font-serif text-4xl md:text-5xl mb-3">{settings?.instagram_heading || "Follow Us on Instagram"}</h2>
         <p className="text-sm text-muted-foreground">{settings?.instagram_subheading || "A glimpse into our world"}</p>
       </div>

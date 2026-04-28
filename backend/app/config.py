@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     MONGO_URL: str
     BACKEND_PORT: int = 8000
     DEBUG: bool = True
-    APP_NAME: str = "Sahjanand Backend"
+    APP_NAME: str = "Sahajanand Backend"
     JWT_SECRET: str = "supersecretjwtkey12345"
     ADMIN_ID: str = "Admin"
     ADMIN_PASSWORD: str = "Admin123"

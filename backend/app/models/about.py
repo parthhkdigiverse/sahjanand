@@ -13,7 +13,7 @@ class AboutData(BaseModel):
     story_heading: str = "Made by hand. Made to last."
     story_eyebrow: str = "Our Studio"
     story_paragraphs: List[str] = [
-        "Maison Aurum was started in Mumbai in 1924 by a young goldsmith who believed jewellery should outlive its wearer. Today, four generations on, we still believe the same thing.",
+        "Sahajanand Jewellers was started in Mumbai in 1924 by a young goldsmith who believed jewellery should outlive its wearer. Today, four generations on, we still believe the same thing.",
         "We don't follow trends and we don't make in bulk. Every piece is finished by hand by an artisan whose name is on the certificate. A quiet promise between the maker, the wearer, and time.",
         "From the gold we choose to the diamonds we set, each decision serves one idea: what you wear today should be worth passing down tomorrow."
     ]
