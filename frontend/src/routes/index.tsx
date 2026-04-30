@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { LeadCapture } from "@/components/LeadCapture";
-import { GoldRates } from "@/components/GoldRates";
 import { FeaturedProducts } from "@/components/FeaturedProducts";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { GoogleReviews } from "@/components/GoogleReviews";
@@ -14,7 +13,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Heirloom gold and diamond jewellery from Sahajanand Jewellers' atelier in Nadiad. Browse rings, necklaces, earrings and bracelets — and view today's gold rate.",
+          "Heirloom gold and diamond jewellery from Sahajanand Jewellers' atelier in Nadiad. Browse rings, necklaces, earrings and bracelets.",
       },
     ],
   }),
@@ -26,7 +25,6 @@ function Index() {
     <>
       <HeroCarousel />
       <LeadCapture />
-      <GoldRates />
       <FeaturedProducts />
       <InstagramFeed />
       <GoogleReviews />

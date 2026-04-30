@@ -51,12 +51,7 @@ class SettingsBase(BaseModel):
     testimonials_heading: str = "Voices of Trust"
     testimonials_subheading: str = "Our Customers"
 
-    # Gold Price Settings
-    gold_price_source: str = "manual"  # "manual" or "api"
-    manual_price_24k: float = 7780.0
-    manual_price_22k: float = 7140.0
-    manual_price_18k: float = 5840.0
-    gold_price_api_key: Optional[str] = None
+    # Gold Price Settings removed
 
     # Atelier Promise Settings
     promise_title: str = "Atelier Promise"

@@ -28,11 +28,6 @@ const item = {
 function AdminDashboard() {
   const navigate = useNavigate({ from: "/admin/" });
 
-  const { data: goldPrices } = useQuery({
-    queryKey: ["gold-prices"],
-    queryFn: () => fetch(`${API_BASE}/gold-prices/`).then(res => res.json())
-  });
-
   const { data: products } = useQuery({
     queryKey: ["products"],
     queryFn: () => fetch(`${API_BASE}/products/`).then(res => res.json())
@@ -52,7 +47,6 @@ function AdminDashboard() {
     { title: "Total Products", value: products?.length || 0, icon: Package, trend: "Inventory" },
     { title: "Gallery Items", value: galleryItems?.length || 0, icon: Sparkles, trend: "Visuals" },
     { title: "Total Blogs", value: blogs?.length || 0, icon: FileText, trend: "Editorial" },
-    { title: "Gold Rate (22K)", value: goldPrices ? `₹${goldPrices.price_22k.toLocaleString('en-IN')}` : "Fetching...", icon: TrendingUp, trend: "Real-time" },
   ];
 
   return (
@@ -118,7 +112,6 @@ function AdminDashboard() {
                 {[
                   { action: "New product added", item: "Diamond Ring", time: "2 hours ago", status: "Active" },
                   { action: "Newsletter sent", item: "Spring Collection", time: "5 hours ago", status: "Sent" },
-                  { action: "Price updated", item: "24K Gold", time: "Yesterday", status: "Updated" },
                 ].map((log, i) => (
                   <div key={i} className="flex gap-6 items-center group">
                     <div className="h-12 w-12 rounded-2xl bg-onyx/5 flex items-center justify-center text-onyx/40 group-hover:bg-gold group-hover:text-onyx transition-all duration-500">

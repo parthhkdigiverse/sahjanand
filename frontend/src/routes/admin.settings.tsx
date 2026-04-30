@@ -76,43 +76,8 @@ function AdminSettings() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Market Rates - Column */}
-        <div className="lg:col-span-4">
-          <Card className="h-full border-onyx/5 shadow-sm">
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-2">
-                <Coins className="h-4 w-4 text-gold" />
-                <CardTitle className="text-sm font-bold uppercase tracking-wider">Gold Rates (per gram)</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[
-                { key: 'manual_price_24k', label: '24K Rate' },
-                { key: 'manual_price_22k', label: '22K Rate' },
-                { key: 'manual_price_18k', label: '18K Rate' }
-              ].map((rate) => (
-                <div key={rate.key} className="space-y-1.5">
-                  <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">{rate.label}</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-onyx/30 text-xs">₹</span>
-                    <Input 
-                      type="number"
-                      value={(formData as any)[rate.key]}
-                      onChange={(e) => setFormData({...formData, [rate.key]: parseFloat(e.target.value)})}
-                      className="pl-7 h-10 bg-onyx/[0.02] border-onyx/10 focus:border-gold/50 text-sm font-medium"
-                    />
-                  </div>
-                </div>
-              ))}
-              <div className="mt-4 p-3 bg-gold/5 rounded-lg border border-gold/10">
-                <p className="text-[10px] text-onyx/40 leading-relaxed italic text-center">Rates are globally updated across the platform instantly.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Connectivity & Social - Column */}
-        <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="border-onyx/5 shadow-sm">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-2">

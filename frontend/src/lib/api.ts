@@ -288,12 +288,7 @@ export type SiteSettings = {
   popup_description: string;
   popup_button_text: string;
   form_fields: FormField[];
-  // Gold Price Settings
-  gold_price_source: 'manual' | 'api';
-  manual_price_24k: number;
-  manual_price_22k: number;
-  manual_price_18k: number;
-  gold_price_api_key?: string;
+  // Gold Price Settings removed
   offer_button_text: string;
   offer_footer_text: string;
   contact_address: string;
@@ -398,20 +393,7 @@ export async function fetchInstagramPosts(): Promise<InstagramPost[]> {
   return res.json();
 }
 
-// Gold Prices
-export type GoldPriceResponse = {
-  price_24k: number;
-  price_22k: number;
-  price_18k: number;
-  change: number;
-  source: string;
-};
-
-export async function fetchGoldPrices(): Promise<GoldPriceResponse> {
-  const res = await fetch(`${API_BASE}/gold-prices/`);
-  if (!res.ok) throw new Error("Failed to fetch gold prices");
-  return res.json();
-}
+// Gold Prices removed
 // Offers (Dynamic Promotions)
 export type Offer = {
   _id: string;
