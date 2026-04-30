@@ -95,7 +95,25 @@ function AdminSettings() {
                   placeholder="+91..."
                 />
               </div>
-              <p className="text-[10px] text-onyx/40 leading-relaxed italic">Used for direct product inquiries on the public website.</p>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">Video Call URL</Label>
+                <Input 
+                  value={formData.videocall_url || ""}
+                  onChange={(e) => setFormData({...formData, videocall_url: e.target.value})}
+                  className="h-10 bg-onyx/[0.02] border-onyx/10 focus:border-gold/50 text-sm"
+                  placeholder="https://calendly.com/..."
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">Chat URL (Optional)</Label>
+                <Input 
+                  value={formData.chat_url || ""}
+                  onChange={(e) => setFormData({...formData, chat_url: e.target.value})}
+                  className="h-10 bg-onyx/[0.02] border-onyx/10 focus:border-gold/50 text-sm"
+                  placeholder="Leave empty to use WhatsApp"
+                />
+              </div>
+              <p className="text-[10px] text-onyx/40 leading-relaxed italic">Configures the floating concierge widget links.</p>
             </CardContent>
           </Card>
 

@@ -37,6 +37,8 @@ class SettingsBase(BaseModel):
     twitter_url: str = "#"
     youtube_url: str = "#"
     whatsapp_number: str = "+91 95123 06199"
+    videocall_url: str = ""
+    chat_url: str = ""
 
     # Instagram Section Settings
     instagram_eyebrow: str = "@sahajanandjewellers"

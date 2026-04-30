@@ -102,12 +102,22 @@ function AdminContacts() {
     },
   });
 
-  const filteredInquiries = inquiries?.filter(i => {
+  const videoCalls = inquiries?.filter(i => i.type === "VIDEO_CALL");
+  const standardInquiries = inquiries?.filter(i => i.type !== "VIDEO_CALL");
+
+  const filteredInquiries = standardInquiries?.filter(i => {
     const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       i.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       i.subject.toLowerCase().includes(searchTerm.toLowerCase());
     
     if (inquiryFilter === "unread") return matchesSearch && !i.is_read;
+    return matchesSearch;
+  });
+
+  const filteredVideoCalls = videoCalls?.filter(i => {
+    const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      i.phone?.includes(searchTerm) ||
+      i.preferred_date?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -129,7 +139,7 @@ function AdminContacts() {
       <header className="flex justify-between items-end">
         <div className="space-y-1">
           <h1 className="text-3xl font-serif text-onyx">Customer Inquiries</h1>
-          <p className="text-muted-foreground text-sm">Manage messages and promotional leads from your customers</p>
+          <p className="text-muted-foreground text-sm">Manage messages, video consultations, and promotional leads</p>
         </div>
       </header>
 
@@ -151,7 +161,11 @@ function AdminContacts() {
         <div className="flex items-center justify-between">
           <TabsList className="bg-onyx/[0.03] p-1 h-12 rounded-xl border border-onyx/5">
             <TabsTrigger value="inquiries" className="px-8 text-[10px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all">
-              Standard Inquiries ({inquiries?.length || 0})
+              Standard Inquiries ({standardInquiries?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="videocalls" className="px-8 text-[10px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
+              Video Consultations ({videoCalls?.length || 0})
+              {videoCalls?.some(v => !v.is_read) && <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />}
             </TabsTrigger>
             <TabsTrigger value="leads" className="px-8 text-[10px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
               Promotional Leads ({leads?.length || 0})
@@ -238,6 +252,93 @@ function AdminContacts() {
                                   deleteInquiryMutation.mutate(inquiry._id);
                                 }
                               }}
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="videocalls" className="space-y-6 outline-none">
+          {!filteredVideoCalls || filteredVideoCalls.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-onyx/5 p-20 flex flex-col items-center gap-4 text-center shadow-sm">
+              <InboxIcon className="h-12 w-12 text-onyx/5" />
+              <p className="font-serif text-onyx/30 italic">No video consultation requests found.</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-onyx/5 shadow-sm overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-onyx/[0.02] border-b border-onyx/5">
+                  <tr>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Status</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Scheduled For</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Customer</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Request Detail</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-onyx/5">
+                  <AnimatePresence mode="popLayout">
+                    {filteredVideoCalls.map((call) => (
+                      <motion.tr
+                        key={call._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className={`hover:bg-ivory/20 transition-colors group ${!call.is_read ? 'bg-gold/[0.02]' : ''}`}
+                      >
+                        <td className="py-5 px-6 align-top">
+                          {!call.is_read ? (
+                            <span className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-gold">
+                              <Circle size={8} className="fill-gold" /> New Request
+                            </span>
+                          ) : (
+                            <span className="text-[8px] font-black uppercase tracking-widest text-onyx/20">
+                              Reviewed
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-onyx font-serif">{call.preferred_date}</span>
+                            <span className="text-[10px] text-onyx/40 font-bold uppercase tracking-widest mt-1">
+                              Received: {new Date(call.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-onyx">{call.name}</span>
+                            <span className="text-[10px] text-onyx/40 font-medium">{call.phone}</span>
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <p className="text-xs text-onyx/50 italic max-w-xs leading-relaxed">
+                            "{call.message}"
+                          </p>
+                        </td>
+                        <td className="py-5 px-6 align-top text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={`h-9 w-9 rounded-lg ${call.is_read ? 'text-onyx/20' : 'text-gold bg-gold/5 hover:bg-gold/10'}`}
+                              onClick={() => toggleInquiryReadMutation.mutate({ id: call._id, isRead: !call.is_read })}
+                            >
+                              <CheckCircle2 size={14} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-9 w-9 text-red-500/30 hover:text-red-500 hover:bg-red-500/5"
+                              onClick={() => confirm("Remove this consultation request?") && deleteInquiryMutation.mutate(call._id)}
                             >
                               <Trash2 size={14} />
                             </Button>

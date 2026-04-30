@@ -301,6 +301,8 @@ export type SiteSettings = {
   twitter_url: string;
   youtube_url: string;
   whatsapp_number: string;
+  videocall_url?: string;
+  chat_url?: string;
   instagram_eyebrow: string;
   instagram_heading: string;
   instagram_subheading: string;
