@@ -9,6 +9,7 @@ const exploreLinks = [
   { to: "/gallery", label: "Gallery" },
   { to: "/blog", label: "Journal" },
   { to: "/about", label: "About Us" },
+  { to: "/achievements", label: "Achievements" },
   { to: "/contact", label: "Contact Us" },
 ] as const;
 

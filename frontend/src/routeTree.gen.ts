@@ -14,6 +14,7 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AchievementsRouteImport } from './routes/achievements'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -36,6 +37,7 @@ import { Route as AdminContactsRouteImport } from './routes/admin.contacts'
 import { Route as AdminContactPageRouteImport } from './routes/admin.contact-page'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminBlogsRouteImport } from './routes/admin.blogs'
+import { Route as AdminAchievementsRouteImport } from './routes/admin.achievements'
 import { Route as AdminAboutRouteImport } from './routes/admin.about'
 
 const ShopRoute = ShopRouteImport.update({
@@ -61,6 +63,11 @@ const BlogRoute = BlogRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AchievementsRoute = AchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -173,6 +180,11 @@ const AdminBlogsRoute = AdminBlogsRouteImport.update({
   path: '/blogs',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAchievementsRoute = AdminAchievementsRouteImport.update({
+  id: '/achievements',
+  path: '/achievements',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAboutRoute = AdminAboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -182,12 +194,14 @@ const AdminAboutRoute = AdminAboutRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/achievements': typeof AchievementsRoute
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/shop': typeof ShopRoute
   '/admin/about': typeof AdminAboutRoute
+  '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/blogs': typeof AdminBlogsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact-page': typeof AdminContactPageRoute
@@ -212,10 +226,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/achievements': typeof AchievementsRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/shop': typeof ShopRoute
   '/admin/about': typeof AdminAboutRoute
+  '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/blogs': typeof AdminBlogsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact-page': typeof AdminContactPageRoute
@@ -241,12 +257,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/achievements': typeof AchievementsRoute
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/shop': typeof ShopRoute
   '/admin/about': typeof AdminAboutRoute
+  '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/blogs': typeof AdminBlogsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/contact-page': typeof AdminContactPageRoute
@@ -273,12 +291,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/achievements'
     | '/admin'
     | '/blog'
     | '/contact'
     | '/gallery'
     | '/shop'
     | '/admin/about'
+    | '/admin/achievements'
     | '/admin/blogs'
     | '/admin/categories'
     | '/admin/contact-page'
@@ -303,10 +323,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/achievements'
     | '/contact'
     | '/gallery'
     | '/shop'
     | '/admin/about'
+    | '/admin/achievements'
     | '/admin/blogs'
     | '/admin/categories'
     | '/admin/contact-page'
@@ -331,12 +353,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/achievements'
     | '/admin'
     | '/blog'
     | '/contact'
     | '/gallery'
     | '/shop'
     | '/admin/about'
+    | '/admin/achievements'
     | '/admin/blogs'
     | '/admin/categories'
     | '/admin/contact-page'
@@ -362,6 +386,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AchievementsRoute: typeof AchievementsRoute
   AdminRoute: typeof AdminRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
   ContactRoute: typeof ContactRoute
@@ -406,6 +431,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/achievements': {
+      id: '/achievements'
+      path: '/achievements'
+      fullPath: '/achievements'
+      preLoaderRoute: typeof AchievementsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -562,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/achievements': {
+      id: '/admin/achievements'
+      path: '/achievements'
+      fullPath: '/admin/achievements'
+      preLoaderRoute: typeof AdminAchievementsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/about': {
       id: '/admin/about'
       path: '/about'
@@ -574,6 +613,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAboutRoute: typeof AdminAboutRoute
+  AdminAchievementsRoute: typeof AdminAchievementsRoute
   AdminBlogsRoute: typeof AdminBlogsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminContactPageRoute: typeof AdminContactPageRoute
@@ -594,6 +634,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAboutRoute: AdminAboutRoute,
+  AdminAchievementsRoute: AdminAchievementsRoute,
   AdminBlogsRoute: AdminBlogsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminContactPageRoute: AdminContactPageRoute,
@@ -629,6 +670,7 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AchievementsRoute: AchievementsRoute,
   AdminRoute: AdminRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
   ContactRoute: ContactRoute,

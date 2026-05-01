@@ -161,6 +161,14 @@ export type GallerySettings = {
   subheading: string;
 };
 
+export type Achievement = {
+  _id: string;
+  title: string;
+  description: string;
+  image: string;
+  order: number;
+};
+
 export async function fetchProducts(): Promise<Product[]> {
   const res = await fetch(`${API_BASE}/products/`);
   if (!res.ok) throw new Error("Failed to fetch products");
@@ -554,5 +562,35 @@ export async function deletePolicy(id: string, token: string) {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete policy");
+  return res.json();
+}
+
+// --- Achievements API ---
+export async function fetchAchievements(): Promise<Achievement[]> {
+  const res = await fetch(`${API_BASE}/achievements/`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function createAchievement(data: Omit<Achievement, "_id">, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/achievements/`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updateAchievement(id: string, data: Partial<Achievement>, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/achievements/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteAchievement(id: string, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/achievements/${id}`, {
+    method: "DELETE",
+  });
   return res.json();
 }
