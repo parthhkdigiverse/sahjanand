@@ -34,17 +34,17 @@ function About() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative h-[70vh] min-h-[480px] overflow-hidden">
+      <section className="relative w-full overflow-hidden pt-[104px] md:pt-0 md:h-[70vh] md:min-h-[480px] bg-onyx">
         <img 
           src={data.hero_image ? getImageUrl(data.hero_image) : heroFallback} 
           alt="Sahajanand Jewellers" 
-          className="absolute inset-0 h-full w-full object-cover" 
+          className="w-full h-auto block md:absolute md:inset-0 md:h-full md:w-full md:object-cover" 
         />
         <div className="absolute inset-0 bg-onyx/40" />
-        <div className="relative z-10 h-full flex items-end pb-20 container-luxe">
-          <div className="text-ivory max-w-2xl">
-            <p className="divider-gold mb-5">{data.hero_eyebrow}</p>
-            <h1 className="font-serif text-5xl md:text-7xl leading-[1.05]">
+        <div className="absolute inset-0 z-10 flex items-center md:items-end justify-center md:justify-start pb-0 md:pb-20 pt-[104px] md:pt-0 text-center md:text-left container-luxe px-4">
+          <div className="text-ivory max-w-2xl mx-auto md:mx-0 w-full" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>
+            <p className="divider-gold mb-2 md:mb-5 text-[10px] md:text-xs uppercase font-bold justify-center md:justify-start">{data.hero_eyebrow}</p>
+            <h1 className="font-serif text-3xl md:text-7xl leading-[1.05]">
               {data.hero_heading}
             </h1>
           </div>

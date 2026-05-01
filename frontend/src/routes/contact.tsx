@@ -111,30 +111,32 @@ function Contact() {
 
   return (
     <div className="bg-ivory/30 min-h-screen">
-      <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden pt-20">
-        <div className="absolute inset-0">
+      <section className="relative w-full overflow-hidden pt-[104px] md:pt-0 md:h-[60vh] md:min-h-[500px] flex items-center justify-center bg-onyx">
+        <div className="md:absolute md:inset-0 w-full h-auto block">
           <img 
             src={getImageUrl(contactData?.hero_image || "/assets/hero-3.jpg")} 
             alt="Sahajanand Jewellers Atelier" 
-            className="w-full h-full object-cover"
+            className="w-full h-auto block md:h-full md:w-full md:object-cover"
           />
           <div className="absolute inset-0 bg-onyx/60" />
         </div>
         
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <p className="text-gold uppercase tracking-[0.3em] text-xs font-bold mb-6 flex items-center justify-center gap-4">
-            <span className="w-12 h-px bg-gold/50"></span>
-            {contactData?.hero_eyebrow || ""}
-            <span className="w-12 h-px bg-gold/50"></span>
-          </p>
-          <h1 className="font-serif text-5xl md:text-7xl text-ivory mb-6 leading-tight">
-            {contactData?.hero_heading ? (
-              <div dangerouslySetInnerHTML={{ __html: contactData.hero_heading.replace("Experience", '<span class="italic text-gold">Experience</span>') }} />
-            ) : null}
-          </h1>
-          <p className="text-ivory/70 max-w-xl mx-auto font-light text-sm md:text-base">
-            {contactData?.hero_description || ""}
-          </p>
+        <div className="absolute inset-0 z-10 flex items-center justify-center pt-[104px] md:pt-0">
+          <div className="text-center px-4 max-w-4xl mx-auto w-full" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>
+            <p className="text-gold uppercase tracking-[0.3em] text-[10px] md:text-xs font-bold mb-3 md:mb-6 flex items-center justify-center gap-4">
+              <span className="w-8 md:w-12 h-px bg-gold/50"></span>
+              {contactData?.hero_eyebrow || ""}
+              <span className="w-8 md:w-12 h-px bg-gold/50"></span>
+            </p>
+            <h1 className="font-serif text-3xl md:text-7xl text-ivory mb-2 md:mb-6 leading-tight">
+              {contactData?.hero_heading ? (
+                <div dangerouslySetInnerHTML={{ __html: contactData.hero_heading.replace("Experience", '<span class="italic text-gold">Experience</span>') }} />
+              ) : null}
+            </h1>
+            <p className="text-ivory/90 max-w-xl mx-auto font-light text-xs md:text-base">
+              {contactData?.hero_description || ""}
+            </p>
+          </div>
         </div>
       </section>
 
