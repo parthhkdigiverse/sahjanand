@@ -6,6 +6,7 @@ import { FeaturedProducts } from "@/components/FeaturedProducts";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { GoogleReviews } from "@/components/GoogleReviews";
 import { VideoTestimonials } from "@/components/VideoTestimonials";
+import { BrandShowcase } from "@/components/BrandShowcase";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,6 +28,7 @@ function Index() {
       <HeroCarousel />
       <TrustStrip />
       <LeadCapture />
+      <BrandShowcase />
       <FeaturedProducts />
       <InstagramFeed />
       <GoogleReviews />

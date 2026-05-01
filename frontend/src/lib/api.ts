@@ -321,6 +321,10 @@ export type SiteSettings = {
   testimonials_subheading: string;
   show_announcement: boolean;
   announcement_text: string;
+  show_brand_showcase: boolean;
+  showcase_video_url: string;
+  showcase_title: string;
+  showcase_description: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {

@@ -153,6 +153,50 @@ function AdminSettings() {
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
+                  <Youtube className="h-4 w-4 text-gold" />
+                  <CardTitle className="text-sm font-bold uppercase tracking-wider">Brand Showcase</CardTitle>
+                </div>
+                <Switch 
+                  checked={formData.show_brand_showcase || false}
+                  onCheckedChange={(checked) => setFormData({...formData, show_brand_showcase: checked})}
+                />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">Showcase Title</Label>
+                <Input 
+                  value={formData.showcase_title || ""}
+                  onChange={(e) => setFormData({...formData, showcase_title: e.target.value})}
+                  className="h-10 bg-onyx/[0.02] border-onyx/10 focus:border-gold/50 text-sm"
+                  placeholder="The Art of Sahajanand"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">Video URL (YouTube)</Label>
+                <Input 
+                  value={formData.showcase_video_url || ""}
+                  onChange={(e) => setFormData({...formData, showcase_video_url: e.target.value})}
+                  className="h-10 bg-onyx/[0.02] border-onyx/10 focus:border-gold/50 text-sm"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">Showcase Description</Label>
+                <textarea 
+                  value={formData.showcase_description || ""}
+                  onChange={(e) => setFormData({...formData, showcase_description: e.target.value})}
+                  className="w-full min-h-[100px] p-3 rounded-lg bg-onyx/[0.02] border border-onyx/10 focus:border-gold/50 text-sm outline-none transition-all resize-none"
+                  placeholder="Tell your brand's story..."
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-onyx/5 shadow-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <Megaphone className="h-4 w-4 text-gold" />
                   <CardTitle className="text-sm font-bold uppercase tracking-wider">Announcement Bar</CardTitle>
                 </div>

@@ -63,5 +63,11 @@ class SettingsBase(BaseModel):
     promise_title: str = "Atelier Promise"
     promise_text: str = "Every piece is hallmarked, certified and accompanied by a lifetime care service."
 
+    # Brand Showcase Settings
+    show_brand_showcase: bool = True
+    showcase_video_url: str = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    showcase_title: str = "The Art of Sahajanand"
+    showcase_description: str = "Discover the journey of a thousand diamonds, meticulously crafted into timeless heirlooms. Our atelier in Nadiad preserves centuries-old techniques while embracing modern elegance."
+
 class Settings(SettingsBase):
     pass
