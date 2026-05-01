@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Play, Volume2, VolumeX } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -23,9 +23,19 @@ export function BrandShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const videoId = settings?.showcase_video_url ? getYoutubeId(settings.showcase_video_url) : "dQw4w9WgXcQ";
+  const isInView = useInView(containerRef, { amount: 0.3 });
 
   useEffect(() => {
-    // Load YouTube API if not already loaded
+    if (playerRef.current && typeof playerRef.current.playVideo === "function") {
+      if (isInView) {
+        playerRef.current.playVideo();
+      } else {
+        playerRef.current.pauseVideo();
+      }
+    }
+  }, [isInView]);
+
+  useEffect(() => {
     if (!window.YT) {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
@@ -33,15 +43,15 @@ export function BrandShowcase() {
       firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
     }
 
-    window.onYouTubeIframeAPIReady = () => {
-      initPlayer();
-    };
-
-    if (window.YT && window.YT.Player) {
-      initPlayer();
-    }
+    const interval = setInterval(() => {
+      if (window.YT && window.YT.Player) {
+        initPlayer();
+        clearInterval(interval);
+      }
+    }, 100);
 
     return () => {
+      clearInterval(interval);
       if (playerRef.current) {
         playerRef.current.destroy();
       }
@@ -58,22 +68,32 @@ export function BrandShowcase() {
         controls: 0,
         rel: 0,
         modestbranding: 1,
-        loop: 1,
-        playlist: videoId,
+        loop: 0, // Manual loop below
         mute: 1,
         enablejsapi: 1,
         iv_load_policy: 3,
         fs: 0,
         autohide: 1,
+        playsinline: 1,
       },
       events: {
         onReady: (event: any) => {
           event.target.mute();
-          event.target.playVideo();
+          if (isInView) {
+            event.target.playVideo();
+            // Force play again after a short delay to bypass some browser blocks
+            setTimeout(() => {
+              if (event.target.getPlayerState() !== 1) {
+                event.target.playVideo();
+              }
+            }, 1000);
+          }
         },
         onStateChange: (event: any) => {
           if (event.data === window.YT.PlayerState.PLAYING) {
             setIsPlaying(true);
+          } else if (event.data === window.YT.PlayerState.ENDED) {
+            event.target.playVideo(); // Manual loop
           } else {
             setIsPlaying(false);
           }
@@ -88,19 +108,14 @@ export function BrandShowcase() {
     return match && match[2].length === 11 ? match[2] : null;
   }
 
-  const togglePlay = () => {
-    if (!playerRef.current) return;
-    if (isPlaying) {
-      playerRef.current.pauseVideo();
-    } else {
-      playerRef.current.playVideo();
-    }
-  };
+
 
   const toggleMute = () => {
     if (!playerRef.current) return;
     if (isMuted) {
       playerRef.current.unMute();
+      playerRef.current.setVolume(100);
+      playerRef.current.playVideo(); // Force play on unmute
       setIsMuted(false);
     } else {
       playerRef.current.mute();
@@ -159,49 +174,28 @@ export function BrandShowcase() {
               <div className="absolute inset-0 w-full h-full pointer-events-none">
                 <div 
                   id="showcase-player" 
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[130%] scale-110" 
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] scale-110" 
                 />
               </div>
               
-              {/* Invisible interaction blocker and custom play trigger */}
+              {/* Opaque cover that fades out only when video is actually playing */}
+              {/* Note: We keep this as a permanent interaction blocker (no pointer-events-none) to hide YouTube icons */}
               <div 
-                className={`absolute inset-0 z-10 cursor-pointer transition-colors duration-500 ${!isPlaying ? "bg-onyx/40 backdrop-blur-[2px]" : "bg-transparent"}`}
-                onClick={togglePlay}
+                className={`absolute inset-0 z-10 transition-opacity duration-1000 bg-onyx ${isPlaying ? "opacity-0" : "opacity-100"}`}
+              />
+
+              {/* Mute/Unmute Button - Positioned top-right to match testimonials */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleMute();
+                }}
+                className="absolute top-6 right-6 h-12 w-12 rounded-full bg-onyx/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-ivory hover:bg-gold hover:text-onyx transition-all z-20 shadow-xl"
               >
-                {!isPlaying && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-ivory group-hover:scale-110 group-hover:bg-gold group-hover:text-onyx transition-all duration-500">
-                      <Play size={32} className="ml-1 fill-current" />
-                    </div>
-                  </div>
-                )}
-              </div>
+                {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </button>
 
-              {/* Mute/Unmute Button */}
-              {isPlaying && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleMute();
-                  }}
-                  className="absolute bottom-6 right-6 h-12 w-12 rounded-full bg-onyx/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-ivory hover:bg-gold hover:text-onyx transition-all z-20 shadow-xl"
-                >
-                  {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                </button>
-              )}
 
-              {/* Pause Button (Visible on Hover) */}
-              {isPlaying && (
-                <div 
-                  className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer bg-onyx/20"
-                  onClick={togglePlay}
-                >
-                  <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-ivory">
-                    <div className="w-1 h-6 bg-current rounded-full mx-1" />
-                    <div className="w-1 h-6 bg-current rounded-full mx-1" />
-                  </div>
-                </div>
-              )}
             </div>
 
           </motion.div>

@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { motion, useInView } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import { Play, X, ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -32,8 +33,12 @@ export function VideoTestimonials() {
     Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true })
   ]);
   
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { amount: 0.1 });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
   const players = useRef<Map<string, any>>(new Map());
 
   // Load YouTube API
@@ -43,18 +48,64 @@ export function VideoTestimonials() {
       tag.src = "https://www.youtube.com/iframe_api";
       document.head.appendChild(tag);
     }
+    
+    const interval = setInterval(() => {
+      if (window.YT && window.YT.Player) {
+        setPlayerReady(true);
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => {
+      clearInterval(interval);
+      players.current.forEach(player => {
+        try { player.destroy(); } catch (e) {}
+      });
+    };
   }, []);
+
+  // Handle Play/Pause based on visibility
+  useEffect(() => {
+    const autoplay = emblaApi?.plugins().autoplay;
+    
+    if (isInView) {
+      // Resume carousel if no video is playing
+      if (!isPlaying) {
+        autoplay?.play();
+      }
+      // Play current video
+      const elementId = `yt-player-${selectedIndex}`;
+      const player = players.current.get(elementId);
+      if (player && typeof player.playVideo === "function") {
+        player.playVideo();
+      }
+    } else {
+      // Pause everything when out of view
+      autoplay?.stop();
+      players.current.forEach(player => {
+        try {
+          if (typeof player.pauseVideo === "function") {
+            player.pauseVideo();
+          }
+        } catch (e) {}
+      });
+    }
+  }, [isInView, emblaApi, selectedIndex, isPlaying]);
 
   const onPlayerStateChange = (event: any) => {
     const autoplay = emblaApi?.plugins().autoplay;
 
     // YT.PlayerState.PLAYING = 1
     if (event.data === 1) {
+      setIsPlaying(true);
       autoplay?.stop();
     } 
     // YT.PlayerState.PAUSED = 2, ENDED = 0
-    else if (event.data === 2 || event.data === 0) {
-      autoplay?.play();
+    else {
+      setIsPlaying(false);
+      if (isInView) {
+        autoplay?.play();
+      }
     }
 
     // YT.PlayerState.ENDED = 0
@@ -68,15 +119,20 @@ export function VideoTestimonials() {
     setIsMuted(nextMuted);
     players.current.forEach(player => {
       try {
-        if (nextMuted) player.mute();
-        else player.unMute();
+        if (nextMuted) {
+          player.mute();
+        } else {
+          player.unMute();
+          player.setVolume(100);
+          player.playVideo();
+        }
       } catch (e) {
         // Player might not be ready or destroyed
       }
     });
   };
 
-  const initPlayer = (elementId: string, videoId: string) => {
+  const initPlayer = useCallback((elementId: string, videoId: string) => {
     if (!window.YT || !window.YT.Player || !document.getElementById(elementId)) return;
     
     // If player exists for this element, destroy it first to be clean
@@ -90,24 +146,40 @@ export function VideoTestimonials() {
       videoId: videoId,
       playerVars: {
         autoplay: 1,
-        controls: 1,
+        controls: 0,
         rel: 0,
         modestbranding: 1,
         iv_load_policy: 3,
         enablejsapi: 1,
-        mute: isMuted ? 1 : 0
+        mute: 1, // Force mute for autoplay compliance
+        playsinline: 1,
+        showinfo: 0,
       },
       events: {
         onStateChange: onPlayerStateChange,
         onReady: (e: any) => {
+          // Sync with component mute state
           if (isMuted) e.target.mute();
-          else e.target.unMute();
+          else {
+            e.target.unMute();
+            e.target.setVolume(100);
+          }
+          
           e.target.playVideo();
+          
+          // Force play again after a short delay to bypass some browser blocks
+          setTimeout(() => {
+            if (e.target && typeof e.target.getPlayerState === "function") {
+              if (e.target.getPlayerState() !== 1) {
+                e.target.playVideo();
+              }
+            }
+          }, 1000);
         }
       }
     });
     players.current.set(elementId, player);
-  };
+  }, [isMuted, onPlayerStateChange]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -115,6 +187,7 @@ export function VideoTestimonials() {
     const onSelect = () => {
       const index = emblaApi.selectedScrollSnap();
       setSelectedIndex(index);
+      setIsPlaying(false);
     };
 
     emblaApi.on("select", onSelect);
@@ -126,14 +199,37 @@ export function VideoTestimonials() {
 
   const getYoutubeId = (url: string) => {
     if (!url) return "";
-    if (url.includes("v=")) return url.split("v=")[1].split("&")[0];
-    return url.split("/").pop() || "";
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
   };
 
   const displayTestimonials = useMemo(() => {
     if (testimonials.length === 0) return [];
     return testimonials.length <= 5 ? [...testimonials, ...testimonials] : testimonials;
   }, [testimonials]);
+
+  // Initialize player when centered and in view
+  useEffect(() => {
+    if (!isInView || !playerReady || testimonials.length === 0) return;
+
+    const currentTestimonial = displayTestimonials[selectedIndex];
+    if (!currentTestimonial || !currentTestimonial.video_url) return;
+
+    const videoId = getYoutubeId(currentTestimonial.video_url);
+    if (!videoId) return;
+
+    const elementId = `yt-player-${selectedIndex}`;
+
+    // If player already exists, just make sure it's playing (handled by visibility effect)
+    if (players.current.has(elementId)) return;
+
+    const timer = setTimeout(() => {
+      initPlayer(elementId, videoId);
+    }, 300); // Increased timeout for DOM readiness
+
+    return () => clearTimeout(timer);
+  }, [selectedIndex, isInView, playerReady, testimonials, displayTestimonials, initPlayer]);
 
   if (isLoading) {
     return (
@@ -152,7 +248,7 @@ export function VideoTestimonials() {
   }
 
   return (
-    <section className="container-luxe py-24 md:py-32 overflow-hidden">
+    <section className="container-luxe py-24 md:py-32 overflow-hidden" ref={containerRef}>
       <div className="text-center mb-14">
         <p className="divider-gold mb-5">{settings?.testimonials_subheading || "Our Customers"}</p>
         <h2 className="font-serif text-4xl md:text-5xl">{settings?.testimonials_heading || "Voices of Trust"}</h2>
@@ -165,11 +261,6 @@ export function VideoTestimonials() {
               const isCentered = selectedIndex === i;
               const videoId = getYoutubeId(t.video_url);
               const elementId = `yt-player-${i}`;
-              
-              // Initialize player when centered
-              if (isCentered && videoId && window.YT?.Player) {
-                setTimeout(() => initPlayer(elementId, videoId), 100);
-              }
 
               return (
                 <div
@@ -186,12 +277,14 @@ export function VideoTestimonials() {
                       src={getImageUrl(t.image)}
                       alt={t.name}
                       loading="lazy"
-                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isCentered ? "opacity-0" : "opacity-100"}`}
+                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isCentered && isPlaying ? "opacity-0" : "opacity-100"}`}
                     />
 
-                    {isCentered && t.video_url && (
-                      <div className="absolute inset-0">
-                        <div id={elementId} className="absolute -inset-x-[15%] -inset-y-[15%] w-[130%] h-[130%] pointer-events-none object-cover" />
+                    {t.video_url && (
+                      <div className={`absolute inset-0 transition-opacity duration-700 ${isCentered ? "opacity-100" : "opacity-0"}`}>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] pointer-events-none">
+                          <div id={elementId} className="w-full h-full" />
+                        </div>
                         
                         <button
                           onClick={(e) => {
@@ -202,6 +295,9 @@ export function VideoTestimonials() {
                         >
                           {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                         </button>
+                        
+                        {/* Interaction blocker to prevent YouTube icons */}
+                        <div className="absolute inset-0 z-10" />
                       </div>
                     )}
                     
@@ -214,13 +310,7 @@ export function VideoTestimonials() {
                       <p className="text-[10px] tracking-[0.3em] text-gold uppercase font-bold">{t.name}</p>
                     </div>
 
-                    {!isCentered && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="h-14 w-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-ivory">
-                          <Play size={20} className="ml-1 fill-current" />
-                        </div>
-                      </div>
-                    )}
+
                   </div>
                 </div>
               );
@@ -228,18 +318,7 @@ export function VideoTestimonials() {
           </div>
         </div>
 
-        <button
-          onClick={() => emblaApi?.scrollPrev()}
-          className="absolute left-4 lg:-left-12 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-ivory text-onyx shadow-xl hover:bg-gold hover:text-white transition-all flex items-center justify-center z-10"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <button
-          onClick={() => emblaApi?.scrollNext()}
-          className="absolute right-4 lg:-right-12 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-ivory text-onyx shadow-xl hover:bg-gold hover:text-white transition-all flex items-center justify-center z-10"
-        >
-          <ChevronRight size={20} />
-        </button>
+
       </div>
     </section>
   );
