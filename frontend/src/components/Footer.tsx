@@ -10,6 +10,7 @@ const exploreLinks = [
   { to: "/blog", label: "Journal" },
   { to: "/about", label: "About Us" },
   { to: "/achievements", label: "Achievements" },
+  { to: "/nri", label: "NRI Services" },
   { to: "/contact", label: "Contact Us" },
 ] as const;
 

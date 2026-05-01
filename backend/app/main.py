@@ -23,7 +23,8 @@ from .routes import (
     policies as policies_route,
     contact_page,
     newsletter,
-    achievements
+    achievements,
+    nri
 )
 import os
 
@@ -69,6 +70,7 @@ app.include_router(policies_route.router, prefix="/api")
 app.include_router(contact_page.router, prefix="/api")
 app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newsletter"])
 app.include_router(achievements.router, prefix="/api")
+app.include_router(nri.router, prefix="/api/nri", tags=["NRI"])
 
 # Mount uploads directory from frontend to serve static files
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

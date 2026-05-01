@@ -598,3 +598,80 @@ export async function deleteAchievement(id: string, token: string) {
   });
   return res.json();
 }
+
+// --- NRI API ---
+export type BenefitItem = {
+  title: string;
+  description: string;
+};
+
+export type NRIPageData = {
+  hero_image?: string;
+  hero_heading: string;
+  hero_eyebrow: string;
+  intro_heading: string;
+  intro_paragraphs: string[];
+  benefits_image?: string;
+  benefits: BenefitItem[];
+  cta_text: string;
+  cta_link: string;
+};
+
+export async function fetchNRIPageData(): Promise<NRIPageData> {
+  const res = await fetch(`${API_BASE}/nri/`);
+  if (!res.ok) throw new Error("Failed to fetch NRI data");
+  return res.json();
+}
+
+export async function updateNRIPageData(data: NRIPageData, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/nri/`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update NRI data");
+  return res.json();
+}
+
+// --- NRI Leads API ---
+export type NRILead = {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  country: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+};
+
+export async function fetchNRILeads(token: string): Promise<NRILead[]> {
+  const res = await authenticatedFetch(`${API_BASE}/nri/leads`);
+  if (!res.ok) throw new Error("Failed to fetch NRI leads");
+  return res.json();
+}
+
+export async function submitNRILead(data: Omit<NRILead, "_id" | "is_read" | "created_at">) {
+  const res = await fetch(`${API_BASE}/nri/leads`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to submit NRI lead");
+  return res.json();
+}
+
+export async function toggleNRILeadRead(id: string, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/nri/leads/${id}/toggle-read`, {
+    method: "PATCH",
+  });
+  if (!res.ok) throw new Error("Failed to toggle NRI lead status");
+  return res.json();
+}
+
+export async function deleteNRILead(id: string, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/nri/leads/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete NRI lead");
+  return res.json();
+}

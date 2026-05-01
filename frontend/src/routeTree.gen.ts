@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as NriRouteImport } from './routes/nri'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -28,6 +29,7 @@ import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminPoliciesRouteImport } from './routes/admin.policies'
 import { Route as AdminOffersRouteImport } from './routes/admin.offers'
+import { Route as AdminNriRouteImport } from './routes/admin.nri'
 import { Route as AdminNewsletterRouteImport } from './routes/admin.newsletter'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminInstagramRouteImport } from './routes/admin.instagram'
@@ -43,6 +45,11 @@ import { Route as AdminAboutRouteImport } from './routes/admin.about'
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NriRoute = NriRouteImport.update({
+  id: '/nri',
+  path: '/nri',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -135,6 +142,11 @@ const AdminOffersRoute = AdminOffersRouteImport.update({
   path: '/offers',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminNriRoute = AdminNriRouteImport.update({
+  id: '/nri',
+  path: '/nri',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminNewsletterRoute = AdminNewsletterRouteImport.update({
   id: '/newsletter',
   path: '/newsletter',
@@ -199,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/nri': typeof NriRoute
   '/shop': typeof ShopRoute
   '/admin/about': typeof AdminAboutRoute
   '/admin/achievements': typeof AdminAchievementsRoute
@@ -211,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/admin/instagram': typeof AdminInstagramRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
+  '/admin/nri': typeof AdminNriRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/policies': typeof AdminPoliciesRoute
   '/admin/products': typeof AdminProductsRoute
@@ -229,6 +243,7 @@ export interface FileRoutesByTo {
   '/achievements': typeof AchievementsRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/nri': typeof NriRoute
   '/shop': typeof ShopRoute
   '/admin/about': typeof AdminAboutRoute
   '/admin/achievements': typeof AdminAchievementsRoute
@@ -241,6 +256,7 @@ export interface FileRoutesByTo {
   '/admin/instagram': typeof AdminInstagramRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
+  '/admin/nri': typeof AdminNriRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/policies': typeof AdminPoliciesRoute
   '/admin/products': typeof AdminProductsRoute
@@ -262,6 +278,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/nri': typeof NriRoute
   '/shop': typeof ShopRoute
   '/admin/about': typeof AdminAboutRoute
   '/admin/achievements': typeof AdminAchievementsRoute
@@ -274,6 +291,7 @@ export interface FileRoutesById {
   '/admin/instagram': typeof AdminInstagramRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/newsletter': typeof AdminNewsletterRoute
+  '/admin/nri': typeof AdminNriRoute
   '/admin/offers': typeof AdminOffersRoute
   '/admin/policies': typeof AdminPoliciesRoute
   '/admin/products': typeof AdminProductsRoute
@@ -296,6 +314,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/contact'
     | '/gallery'
+    | '/nri'
     | '/shop'
     | '/admin/about'
     | '/admin/achievements'
@@ -308,6 +327,7 @@ export interface FileRouteTypes {
     | '/admin/instagram'
     | '/admin/login'
     | '/admin/newsletter'
+    | '/admin/nri'
     | '/admin/offers'
     | '/admin/policies'
     | '/admin/products'
@@ -326,6 +346,7 @@ export interface FileRouteTypes {
     | '/achievements'
     | '/contact'
     | '/gallery'
+    | '/nri'
     | '/shop'
     | '/admin/about'
     | '/admin/achievements'
@@ -338,6 +359,7 @@ export interface FileRouteTypes {
     | '/admin/instagram'
     | '/admin/login'
     | '/admin/newsletter'
+    | '/admin/nri'
     | '/admin/offers'
     | '/admin/policies'
     | '/admin/products'
@@ -358,6 +380,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/contact'
     | '/gallery'
+    | '/nri'
     | '/shop'
     | '/admin/about'
     | '/admin/achievements'
@@ -370,6 +393,7 @@ export interface FileRouteTypes {
     | '/admin/instagram'
     | '/admin/login'
     | '/admin/newsletter'
+    | '/admin/nri'
     | '/admin/offers'
     | '/admin/policies'
     | '/admin/products'
@@ -391,6 +415,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
+  NriRoute: typeof NriRoute
   ShopRoute: typeof ShopRoute
   PoliciesSlugRoute: typeof PoliciesSlugRoute
   ProductIdRoute: typeof ProductIdRoute
@@ -403,6 +428,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nri': {
+      id: '/nri'
+      path: '/nri'
+      fullPath: '/nri'
+      preLoaderRoute: typeof NriRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -531,6 +563,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOffersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/nri': {
+      id: '/admin/nri'
+      path: '/nri'
+      fullPath: '/admin/nri'
+      preLoaderRoute: typeof AdminNriRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/newsletter': {
       id: '/admin/newsletter'
       path: '/newsletter'
@@ -623,6 +662,7 @@ interface AdminRouteChildren {
   AdminInstagramRoute: typeof AdminInstagramRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNewsletterRoute: typeof AdminNewsletterRoute
+  AdminNriRoute: typeof AdminNriRoute
   AdminOffersRoute: typeof AdminOffersRoute
   AdminPoliciesRoute: typeof AdminPoliciesRoute
   AdminProductsRoute: typeof AdminProductsRoute
@@ -644,6 +684,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminInstagramRoute: AdminInstagramRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNewsletterRoute: AdminNewsletterRoute,
+  AdminNriRoute: AdminNriRoute,
   AdminOffersRoute: AdminOffersRoute,
   AdminPoliciesRoute: AdminPoliciesRoute,
   AdminProductsRoute: AdminProductsRoute,
@@ -675,6 +716,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
+  NriRoute: NriRoute,
   ShopRoute: ShopRoute,
   PoliciesSlugRoute: PoliciesSlugRoute,
   ProductIdRoute: ProductIdRoute,
