@@ -3,6 +3,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { Play, X, ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTestimonials, getImageUrl, fetchSettings } from "@/lib/api";
+import Autoplay from "embla-carousel-autoplay";
 
 declare global {
   interface Window {
@@ -27,7 +28,9 @@ export function VideoTestimonials() {
     align: "center",
     duration: 60,
     skipSnaps: false
-  });
+  }, [
+    Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true })
+  ]);
   
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
@@ -43,6 +46,17 @@ export function VideoTestimonials() {
   }, []);
 
   const onPlayerStateChange = (event: any) => {
+    const autoplay = emblaApi?.plugins().autoplay;
+
+    // YT.PlayerState.PLAYING = 1
+    if (event.data === 1) {
+      autoplay?.stop();
+    } 
+    // YT.PlayerState.PAUSED = 2, ENDED = 0
+    else if (event.data === 2 || event.data === 0) {
+      autoplay?.play();
+    }
+
     // YT.PlayerState.ENDED = 0
     if (event.data === 0) {
       emblaApi?.scrollNext();
