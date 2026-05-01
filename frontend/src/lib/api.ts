@@ -200,7 +200,7 @@ export type ContactInquiry = {
   preferred_date?: string;
   subject: string;
   message: string;
-  type: "GENERAL" | "PRODUCT";
+  type: "GENERAL" | "PRODUCT" | "VIDEO_CALL" | "STORE_VISIT" | "VIRTUAL_CALL" | "HOME_VISIT";
   product_id?: string;
   product_name?: string;
 };
