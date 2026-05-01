@@ -1,11 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchSettings } from "@/lib/api";
+import { useEffect } from "react";
 
 export function AnnouncementStrip() {
   const { data: settings } = useQuery({
     queryKey: ["settings"],
     queryFn: fetchSettings,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_settings");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
+
+  useEffect(() => {
+    if (settings) {
+      localStorage.setItem("cached_settings", JSON.stringify(settings));
+    }
+  }, [settings]);
 
   if (!settings?.show_announcement || !settings?.announcement_text) {
     return null;

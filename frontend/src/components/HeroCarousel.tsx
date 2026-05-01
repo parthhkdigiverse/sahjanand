@@ -9,7 +9,22 @@ export function HeroCarousel() {
   const { data: slides = [] } = useQuery({
     queryKey: ["hero-slides"],
     queryFn: fetchHeroSlides,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_hero_slides");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
+
+  useEffect(() => {
+    if (slides && slides.length > 0) {
+      localStorage.setItem("cached_hero_slides", JSON.stringify(slides));
+    }
+  }, [slides]);
 
   // Fallback slides if DB is empty
   const defaultSlides = [

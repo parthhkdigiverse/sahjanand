@@ -5,6 +5,7 @@ import appCss from "../styles.css?url";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ConciergeFab } from "@/components/ConciergeFab";
+import { InteractionContactPopup } from "@/components/InteractionContactPopup";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,7 @@ function RootComponent() {
       </main>
       {!isAdmin && <Footer />}
       {!isAdmin && <ConciergeFab />}
+      {!isAdmin && <InteractionContactPopup />}
     </>
   );
 }
