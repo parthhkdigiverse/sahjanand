@@ -61,7 +61,7 @@ function Shop() {
 
   return (
     <>
-      <section className="pt-32 pb-12 bg-secondary/40">
+      <section className="py-24 bg-secondary/40">
         <div className="container-luxe text-center">
           <p className="divider-gold mb-5">Our Collection</p>
           <h1 className="font-serif text-5xl md:text-6xl mb-3">Shop All Jewellery</h1>

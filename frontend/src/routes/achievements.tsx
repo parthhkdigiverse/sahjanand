@@ -23,7 +23,7 @@ function Achievements() {
   return (
     <div className="bg-ivory/20">
       {/* Hero Section */}
-      <section className="relative w-full h-[50vh] min-h-[400px] overflow-hidden bg-onyx">
+      <section className="relative w-full h-[50vh] min-h-[400px] overflow-hidden bg-onyx -mt-[var(--header-height)]">
         <img 
           src={heroFallback} 
           alt="Our Achievements" 
@@ -106,18 +106,6 @@ function Achievements() {
         )}
       </section>
 
-      {/* Bottom CTA */}
-      <section className="bg-onyx py-24 text-center">
-        <div className="container-luxe">
-          <h3 className="font-serif text-3xl md:text-4xl text-ivory mb-8">Want to be part of our story?</h3>
-          <a 
-            href="/shop" 
-            className="sheen inline-flex items-center gap-3 px-10 py-4 bg-gold text-onyx text-xs font-bold tracking-[0.2em] hover:bg-ivory transition-all duration-500 shadow-luxe uppercase"
-          >
-            Explore the Collection →
-          </a>
-        </div>
-      </section>
     </div>
   );
 }

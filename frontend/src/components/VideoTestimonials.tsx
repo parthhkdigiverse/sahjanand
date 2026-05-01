@@ -110,7 +110,7 @@ export function VideoTestimonials() {
 
     // YT.PlayerState.ENDED = 0
     if (event.data === 0) {
-      emblaApi?.scrollNext();
+      if (emblaApi) emblaApi.scrollNext();
     }
   };
 
@@ -158,23 +158,28 @@ export function VideoTestimonials() {
       events: {
         onStateChange: onPlayerStateChange,
         onReady: (e: any) => {
-          // Sync with component mute state
-          if (isMuted) e.target.mute();
-          else {
-            e.target.unMute();
-            e.target.setVolume(100);
-          }
+          // STRICTLY mute first for browser autoplay policy compliance
+          e.target.mute();
           
+          if (!isMuted) {
+            // Only unmute if user has explicitly unmuted (handled by global state)
+            // But for first load, we always start muted to ensure it plays
+          }
+
           e.target.playVideo();
           
-          // Force play again after a short delay to bypass some browser blocks
+          // Re-verify it's playing after a delay
           setTimeout(() => {
             if (e.target && typeof e.target.getPlayerState === "function") {
-              if (e.target.getPlayerState() !== 1) {
+              const state = e.target.getPlayerState();
+              if (state !== 1 && state !== 3) { // 1=playing, 3=buffering
                 e.target.playVideo();
               }
             }
-          }, 1000);
+          }, 1500);
+        },
+        onError: (e: any) => {
+          console.error("YT Player Error:", e.data);
         }
       }
     });
@@ -199,7 +204,8 @@ export function VideoTestimonials() {
 
   const getYoutubeId = (url: string) => {
     if (!url) return "";
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    // Added shorts/ support
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   };

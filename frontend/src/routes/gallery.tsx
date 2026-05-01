@@ -43,7 +43,7 @@ function GalleryPage() {
   const remaining = galleryItems.slice(5);
 
   return (
-    <main className="pt-32 pb-24 md:pt-40 md:pb-32 bg-[#F9F8F6]">
+    <main className="py-24 bg-[#F9F8F6]">
       <div className="container-luxe">
         <header className="text-center space-y-4 max-w-3xl mx-auto mb-16 animate-fade-up">
           <span className="text-gold uppercase tracking-[0.4em] text-[10px] font-medium block">

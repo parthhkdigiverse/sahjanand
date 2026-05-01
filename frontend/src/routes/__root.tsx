@@ -83,7 +83,7 @@ function RootComponent() {
   return (
     <>
       {!isAdmin && <Navbar />}
-      <main>
+      <main className={!isAdmin ? "pt-[var(--header-height)]" : ""}>
         <Outlet />
       </main>
       {!isAdmin && <Footer />}

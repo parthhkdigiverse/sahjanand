@@ -83,10 +83,13 @@ export function BrandShowcase() {
             event.target.playVideo();
             // Force play again after a short delay to bypass some browser blocks
             setTimeout(() => {
-              if (event.target.getPlayerState() !== 1) {
-                event.target.playVideo();
+              if (event.target && typeof event.target.getPlayerState === "function") {
+                const state = event.target.getPlayerState();
+                if (state !== 1 && state !== 3) {
+                  event.target.playVideo();
+                }
               }
-            }, 1000);
+            }, 1500);
           }
         },
         onStateChange: (event: any) => {
@@ -103,7 +106,8 @@ export function BrandShowcase() {
   }
 
   function getYoutubeId(url: string) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   }

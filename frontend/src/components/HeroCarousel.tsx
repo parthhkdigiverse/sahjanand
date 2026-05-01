@@ -58,7 +58,7 @@ export function HeroCarousel() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-onyx md:h-screen md:min-h-[640px] pt-[100px] md:pt-0"
+      className="relative w-full overflow-hidden bg-onyx md:h-screen md:min-h-[640px] -mt-[var(--header-height)]"
       style={{ backgroundColor: "var(--onyx)" }}
     >
       <div className="md:h-full" ref={emblaRef}>

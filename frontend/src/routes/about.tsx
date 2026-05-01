@@ -34,14 +34,14 @@ function About() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative w-full overflow-hidden pt-[104px] md:pt-0 md:h-[70vh] md:min-h-[480px] bg-onyx">
+      <section className="relative w-full overflow-hidden -mt-[var(--header-height)] md:h-[70vh] md:min-h-[480px] bg-onyx">
         <img 
           src={data.hero_image ? getImageUrl(data.hero_image) : heroFallback} 
           alt="Sahajanand Jewellers" 
           className="w-full h-auto block md:absolute md:inset-0 md:h-full md:w-full md:object-cover" 
         />
         <div className="absolute inset-0 bg-onyx/40" />
-        <div className="absolute inset-0 z-10 flex items-center md:items-end justify-center md:justify-start pb-0 md:pb-20 pt-[104px] md:pt-0 text-center md:text-left container-luxe px-4">
+        <div className="absolute inset-0 z-10 flex items-center md:items-end justify-center md:justify-start pb-0 md:pb-20 text-center md:text-left container-luxe px-4">
           <div className="text-ivory max-w-2xl mx-auto md:mx-0 w-full" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>
             <p className="divider-gold mb-2 md:mb-5 text-[10px] md:text-xs uppercase font-bold justify-center md:justify-start">{data.hero_eyebrow}</p>
             <h1 className="font-serif text-3xl md:text-7xl leading-[1.05]">
