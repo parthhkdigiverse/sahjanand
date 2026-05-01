@@ -34,14 +34,14 @@ export function TrustStrip() {
       {/* Decorative vertical line that runs through the section */}
       <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gold/20 -translate-x-1/2 hidden md:block" />
 
-      <div className="container-luxe px-4 relative z-10 py-16 md:py-24">
+      <div className="container-luxe px-4 relative z-10 pt-16 md:pt-24 pb-8 md:pb-12">
         {/* Title with decorative vertical lines */}
-        <div className="flex flex-col items-center mb-16 md:mb-20">
-          <div className="w-[1px] h-16 bg-gold/40 mb-8" />
+        <div className="flex flex-col items-center mb-12 md:mb-16">
+          <div className="w-[1px] h-12 bg-gold/40 mb-8" />
           <h2 className="font-serif text-3xl md:text-4xl tracking-[0.2em] md:tracking-luxe text-onyx uppercase text-center">
             Sahajanand Promises
           </h2>
-          <div className="w-[1px] h-16 bg-gold/40 mt-8" />
+          <div className="w-[1px] h-12 bg-gold/40 mt-8" />
         </div>
 
         {/* Promises Grid */}
@@ -76,8 +76,8 @@ export function TrustStrip() {
         </div>
 
         {/* Bottom vertical line */}
-        <div className="flex justify-center mt-16 md:mt-20">
-          <div className="w-[1px] h-16 bg-gold/40" />
+        <div className="flex justify-center mt-8 md:mt-12">
+          <div className="w-[1px] h-12 bg-gold/40" />
         </div>
       </div>
     </section>

@@ -80,7 +80,7 @@ export function LeadCapture() {
   };
 
   return (
-    <section className="container-luxe py-24 md:py-32">
+    <section className="container-luxe pt-12 md:pt-16 pb-24 md:pb-32">
       <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch shadow-luxe overflow-hidden bg-card">
         {/* LEFT — offer text + CTA */}
         <div className="relative p-10 md:p-16 lg:p-20 flex flex-col justify-center">
