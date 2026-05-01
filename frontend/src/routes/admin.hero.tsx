@@ -258,8 +258,8 @@ function AdminHero() {
               {formData.link_type !== "NONE" && (
                 <>
                   <div className="space-y-2">
-                    <Label>{formData.link_type === "BUTTON" ? "Button Text" : "Link Text"}</Label>
-                    <Input value={formData.link_text} onChange={e => setFormData({...formData, link_text: e.target.value})} placeholder="e.g. Shop Now" />
+                    <Label>{formData.link_type === "BUTTON" ? "Button Text" : "Link Text (Optional)"}</Label>
+                    <Input value={formData.link_text} onChange={e => setFormData({...formData, link_text: e.target.value})} placeholder={formData.link_type === "BUTTON" ? "e.g. Shop Now" : "Leave empty for silent redirect"} />
                   </div>
                   <div className="space-y-2">
                     <Label>{formData.link_type === "BUTTON" ? "Button URL" : "Redirection URL"}</Label>
