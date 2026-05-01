@@ -87,28 +87,28 @@ export function InteractionContactPopup() {
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-4xl bg-ivory border border-gold/20 shadow-luxe shadow-2xl animate-in zoom-in-95 fade-in duration-700 overflow-hidden flex flex-col md:flex-row">
+      <div className="relative w-full max-h-[95vh] overflow-y-auto md:overflow-hidden max-w-4xl bg-ivory border border-gold/20 shadow-luxe shadow-2xl animate-in zoom-in-95 fade-in duration-700 flex flex-col md:flex-row">
         {/* Accent Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gold z-10" />
 
         <button
           onClick={() => setIsOpen(false)}
-          className="absolute top-4 right-4 z-20 text-onyx/40 hover:text-gold transition-colors duration-300 bg-white/50 backdrop-blur-sm p-1 rounded-full md:bg-transparent"
+          className="absolute top-4 right-4 z-20 text-onyx/40 hover:text-gold transition-colors duration-300 bg-white/80 backdrop-blur-sm p-2 rounded-full md:bg-transparent md:p-0"
         >
           <X size={24} />
         </button>
 
         {/* Image Section */}
-        <div className="hidden md:block w-full md:w-1/2 relative bg-onyx overflow-hidden">
+        <div className="w-full md:w-1/2 relative bg-onyx shrink-0">
           <img 
             src="/assets/hero-1.jpg" 
             alt="Sahajanand Jewellers" 
-            className="absolute inset-0 w-full h-full object-cover opacity-90"
+            className="w-full h-auto object-contain md:absolute md:inset-0 md:h-full opacity-90"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-onyx/80 to-transparent" />
-          <div className="absolute bottom-10 left-10 right-10">
-            <h3 className="font-serif text-3xl text-ivory mb-2">Welcome to Sahajanand</h3>
-            <p className="text-ivory/80 text-sm font-light">Crafting timeless elegance and heirloom-quality jewellery since inception.</p>
+          <div className="absolute inset-0 bg-gradient-to-t from-onyx/80 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute bottom-6 md:bottom-10 left-6 md:left-10 right-6 md:right-10 pointer-events-none">
+            <h3 className="font-serif text-2xl md:text-3xl text-ivory mb-1 md:mb-2">Welcome to Sahajanand</h3>
+            <p className="text-ivory/80 text-xs md:text-sm font-light">Crafting timeless elegance and heirloom-quality jewellery since inception.</p>
           </div>
         </div>
 

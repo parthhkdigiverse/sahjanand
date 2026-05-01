@@ -58,46 +58,46 @@ export function HeroCarousel() {
 
   return (
     <section
-      className="relative h-screen min-h-[640px] w-full overflow-hidden bg-onyx"
+      className="relative w-full overflow-hidden bg-onyx md:h-screen md:min-h-[640px] pt-[100px] md:pt-0"
       style={{ backgroundColor: "var(--onyx)" }}
     >
-      <div className="h-full" ref={emblaRef}>
-        <div className="flex h-full">
+      <div className="md:h-full" ref={emblaRef}>
+        <div className="flex md:h-full items-stretch">
           {activeSlides.map((s, i) => {
             const isTextLink = s.link_type === "LINK";
             const Content = (
-              <div key={i} className={`relative h-full w-full flex-[0_0_100%] ${isTextLink ? "cursor-pointer" : ""}`}>
+              <div key={i} className={`relative w-full md:h-full flex-[0_0_100%] ${isTextLink ? "cursor-pointer" : ""}`}>
                 <img
                   src={getImageUrl(s.image)}
                   alt={s.title}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="w-full h-auto block md:absolute md:inset-0 md:h-full md:object-cover"
                   loading={i === 0 ? "eager" : "lazy"}
                 />
                 <div className="absolute inset-0 gradient-overlay" />
                 
-                <div className="relative z-10 h-full flex items-end pb-32 md:pb-40">
-                  <div className="container-luxe">
+                <div className="absolute inset-0 z-10 flex items-center md:items-end justify-center md:justify-start pb-0 md:pb-40 text-center md:text-left">
+                  <div className="container-luxe px-4 w-full">
                     <div
-                      className="max-w-2xl text-ivory"
-                      style={{ color: "var(--ivory)" }}
+                      className="max-w-2xl text-ivory mx-auto md:mx-0"
+                      style={{ color: "var(--ivory)", textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}
                     >
                       <p
                         key={`e-${selected}-${i}`}
-                        className="text-xs tracking-luxe text-gold mb-5 animate-fade-up"
+                        className="text-[10px] md:text-xs tracking-luxe text-gold mb-2 md:mb-5 animate-fade-up uppercase font-bold"
                         style={{ animationDelay: "0.1s" }}
                       >
                         — {s.eyebrow}
                       </p>
                       <h1
                         key={`t-${selected}-${i}`}
-                        className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[1.05] mb-5 animate-fade-up"
+                        className="font-serif text-3xl md:text-7xl lg:text-8xl leading-[1.1] mb-2 md:mb-5 animate-fade-up"
                         style={{ animationDelay: "0.2s" }}
                       >
                         {s.title}
                       </h1>
                       <p
                         key={`s-${selected}-${i}`}
-                        className="text-base md:text-lg text-ivory/80 max-w-md mb-10 animate-fade-up"
+                        className="text-xs md:text-lg text-ivory/90 max-w-md mx-auto md:mx-0 mb-4 md:mb-10 animate-fade-up line-clamp-2 md:line-clamp-none"
                         style={{ animationDelay: "0.35s" }}
                       >
                         {s.subtitle}
@@ -108,7 +108,7 @@ export function HeroCarousel() {
                           href={s.link_url || "/shop"}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="sheen inline-flex items-center gap-3 px-9 py-4 bg-gold text-onyx text-xs tracking-luxe hover:bg-ivory transition-colors animate-fade-up"
+                          className="sheen inline-flex items-center gap-2 md:gap-3 px-6 py-2.5 md:px-9 md:py-4 bg-gold text-onyx text-[9px] md:text-xs tracking-luxe hover:bg-ivory transition-colors animate-fade-up"
                           style={{ animationDelay: "0.5s", color: "var(--onyx)" }}
                         >
                           {s.link_text || "Shop Now"} →
@@ -145,14 +145,14 @@ export function HeroCarousel() {
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
+      <div className="absolute bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
         {activeSlides.map((_, i) => (
           <button
             key={i}
             onClick={() => emblaApi?.scrollTo(i)}
             aria-label={`Go to slide ${i + 1}`}
             className={`h-[2px] transition-all duration-500 ${
-              selected === i ? "w-12 bg-gold" : "w-6 bg-ivory/40"
+              selected === i ? "w-8 md:w-12 bg-gold" : "w-4 md:w-6 bg-ivory/40"
             }`}
           />
         ))}
