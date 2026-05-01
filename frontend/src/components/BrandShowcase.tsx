@@ -24,23 +24,27 @@ export function BrandShowcase() {
 
   const videoId = settings?.showcase_video_url ? getYoutubeId(settings.showcase_video_url) : "dQw4w9WgXcQ";
   const isInView = useInView(containerRef, { amount: 0.3 });
-
+  
   useEffect(() => {
     if (playerRef.current && typeof playerRef.current.playVideo === "function") {
-      if (isInView) {
-        playerRef.current.playVideo();
-      } else {
-        playerRef.current.pauseVideo();
+      try {
+        if (isInView) {
+          playerRef.current.playVideo();
+        } else if (typeof playerRef.current.pauseVideo === "function") {
+          playerRef.current.pauseVideo();
+        }
+      } catch (e) {
+        console.error("Error toggling video playback:", e);
       }
     }
   }, [isInView]);
+
 
   useEffect(() => {
     if (!window.YT) {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
-      const firstScriptTag = document.getElementsByTagName("script")[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+      document.head.appendChild(tag);
     }
 
     const interval = setInterval(() => {
@@ -52,14 +56,19 @@ export function BrandShowcase() {
 
     return () => {
       clearInterval(interval);
-      if (playerRef.current) {
-        playerRef.current.destroy();
+      if (playerRef.current && typeof playerRef.current.destroy === 'function') {
+        try {
+          playerRef.current.destroy();
+        } catch (e) {
+          console.error("Error destroying YT player:", e);
+        }
       }
     };
   }, [videoId]);
 
   function initPlayer() {
     if (!videoId) return;
+    if (!document.getElementById("showcase-player")) return;
     
     playerRef.current = new window.YT.Player("showcase-player", {
       videoId: videoId,
