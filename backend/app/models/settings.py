@@ -21,6 +21,10 @@ class SettingsBase(BaseModel):
     offer_button_text: str = "Get My Offer"
     offer_footer_text: str = "Limited time · One per customer"
 
+    # Announcement Strip
+    show_announcement: bool = True
+    announcement_text: str = "Discover our new Festive Collection — Handcrafted with Pure Gold and Timeless Elegance. | Complimentary shipping on all heirloom orders over ₹50,000. | Visit our Nadiad boutique for a personalized concierge experience."
+
     # Form Configuration
     form_fields: List[FormField] = [
         FormField(id="name", name="name", label="Name", type="text", required=True, is_constant=True),

@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { authService } from "@/services/auth";
-import { Loader2, Save, Coins, Share2, MessageCircle, Instagram, Facebook, Twitter, Youtube } from "lucide-react";
+import { Loader2, Save, Coins, Share2, MessageCircle, Instagram, Facebook, Twitter, Youtube, Megaphone } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -144,6 +145,33 @@ function AdminSettings() {
                   className="w-full min-h-[100px] p-3 rounded-lg bg-onyx/[0.02] border border-onyx/10 focus:border-gold/50 text-sm outline-none transition-all resize-none"
                   placeholder="Every piece is hallmarked..."
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-onyx/5 shadow-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Megaphone className="h-4 w-4 text-gold" />
+                  <CardTitle className="text-sm font-bold uppercase tracking-wider">Announcement Bar</CardTitle>
+                </div>
+                <Switch 
+                  checked={formData.show_announcement || false}
+                  onCheckedChange={(checked) => setFormData({...formData, show_announcement: checked})}
+                />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-bold text-onyx/40 uppercase ml-1">Announcement Text</Label>
+                <textarea 
+                  value={formData.announcement_text || ""}
+                  onChange={(e) => setFormData({...formData, announcement_text: e.target.value})}
+                  className="w-full min-h-[100px] p-3 rounded-lg bg-onyx/[0.02] border border-onyx/10 focus:border-gold/50 text-sm outline-none transition-all resize-none"
+                  placeholder="Enter text to scroll at the top of the site..."
+                />
+                <p className="text-[10px] text-onyx/40 leading-relaxed italic">Use the pipe symbol (|) to separate different messages.</p>
               </div>
             </CardContent>
           </Card>

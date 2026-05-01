@@ -19,7 +19,8 @@ export function HeroCarousel() {
       title: "Timeless Elegance",
       subtitle: "Beautifully crafted jewellery for every occasion.",
       link_text: "Shop Now",
-      link_url: "/shop"
+      link_url: "/shop",
+      link_type: "BUTTON"
     }
   ];
 
@@ -83,13 +84,26 @@ export function HeroCarousel() {
                     >
                       {s.subtitle}
                     </p>
-                    <a
-                      href={(s as any).link_url || "/shop"}
-                      className="sheen inline-flex items-center gap-3 px-9 py-4 bg-gold text-onyx text-xs tracking-luxe hover:bg-ivory transition-colors animate-fade-up"
-                      style={{ animationDelay: "0.5s", color: "var(--onyx)" }}
-                    >
-                      {(s as any).link_text || "Shop Now"} →
-                    </a>
+                    {(s.link_type || "BUTTON") === "BUTTON" && (
+                      <a
+                        href={s.link_url || "/shop"}
+                        className="sheen inline-flex items-center gap-3 px-9 py-4 bg-gold text-onyx text-xs tracking-luxe hover:bg-ivory transition-colors animate-fade-up"
+                        style={{ animationDelay: "0.5s", color: "var(--onyx)" }}
+                      >
+                        {s.link_text || "Shop Now"} →
+                      </a>
+                    )}
+
+                    {s.link_type === "LINK" && (
+                      <a
+                        href={s.link_url || "/shop"}
+                        className="inline-flex items-center gap-2 text-xs tracking-luxe text-gold hover:text-ivory transition-colors animate-fade-up group"
+                        style={{ animationDelay: "0.5s" }}
+                      >
+                        <span className="border-b border-gold/40 group-hover:border-ivory pb-0.5">{s.link_text || "Discover More"}</span>
+                        <span className="transition-transform group-hover:translate-x-1">→</span>
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

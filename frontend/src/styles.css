@@ -396,4 +396,23 @@
   .admin-btn-gold {
     @apply bg-gold text-onyx hover:bg-gold-deep transition-all duration-300 rounded-2xl font-bold tracking-widest uppercase text-[10px] px-6 py-3 shadow-lg hover:shadow-gold/20 flex items-center gap-2;
   }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+  }
+
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
 }

@@ -35,6 +35,7 @@ class HeroSlideBase(BaseModel):
     subtitle: str
     link_text: str = "Shop Now"
     link_url: str = "/shop"
+    link_type: str = "BUTTON"  # NONE, BUTTON, LINK
     order: int = 0
 
 class HeroSlideCreate(HeroSlideBase):
@@ -47,6 +48,7 @@ class HeroSlideUpdate(BaseModel):
     subtitle: Optional[str] = None
     link_text: Optional[str] = None
     link_url: Optional[str] = None
+    link_type: Optional[str] = None
     order: Optional[int] = None
 
 class HeroSlide(HeroSlideBase):

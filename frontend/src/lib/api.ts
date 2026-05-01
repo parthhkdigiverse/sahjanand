@@ -124,6 +124,7 @@ export type HeroSlide = {
   subtitle: string;
   link_text: string;
   link_url: string;
+  link_type: "NONE" | "BUTTON" | "LINK";
   order: number;
 };
 
@@ -310,6 +311,8 @@ export type SiteSettings = {
   reviews_subheading: string;
   testimonials_heading: string;
   testimonials_subheading: string;
+  show_announcement: boolean;
+  announcement_text: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {

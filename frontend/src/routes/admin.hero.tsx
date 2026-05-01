@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { authenticatedFetch } from "@/services/auth";
@@ -30,6 +31,7 @@ function AdminHero() {
     image: "",
     link_text: "Shop Now",
     link_url: "/shop",
+    link_type: "BUTTON",
     order: 0,
   });
 
@@ -92,6 +94,7 @@ function AdminHero() {
       image: "",
       link_text: "Shop Now",
       link_url: "/shop",
+      link_type: "BUTTON",
       order: slides?.length || 0,
     });
     setEditingSlide(null);
@@ -107,6 +110,7 @@ function AdminHero() {
       image: slide.image,
       link_text: slide.link_text,
       link_url: slide.link_url,
+      link_type: slide.link_type || "BUTTON",
       order: slide.order,
     });
     setImagePreview(getImageUrl(slide.image));
@@ -235,13 +239,34 @@ function AdminHero() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Button Text</Label>
-                <Input value={formData.link_text} onChange={e => setFormData({...formData, link_text: e.target.value})} placeholder="e.g. Shop Now" />
+                <Label>Action Type</Label>
+                <Select 
+                  value={formData.link_type} 
+                  onValueChange={v => setFormData({...formData, link_type: v as any})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select action type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NONE">None (No Button/Link)</SelectItem>
+                    <SelectItem value="BUTTON">Button</SelectItem>
+                    <SelectItem value="LINK">Text Link</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Button Link (URL)</Label>
-                <Input value={formData.link_url} onChange={e => setFormData({...formData, link_url: e.target.value})} placeholder="e.g. /shop or https://..." />
-              </div>
+
+              {formData.link_type !== "NONE" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>{formData.link_type === "BUTTON" ? "Button Text" : "Link Text"}</Label>
+                    <Input value={formData.link_text} onChange={e => setFormData({...formData, link_text: e.target.value})} placeholder="e.g. Shop Now" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{formData.link_type === "BUTTON" ? "Button URL" : "Redirection URL"}</Label>
+                    <Input value={formData.link_url} onChange={e => setFormData({...formData, link_url: e.target.value})} placeholder="e.g. /shop" />
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <DialogFooter>

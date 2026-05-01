@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Search, Menu, X, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
+import { AnnouncementStrip } from "./AnnouncementStrip";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -20,6 +21,7 @@ export function Navbar() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
+      <AnnouncementStrip />
       {/* Main bar */}
       <div
         className={`transition-all duration-500 border-b ${
