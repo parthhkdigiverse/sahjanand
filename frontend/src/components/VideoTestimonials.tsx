@@ -37,7 +37,6 @@ export function VideoTestimonials() {
   const isInView = useInView(containerRef, { amount: 0.1 });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
   const players = useRef<Map<string, any>>(new Map());
   const initializingPlayers = useRef<Set<string>>(new Set());
@@ -70,17 +69,19 @@ export function VideoTestimonials() {
   const isInViewRef = useRef(isInView);
   useEffect(() => { isInViewRef.current = isInView; }, [isInView]);
 
-  const onPlayerStateChange = useCallback((event: any) => {
+  const [playingStates, setPlayingStates] = useState<Record<string, boolean>>({});
+
+  const onPlayerStateChange = useCallback((event: any, elementId: string) => {
     const autoplay = emblaApi?.plugins().autoplay;
 
     // YT.PlayerState.PLAYING = 1
     if (event.data === 1) {
-      setIsPlaying(true);
+      setPlayingStates(prev => ({ ...prev, [elementId]: true }));
       autoplay?.stop();
     } 
     // YT.PlayerState.PAUSED = 2, ENDED = 0, BUFFERING = 3
     else if (event.data === 2 || event.data === 0) {
-      setIsPlaying(false);
+      setPlayingStates(prev => ({ ...prev, [elementId]: false }));
       if (isInViewRef.current) {
         autoplay?.play();
       }
@@ -113,7 +114,7 @@ export function VideoTestimonials() {
           showinfo: 0,
         },
         events: {
-          onStateChange: onPlayerStateChange,
+          onStateChange: (e: any) => onPlayerStateChange(e, elementId),
           onReady: (e: any) => {
             e.target.mute();
             e.target.playVideo();
@@ -144,11 +145,12 @@ export function VideoTestimonials() {
     const autoplay = emblaApi?.plugins().autoplay;
     
     if (isInView) {
-      if (!isPlaying) {
+      const elementId = `yt-player-${selectedIndex}`;
+      
+      if (!playingStates[elementId]) {
         autoplay?.play();
       }
       
-      const elementId = `yt-player-${selectedIndex}`;
       const currentPlayer = players.current.get(elementId);
       
       // Pause all other players and play current
@@ -167,7 +169,7 @@ export function VideoTestimonials() {
         try { player.pauseVideo(); } catch (e) {}
       });
     }
-  }, [isInView, emblaApi, selectedIndex, isPlaying]);
+  }, [isInView, emblaApi, selectedIndex, playingStates]);
 
   const toggleMute = () => {
     const nextMuted = !isMuted;
@@ -191,7 +193,6 @@ export function VideoTestimonials() {
     const onSelect = () => {
       const index = emblaApi.selectedScrollSnap();
       setSelectedIndex(index);
-      setIsPlaying(false);
     };
 
     emblaApi.on("select", onSelect);
@@ -224,7 +225,18 @@ export function VideoTestimonials() {
     if (!videoId) return;
 
     const elementId = `yt-player-${selectedIndex}`;
-    if (players.current.has(elementId)) return;
+    const playerElement = document.getElementById(elementId);
+    
+    if (players.current.has(elementId)) {
+      if (playerElement?.tagName === "IFRAME") {
+        return; // Player is intact
+      } else {
+        // React destroyed the iframe and put a div back. We need to clean up and re-init.
+        try { players.current.get(elementId).destroy(); } catch (e) {}
+        players.current.delete(elementId);
+        initializingPlayers.current.delete(elementId);
+      }
+    }
 
     const timer = setTimeout(() => {
       initPlayer(elementId, videoId);
@@ -279,7 +291,7 @@ export function VideoTestimonials() {
                       src={getImageUrl(t.image)}
                       alt={t.name}
                       loading="lazy"
-                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isCentered && isPlaying ? "opacity-0" : "opacity-100"}`}
+                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isCentered && playingStates[elementId] ? "opacity-0" : "opacity-100"}`}
                     />
 
                     {t.video_url && (
