@@ -43,13 +43,23 @@ export function ImageUpload({ value, onChange, className = "aspect-video" }: Ima
       onClick={() => inputRef.current?.click()}
       className={`relative rounded-2xl overflow-hidden border-2 border-dashed border-gold/20 group cursor-pointer hover:border-gold transition-all duration-700 bg-ivory/5 ${className}`}
     >
-      {value ? (
+      {value && getImageUrl(value) ? (
         <>
           <img src={getImageUrl(value)} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Uploaded" />
           <div className="absolute inset-0 bg-onyx/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center backdrop-blur-[2px]">
             <Camera className="h-8 w-8 text-gold mb-2" />
             <span className="text-white text-[10px] uppercase tracking-widest">Replace Image</span>
           </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange("");
+            }}
+            className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 shadow-lg"
+          >
+            <X size={14} />
+          </button>
         </>
       ) : (
         <div className="h-full w-full flex flex-col items-center justify-center text-onyx/20">

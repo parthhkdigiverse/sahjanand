@@ -6,22 +6,26 @@ const getBackendBase = () => {
   const port = typeof __BACKEND_PORT__ !== 'undefined' ? __BACKEND_PORT__ : "8002";
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    
-    // For deployment on a domain (like sahjanand.hkdigiverse.com), 
-    // use a relative path to let the reverse proxy (Nginx) handle the routing.
-    // This solves HTTPS/Mixed content issues without needing SSL configs in the backend.
-    if (hostname !== 'localhost' && !hostname.match(/^\d/)) {
-      // Check if we have an explicit override from environment
-      // @ts-ignore - Vite environment variable
-      const envBase = import.meta.env.VITE_API_URL;
-      if (envBase) return envBase;
-      
-      return ""; // Use relative URL
-    }
+    const protocol = window.location.protocol;
     
     // For local development or IP-based access, stay with the explicit port
-    const protocol = window.location.protocol;
-    return `${protocol}//${hostname}:${port}`;
+    if (hostname === 'localhost' || hostname.match(/^\d/)) {
+      return `${protocol}//${hostname}:${port}`;
+    }
+
+    // For deployment on a domain (like sahjanand.hkdigiverse.com), 
+    // use a relative path to let the reverse proxy (Nginx) handle the routing.
+    // EXCEPT if we are in the antigravity.run dev environment where ports are explicit.
+    if (hostname.includes('antigravity.run')) {
+      return `${protocol}//${hostname}:${port}`;
+    }
+    
+    // Check if we have an explicit override from environment
+    // @ts-ignore - Vite environment variable
+    const envBase = import.meta.env.VITE_API_URL;
+    if (envBase) return envBase;
+    
+    return ""; // Use relative URL
   }
   return `http://localhost:${port}`;
 };
@@ -52,8 +56,16 @@ export const getImageUrl = (path: string | undefined | null) => {
   }
   
   // Return the relative path for uploaded files
+  // This works better for development (Vite serves public folder) 
+  // and production (Nginx/Proxy handles routing)
   if (cleanPath.startsWith('/uploads')) {
     return cleanPath;
+  }
+  
+  // If it's a relative path that doesn't start with /uploads, it's likely a broken legacy path
+  // Return undefined so the UI can show a fallback or placeholder
+  if (!cleanPath.startsWith('http')) {
+    return undefined;
   }
   
   return cleanPath;
