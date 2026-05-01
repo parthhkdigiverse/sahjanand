@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeroCarousel } from "@/components/HeroCarousel";
+import { TrustStrip } from "@/components/TrustStrip";
 import { LeadCapture } from "@/components/LeadCapture";
 import { FeaturedProducts } from "@/components/FeaturedProducts";
 import { InstagramFeed } from "@/components/InstagramFeed";
@@ -24,6 +25,7 @@ function Index() {
   return (
     <>
       <HeroCarousel />
+      <TrustStrip />
       <LeadCapture />
       <FeaturedProducts />
       <InstagramFeed />
