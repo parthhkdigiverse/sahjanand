@@ -60,14 +60,6 @@ export function HeroCarousel() {
                 />
                 <div className="absolute inset-0 gradient-overlay" />
                 
-                {isTextLink && (
-                  <a 
-                    href={s.link_url || "/shop"} 
-                    className="absolute inset-0 z-20"
-                    aria-label={`Learn more about ${s.title}`}
-                  />
-                )}
-
                 <div className="relative z-10 h-full flex items-end pb-32 md:pb-40">
                   <div className="container-luxe">
                     <div
@@ -99,8 +91,8 @@ export function HeroCarousel() {
                       {(s.link_type || "BUTTON") === "BUTTON" && (
                         <a
                           href={s.link_url || "/shop"}
-                          target={s.link_url?.startsWith("http") ? "_blank" : undefined}
-                          rel={s.link_url?.startsWith("http") ? "noopener noreferrer" : undefined}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="sheen inline-flex items-center gap-3 px-9 py-4 bg-gold text-onyx text-xs tracking-luxe hover:bg-ivory transition-colors animate-fade-up"
                           style={{ animationDelay: "0.5s", color: "var(--onyx)" }}
                         >
@@ -112,8 +104,8 @@ export function HeroCarousel() {
                         <>
                           <a 
                             href={s.link_url || "/shop"} 
-                            target={s.link_url?.startsWith("http") ? "_blank" : undefined}
-                            rel={s.link_url?.startsWith("http") ? "noopener noreferrer" : undefined}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="absolute inset-0 z-20"
                             aria-label={`Learn more about ${s.title}`}
                           />
