@@ -30,7 +30,7 @@ export function VideoTestimonials() {
     duration: 60,
     skipSnaps: false
   }, [
-    Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true })
+    Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: false })
   ]);
   
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,6 +40,7 @@ export function VideoTestimonials() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
   const players = useRef<Map<string, any>>(new Map());
+  const initializingPlayers = useRef<Set<string>>(new Set());
 
   // Load YouTube API
   useEffect(() => {
@@ -49,50 +50,27 @@ export function VideoTestimonials() {
       document.head.appendChild(tag);
     }
     
-    const interval = setInterval(() => {
+    const checkYT = setInterval(() => {
       if (window.YT && window.YT.Player) {
         setPlayerReady(true);
-        clearInterval(interval);
+        clearInterval(checkYT);
       }
     }, 100);
 
     return () => {
-      clearInterval(interval);
+      clearInterval(checkYT);
       players.current.forEach(player => {
         try { player.destroy(); } catch (e) {}
       });
+      players.current.clear();
     };
   }, []);
 
-  // Handle Play/Pause based on visibility
-  useEffect(() => {
-    const autoplay = emblaApi?.plugins().autoplay;
-    
-    if (isInView) {
-      // Resume carousel if no video is playing
-      if (!isPlaying) {
-        autoplay?.play();
-      }
-      // Play current video
-      const elementId = `yt-player-${selectedIndex}`;
-      const player = players.current.get(elementId);
-      if (player && typeof player.playVideo === "function") {
-        player.playVideo();
-      }
-    } else {
-      // Pause everything when out of view
-      autoplay?.stop();
-      players.current.forEach(player => {
-        try {
-          if (typeof player.pauseVideo === "function") {
-            player.pauseVideo();
-          }
-        } catch (e) {}
-      });
-    }
-  }, [isInView, emblaApi, selectedIndex, isPlaying]);
+  // Use refs for state to avoid callback recreation loops
+  const isInViewRef = useRef(isInView);
+  useEffect(() => { isInViewRef.current = isInView; }, [isInView]);
 
-  const onPlayerStateChange = (event: any) => {
+  const onPlayerStateChange = useCallback((event: any) => {
     const autoplay = emblaApi?.plugins().autoplay;
 
     // YT.PlayerState.PLAYING = 1
@@ -100,10 +78,10 @@ export function VideoTestimonials() {
       setIsPlaying(true);
       autoplay?.stop();
     } 
-    // YT.PlayerState.PAUSED = 2, ENDED = 0
-    else {
+    // YT.PlayerState.PAUSED = 2, ENDED = 0, BUFFERING = 3
+    else if (event.data === 2 || event.data === 0) {
       setIsPlaying(false);
-      if (isInView) {
+      if (isInViewRef.current) {
         autoplay?.play();
       }
     }
@@ -112,7 +90,84 @@ export function VideoTestimonials() {
     if (event.data === 0) {
       if (emblaApi) emblaApi.scrollNext();
     }
-  };
+  }, [emblaApi]);
+
+  const initPlayer = useCallback((elementId: string, videoId: string) => {
+    if (!window.YT || !window.YT.Player || !document.getElementById(elementId)) return;
+    if (initializingPlayers.current.has(elementId)) return;
+    
+    initializingPlayers.current.add(elementId);
+
+    try {
+      const player = new window.YT.Player(elementId, {
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          rel: 0,
+          modestbranding: 1,
+          iv_load_policy: 3,
+          enablejsapi: 1,
+          mute: 1,
+          playsinline: 1,
+          showinfo: 0,
+        },
+        events: {
+          onStateChange: onPlayerStateChange,
+          onReady: (e: any) => {
+            e.target.mute();
+            e.target.playVideo();
+            
+            // Re-verify playback
+            setTimeout(() => {
+              if (e.target && typeof e.target.getPlayerState === "function") {
+                const state = e.target.getPlayerState();
+                if (state !== 1 && state !== 3) e.target.playVideo();
+              }
+            }, 1000);
+          },
+          onError: (e: any) => {
+            console.error("YT Player Error:", e.data);
+            initializingPlayers.current.delete(elementId);
+          }
+        }
+      });
+      players.current.set(elementId, player);
+    } catch (err) {
+      console.error("Failed to init YT player:", err);
+      initializingPlayers.current.delete(elementId);
+    }
+  }, [onPlayerStateChange]);
+
+  // Handle Play/Pause based on visibility and selection
+  useEffect(() => {
+    const autoplay = emblaApi?.plugins().autoplay;
+    
+    if (isInView) {
+      if (!isPlaying) {
+        autoplay?.play();
+      }
+      
+      const elementId = `yt-player-${selectedIndex}`;
+      const currentPlayer = players.current.get(elementId);
+      
+      // Pause all other players and play current
+      players.current.forEach((player, id) => {
+        try {
+          if (id === elementId) {
+            player.playVideo();
+          } else {
+            player.pauseVideo();
+          }
+        } catch (e) {}
+      });
+    } else {
+      autoplay?.stop();
+      players.current.forEach(player => {
+        try { player.pauseVideo(); } catch (e) {}
+      });
+    }
+  }, [isInView, emblaApi, selectedIndex, isPlaying]);
 
   const toggleMute = () => {
     const nextMuted = !isMuted;
@@ -126,65 +181,9 @@ export function VideoTestimonials() {
           player.setVolume(100);
           player.playVideo();
         }
-      } catch (e) {
-        // Player might not be ready or destroyed
-      }
+      } catch (e) {}
     });
   };
-
-  const initPlayer = useCallback((elementId: string, videoId: string) => {
-    if (!window.YT || !window.YT.Player || !document.getElementById(elementId)) return;
-    
-    // If player exists for this element, destroy it first to be clean
-    if (players.current.has(elementId)) {
-      try {
-        players.current.get(elementId).destroy();
-      } catch (e) {}
-    }
-
-    const player = new window.YT.Player(elementId, {
-      videoId: videoId,
-      playerVars: {
-        autoplay: 1,
-        controls: 0,
-        rel: 0,
-        modestbranding: 1,
-        iv_load_policy: 3,
-        enablejsapi: 1,
-        mute: 1, // Force mute for autoplay compliance
-        playsinline: 1,
-        showinfo: 0,
-      },
-      events: {
-        onStateChange: onPlayerStateChange,
-        onReady: (e: any) => {
-          // STRICTLY mute first for browser autoplay policy compliance
-          e.target.mute();
-          
-          if (!isMuted) {
-            // Only unmute if user has explicitly unmuted (handled by global state)
-            // But for first load, we always start muted to ensure it plays
-          }
-
-          e.target.playVideo();
-          
-          // Re-verify it's playing after a delay
-          setTimeout(() => {
-            if (e.target && typeof e.target.getPlayerState === "function") {
-              const state = e.target.getPlayerState();
-              if (state !== 1 && state !== 3) { // 1=playing, 3=buffering
-                e.target.playVideo();
-              }
-            }
-          }, 1500);
-        },
-        onError: (e: any) => {
-          console.error("YT Player Error:", e.data);
-        }
-      }
-    });
-    players.current.set(elementId, player);
-  }, [isMuted, onPlayerStateChange]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -204,7 +203,6 @@ export function VideoTestimonials() {
 
   const getYoutubeId = (url: string) => {
     if (!url) return "";
-    // Added shorts/ support
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
@@ -226,13 +224,11 @@ export function VideoTestimonials() {
     if (!videoId) return;
 
     const elementId = `yt-player-${selectedIndex}`;
-
-    // If player already exists, just make sure it's playing (handled by visibility effect)
     if (players.current.has(elementId)) return;
 
     const timer = setTimeout(() => {
       initPlayer(elementId, videoId);
-    }, 300); // Increased timeout for DOM readiness
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [selectedIndex, isInView, playerReady, testimonials, displayTestimonials, initPlayer]);
@@ -315,16 +311,12 @@ export function VideoTestimonials() {
                       <div className="h-px w-8 bg-gold/30 mx-auto mb-3" />
                       <p className="text-[10px] tracking-[0.3em] text-gold uppercase font-bold">{t.name}</p>
                     </div>
-
-
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-
-
       </div>
     </section>
   );
