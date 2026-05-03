@@ -1,15 +1,8 @@
 import { motion, useInView } from "framer-motion";
-import { Play, Volume2, VolumeX } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Volume2, VolumeX } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSettings } from "@/lib/api";
-
-declare global {
-  interface Window {
-    onYouTubeIframeAPIReady: () => void;
-    YT: any;
-  }
-}
 
 export function BrandShowcase() {
   const { data: settings } = useQuery({
@@ -18,122 +11,66 @@ export function BrandShowcase() {
   });
 
   const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const playerRef = useRef<any>(null);
+  const [isReady, setIsReady] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const videoId = settings?.showcase_video_url ? getYoutubeId(settings.showcase_video_url) : "dQw4w9WgXcQ";
   const isInView = useInView(containerRef, { amount: 0.3 });
   
+  const sendCommand = useCallback((command: string, args?: any[]) => {
+    if (!iframeRef.current?.contentWindow || !isReady) return;
+    try {
+      iframeRef.current.contentWindow.postMessage(JSON.stringify({
+        event: "command",
+        func: command,
+        args: args || [],
+      }), "https://www.youtube.com");
+    } catch (e) {}
+  }, [isReady]);
+
   useEffect(() => {
-    if (playerRef.current && typeof playerRef.current.playVideo === "function") {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "https://www.youtube.com") return;
       try {
-        if (isInView) {
-          playerRef.current.playVideo();
-        } else if (typeof playerRef.current.pauseVideo === "function") {
-          playerRef.current.pauseVideo();
+        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        if (data.event === "onReady") {
+          setIsReady(true);
         }
-      } catch (e) {
-        console.error("Error toggling video playback:", e);
-      }
-    }
-  }, [isInView]);
+      } catch (e) {}
+    };
 
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   useEffect(() => {
-    if (!window.YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
+    if (isInView) {
+      sendCommand("playVideo");
+    } else {
+      sendCommand("pauseVideo");
     }
+  }, [isInView, sendCommand, isReady]);
 
-    const interval = setInterval(() => {
-      if (window.YT && window.YT.Player) {
-        initPlayer();
-        clearInterval(interval);
-      }
-    }, 100);
-
-    return () => {
-      clearInterval(interval);
-      if (playerRef.current && typeof playerRef.current.destroy === 'function') {
-        try {
-          playerRef.current.destroy();
-        } catch (e) {
-          console.error("Error destroying YT player:", e);
-        }
-      }
-    };
-  }, [videoId]);
-
-  function initPlayer() {
-    if (!videoId) return;
-    if (!document.getElementById("showcase-player")) return;
-    
-    playerRef.current = new window.YT.Player("showcase-player", {
-      videoId: videoId,
-      playerVars: {
-        autoplay: 1,
-        controls: 0,
-        rel: 0,
-        modestbranding: 1,
-        loop: 0, // Manual loop below
-        mute: 1,
-        enablejsapi: 1,
-        iv_load_policy: 3,
-        fs: 0,
-        autohide: 1,
-        playsinline: 1,
-      },
-      events: {
-        onReady: (event: any) => {
-          event.target.mute();
-          if (isInView) {
-            event.target.playVideo();
-            // Force play again after a short delay to bypass some browser blocks
-            setTimeout(() => {
-              if (event.target && typeof event.target.getPlayerState === "function") {
-                const state = event.target.getPlayerState();
-                if (state !== 1 && state !== 3) {
-                  event.target.playVideo();
-                }
-              }
-            }, 1500);
-          }
-        },
-        onStateChange: (event: any) => {
-          if (event.data === window.YT.PlayerState.PLAYING) {
-            setIsPlaying(true);
-          } else if (event.data === window.YT.PlayerState.ENDED) {
-            event.target.playVideo(); // Manual loop
-          } else {
-            setIsPlaying(false);
-          }
-        },
-      },
-    });
-  }
+  useEffect(() => {
+    if (isMuted) {
+      sendCommand("mute");
+    } else {
+      sendCommand("unMute");
+      sendCommand("setVolume", [100]);
+    }
+  }, [isMuted, sendCommand, isReady]);
 
   function getYoutubeId(url: string) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
     const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+    if (match && match[2].length === 11) return match[2];
+    return url.length === 11 ? url : null;
   }
 
-
-
   const toggleMute = () => {
-    if (!playerRef.current) return;
-    if (isMuted) {
-      playerRef.current.unMute();
-      playerRef.current.setVolume(100);
-      playerRef.current.playVideo(); // Force play on unmute
-      setIsMuted(false);
-    } else {
-      playerRef.current.mute();
-      setIsMuted(true);
-    }
+    setIsMuted(prev => !prev);
   };
 
   if (settings?.show_brand_showcase === false) return null;
@@ -143,7 +80,6 @@ export function BrandShowcase() {
       <div className="container-luxe px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           
-          {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -167,7 +103,6 @@ export function BrandShowcase() {
             </p>
           </motion.div>
 
-          {/* Video Window */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -175,7 +110,6 @@ export function BrandShowcase() {
             transition={{ duration: 1 }}
             className="order-1 lg:order-1 relative"
           >
-            {/* Decorative Frames */}
             <div className="absolute -top-4 -right-4 w-24 h-24 border-t border-r border-gold/40" />
             <div className="absolute -bottom-4 -left-4 w-24 h-24 border-b border-l border-gold/40" />
             
@@ -183,21 +117,18 @@ export function BrandShowcase() {
               className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-onyx group"
               ref={containerRef}
             >
-              {/* YouTube Player - Scaled and cropped to hide logo/titles */}
               <div className="absolute inset-0 w-full h-full pointer-events-none">
-                <div 
-                  id="showcase-player" 
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] scale-110" 
-                />
+                {videoId && (
+                  <iframe
+                    ref={iframeRef}
+                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&playsinline=1&showinfo=0&loop=1&playlist=${videoId}&origin=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] scale-110 border-0"
+                    allow="autoplay; encrypted-media"
+                    title="Brand Showcase Video"
+                  />
+                )}
               </div>
               
-              {/* Opaque cover that fades out only when video is actually playing */}
-              {/* Note: We keep this as a permanent interaction blocker (no pointer-events-none) to hide YouTube icons */}
-              <div 
-                className={`absolute inset-0 z-10 transition-opacity duration-1000 bg-onyx ${isPlaying ? "opacity-0" : "opacity-100"}`}
-              />
-
-              {/* Mute/Unmute Button - Positioned top-right to match testimonials */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -208,11 +139,9 @@ export function BrandShowcase() {
                 {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
               </button>
 
-
+              <div className="absolute inset-0 z-10 pointer-events-none" />
             </div>
-
           </motion.div>
-          
         </div>
       </div>
     </section>
