@@ -3,17 +3,48 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchInstagramPosts, getImageUrl, fetchSettings } from "@/lib/api";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import { useEffect } from "react";
 
 export function InstagramFeed() {
   const { data: posts } = useQuery({
     queryKey: ["instagram-posts"],
     queryFn: fetchInstagramPosts,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_instagram_posts");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
     queryFn: fetchSettings,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_settings");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
+
+  useEffect(() => {
+    if (posts && posts.length > 0) {
+      localStorage.setItem("cached_instagram_posts", JSON.stringify(posts));
+    }
+  }, [posts]);
+
+  useEffect(() => {
+    if (settings) {
+      localStorage.setItem("cached_settings", JSON.stringify(settings));
+    }
+  }, [settings]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" }, [
     Autoplay({ delay: 3500, stopOnInteraction: false }),

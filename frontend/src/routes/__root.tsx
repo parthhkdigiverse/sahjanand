@@ -6,6 +6,9 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ConciergeFab } from "@/components/ConciergeFab";
 import { InteractionContactPopup } from "@/components/InteractionContactPopup";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
 const queryClient = new QueryClient();
 
@@ -98,9 +101,21 @@ import { Toaster } from "sonner";
 function RootComponent() {
   const { pathname } = useLocation();
   const isAdmin = pathname.startsWith('/admin');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Show loader for at least 1.5s for a premium feel
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>
+      <AnimatePresence>
+        {isLoading && !isAdmin && <LoadingScreen key="loader" />}
+      </AnimatePresence>
       <Toaster position="bottom-right" expand={true} richColors />
       {!isAdmin && <Navbar />}
       <main className={!isAdmin ? "pt-[var(--header-height)]" : ""}>

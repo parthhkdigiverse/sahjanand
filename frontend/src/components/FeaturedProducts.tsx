@@ -10,6 +10,7 @@ import {
   CarouselPrevious 
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { useEffect } from "react";
 import * as React from "react";
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
@@ -49,12 +50,28 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
 }
 
 export function FeaturedProducts() {
-  const { data: products, isLoading } = useQuery({
+  const { data: products } = useQuery({
     queryKey: ["featured-products"],
     queryFn: fetchProducts,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_products");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
 
+  useEffect(() => {
+    if (products && products.length > 0) {
+      localStorage.setItem("cached_products", JSON.stringify(products));
+    }
+  }, [products]);
+
   const featured = products?.filter((p: any) => p.featured) || [];
+  const isLoading = !products;
 
   return (
     <section className="bg-secondary/20 py-24 md:py-32">

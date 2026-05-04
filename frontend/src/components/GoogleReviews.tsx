@@ -6,15 +6,45 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchReviews, fetchSettings } from "@/lib/api";
 
 export function GoogleReviews() {
-  const { data: reviews = [], isLoading } = useQuery({
+  const { data: reviews = [] } = useQuery({
     queryKey: ["reviews"],
     queryFn: fetchReviews,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_reviews");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
     queryFn: fetchSettings,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_settings");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
+
+  useEffect(() => {
+    if (reviews && reviews.length > 0) {
+      localStorage.setItem("cached_reviews", JSON.stringify(reviews));
+    }
+  }, [reviews]);
+
+  useEffect(() => {
+    if (settings) {
+      localStorage.setItem("cached_settings", JSON.stringify(settings));
+    }
+  }, [settings]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" }, [
     Autoplay({ delay: 4500 }),

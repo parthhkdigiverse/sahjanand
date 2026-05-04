@@ -10,12 +10,42 @@ export function VideoTestimonials() {
   const { data: testimonials = [], isLoading } = useQuery({
     queryKey: ["testimonials"],
     queryFn: fetchTestimonials,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_testimonials");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
   
   const { data: settings } = useQuery({
     queryKey: ["settings"],
     queryFn: fetchSettings,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_settings");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
+
+  useEffect(() => {
+    if (testimonials && testimonials.length > 0) {
+      localStorage.setItem("cached_testimonials", JSON.stringify(testimonials));
+    }
+  }, [testimonials]);
+
+  useEffect(() => {
+    if (settings) {
+      localStorage.setItem("cached_settings", JSON.stringify(settings));
+    }
+  }, [settings]);
 
   const autoplayPlugin = useRef(
     Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: false })

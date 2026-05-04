@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAboutData, getImageUrl } from "@/lib/api";
+import { useEffect } from "react";
 import heroFallback from "@/assets/hero-1.jpg";
 import promiseFallback from "@/assets/insta-1.jpg";
 
@@ -9,12 +10,27 @@ export const Route = createFileRoute("/about")({
 });
 
 function About() {
-  const { data: about, isLoading } = useQuery({
+  const { data: about } = useQuery({
     queryKey: ["about-data"],
     queryFn: fetchAboutData,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_about");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
 
-  if (isLoading) return <div className="h-screen flex items-center justify-center bg-ivory/30">
+  useEffect(() => {
+    if (about) {
+      localStorage.setItem("cached_about", JSON.stringify(about));
+    }
+  }, [about]);
+
+  if (!about) return <div className="h-screen flex items-center justify-center bg-ivory/30">
     <div className="animate-pulse font-serif text-2xl text-gold tracking-widest uppercase">Sahajanand Jewellers</div>
   </div>;
 

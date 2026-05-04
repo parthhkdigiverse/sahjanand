@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Instagram, Facebook, Twitter, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
 import { fetchPolicies, fetchSettings, fetchContactPageData, subscribeNewsletter } from "@/lib/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 const exploreLinks = [
@@ -20,17 +20,56 @@ export function Footer() {
   const { data: policies } = useQuery({
     queryKey: ["policies"],
     queryFn: fetchPolicies,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_policies");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
     queryFn: fetchSettings,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_settings");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
 
   const { data: contactData } = useQuery({
     queryKey: ["contact-page"],
     queryFn: fetchContactPageData,
+    initialData: () => {
+      if (typeof window === "undefined") return undefined;
+      const cached = localStorage.getItem("cached_contact_page");
+      try {
+        return cached ? JSON.parse(cached) : undefined;
+      } catch (e) {
+        return undefined;
+      }
+    },
   });
+
+  useEffect(() => {
+    if (policies) localStorage.setItem("cached_policies", JSON.stringify(policies));
+  }, [policies]);
+
+  useEffect(() => {
+    if (settings) localStorage.setItem("cached_settings", JSON.stringify(settings));
+  }, [settings]);
+
+  useEffect(() => {
+    if (contactData) localStorage.setItem("cached_contact_page", JSON.stringify(contactData));
+  }, [contactData]);
 
   const mutation = useMutation({
     mutationFn: subscribeNewsletter,
