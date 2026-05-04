@@ -27,7 +27,7 @@ function Achievements() {
         <img 
           src={heroFallback} 
           alt="Our Achievements" 
-          className="absolute inset-0 w-full h-full object-cover opacity-50"
+          className="absolute inset-0 w-full h-full object-cover object-top opacity-50"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-onyx/40 to-onyx/80" />
         <div className="absolute inset-0 z-10 flex items-center justify-center text-center px-4">

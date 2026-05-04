@@ -54,7 +54,7 @@ function About() {
         <img 
           src={data.hero_image ? getImageUrl(data.hero_image) : heroFallback} 
           alt="Sahajanand Jewellers" 
-          className="absolute inset-0 w-full h-full object-cover object-top md:object-center" 
+          className="absolute inset-0 w-full h-full object-cover object-top" 
         />
         <div className="absolute inset-0 bg-onyx/40" />
         <div className="absolute inset-0 z-10 flex items-end justify-center md:justify-start pb-12 md:pb-20 text-center md:text-left container-luxe px-4">

@@ -88,12 +88,6 @@ export function Footer() {
     mutation.mutate(email);
   };
 
-  const socialLinks = settings || {
-    instagram_url: "#",
-    facebook_url: "#",
-    twitter_url: "#",
-    youtube_url: "#",
-  };
 
   return (
     <footer
@@ -111,10 +105,26 @@ export function Footer() {
               Crafting Trust, Purity & Elegance in Every Gold Jewellery Piece, Where Tradition Meets Trust – Premium Gold Jewellery in Nadiad
             </p>
             <div className="flex gap-4 text-ivory/70">
-              <a href={socialLinks.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-gold transition-colors"><Instagram size={18} /></a>
-              <a href={socialLinks.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-gold transition-colors"><Facebook size={18} /></a>
-              <a href={socialLinks.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="hover:text-gold transition-colors"><Twitter size={18} /></a>
-              <a href={socialLinks.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:text-gold transition-colors"><Youtube size={18} /></a>
+              {settings?.instagram_url && (
+                <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-gold transition-colors">
+                  <Instagram size={18} />
+                </a>
+              )}
+              {settings?.facebook_url && (
+                <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-gold transition-colors">
+                  <Facebook size={18} />
+                </a>
+              )}
+              {settings?.twitter_url && (
+                <a href={settings.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="hover:text-gold transition-colors">
+                  <Twitter size={18} />
+                </a>
+              )}
+              {settings?.youtube_url && (
+                <a href={settings.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:text-gold transition-colors">
+                  <Youtube size={18} />
+                </a>
+              )}
             </div>
           </div>
 

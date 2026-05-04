@@ -70,7 +70,7 @@ export function HeroCarousel() {
                 <img
                   src={getImageUrl(s.image)}
                   alt={s.title}
-                  className="absolute inset-0 w-full h-full object-cover object-top md:object-center"
+                  className="absolute inset-0 w-full h-full object-cover object-top md:object-top"
                   loading={i === 0 ? "eager" : "lazy"}
                 />
                 <div className="absolute inset-0 gradient-overlay" />
