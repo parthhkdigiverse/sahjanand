@@ -6,22 +6,26 @@ const getBackendBase = () => {
   const port = typeof __BACKEND_PORT__ !== 'undefined' ? __BACKEND_PORT__ : "8002";
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    
-    // For deployment on a domain (like sahjanand.hkdigiverse.com), 
-    // use a relative path to let the reverse proxy (Nginx) handle the routing.
-    // This solves HTTPS/Mixed content issues without needing SSL configs in the backend.
-    if (hostname !== 'localhost' && !hostname.match(/^\d/)) {
-      // Check if we have an explicit override from environment
-      // @ts-ignore - Vite environment variable
-      const envBase = import.meta.env.VITE_API_URL;
-      if (envBase) return envBase;
-      
-      return ""; // Use relative URL
-    }
+    const protocol = window.location.protocol;
     
     // For local development or IP-based access, stay with the explicit port
-    const protocol = window.location.protocol;
-    return `${protocol}//${hostname}:${port}`;
+    if (hostname === 'localhost' || hostname.match(/^\d/)) {
+      return `${protocol}//${hostname}:${port}`;
+    }
+
+    // For deployment on a domain (like sahjanand.hkdigiverse.com), 
+    // use a relative path to let the reverse proxy (Nginx) handle the routing.
+    // EXCEPT if we are in the antigravity.run dev environment where ports are explicit.
+    if (hostname.includes('antigravity.run')) {
+      return `${protocol}//${hostname}:${port}`;
+    }
+    
+    // Check if we have an explicit override from environment
+    // @ts-ignore - Vite environment variable
+    const envBase = import.meta.env.VITE_API_URL;
+    if (envBase) return envBase;
+    
+    return ""; // Use relative URL
   }
   return `http://localhost:${port}`;
 };
@@ -52,8 +56,16 @@ export const getImageUrl = (path: string | undefined | null) => {
   }
   
   // Return the relative path for uploaded files
+  // This works better for development (Vite serves public folder) 
+  // and production (Nginx/Proxy handles routing)
   if (cleanPath.startsWith('/uploads')) {
     return cleanPath;
+  }
+  
+  // If it's a relative path that doesn't start with /uploads, it's likely a broken legacy path
+  // Return undefined so the UI can show a fallback or placeholder
+  if (!cleanPath.startsWith('http')) {
+    return undefined;
   }
   
   return cleanPath;
@@ -124,6 +136,7 @@ export type HeroSlide = {
   subtitle: string;
   link_text: string;
   link_url: string;
+  link_type: "NONE" | "BUTTON" | "LINK";
   order: number;
 };
 
@@ -160,6 +173,14 @@ export type GallerySettings = {
   subheading: string;
 };
 
+export type Achievement = {
+  _id: string;
+  title: string;
+  description: string;
+  image: string;
+  order: number;
+};
+
 export async function fetchProducts(): Promise<Product[]> {
   const res = await fetch(`${API_BASE}/products/`);
   if (!res.ok) throw new Error("Failed to fetch products");
@@ -191,7 +212,7 @@ export type ContactInquiry = {
   preferred_date?: string;
   subject: string;
   message: string;
-  type: "GENERAL" | "PRODUCT" | "VIDEO_CALL" | "VIRTUAL_CALL" | "STORE_VISIT" | "HOME_VISIT";
+  type: "GENERAL" | "PRODUCT" | "VIDEO_CALL" | "STORE_VISIT" | "VIRTUAL_CALL" | "HOME_VISIT" | "VIDEO_CALL" | "VIRTUAL_CALL" | "STORE_VISIT" | "HOME_VISIT";
   product_id?: string;
   product_name?: string;
   store_location?: string;
@@ -312,6 +333,12 @@ export type SiteSettings = {
   reviews_subheading: string;
   testimonials_heading: string;
   testimonials_subheading: string;
+  show_announcement: boolean;
+  announcement_text: string;
+  show_brand_showcase: boolean;
+  showcase_video_url: string;
+  showcase_title: string;
+  showcase_description: string;
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {
@@ -553,5 +580,112 @@ export async function deletePolicy(id: string, token: string) {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete policy");
+  return res.json();
+}
+
+// --- Achievements API ---
+export async function fetchAchievements(): Promise<Achievement[]> {
+  const res = await fetch(`${API_BASE}/achievements/`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function createAchievement(data: Omit<Achievement, "_id">, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/achievements/`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function updateAchievement(id: string, data: Partial<Achievement>, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/achievements/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+export async function deleteAchievement(id: string, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/achievements/${id}`, {
+    method: "DELETE",
+  });
+  return res.json();
+}
+
+// --- NRI API ---
+export type BenefitItem = {
+  title: string;
+  description: string;
+};
+
+export type NRIPageData = {
+  hero_image?: string;
+  hero_heading: string;
+  hero_eyebrow: string;
+  intro_heading: string;
+  intro_paragraphs: string[];
+  benefits_image?: string;
+  benefits: BenefitItem[];
+  cta_text: string;
+  cta_link: string;
+};
+
+export async function fetchNRIPageData(): Promise<NRIPageData> {
+  const res = await fetch(`${API_BASE}/nri/`);
+  if (!res.ok) throw new Error("Failed to fetch NRI data");
+  return res.json();
+}
+
+export async function updateNRIPageData(data: NRIPageData, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/nri/`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update NRI data");
+  return res.json();
+}
+
+// --- NRI Leads API ---
+export type NRILead = {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  country: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+};
+
+export async function fetchNRILeads(token: string): Promise<NRILead[]> {
+  const res = await authenticatedFetch(`${API_BASE}/nri/leads`);
+  if (!res.ok) throw new Error("Failed to fetch NRI leads");
+  return res.json();
+}
+
+export async function submitNRILead(data: Omit<NRILead, "_id" | "is_read" | "created_at">) {
+  const res = await fetch(`${API_BASE}/nri/leads`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to submit NRI lead");
+  return res.json();
+}
+
+export async function toggleNRILeadRead(id: string, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/nri/leads/${id}/toggle-read`, {
+    method: "PATCH",
+  });
+  if (!res.ok) throw new Error("Failed to toggle NRI lead status");
+  return res.json();
+}
+
+export async function deleteNRILead(id: string, token: string) {
+  const res = await authenticatedFetch(`${API_BASE}/nri/leads/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete NRI lead");
   return res.json();
 }

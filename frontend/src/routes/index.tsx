@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HeroCarousel } from "@/components/HeroCarousel";
+import { TrustStrip } from "@/components/TrustStrip";
 import { LeadCapture } from "@/components/LeadCapture";
 import { FeaturedProducts } from "@/components/FeaturedProducts";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { GoogleReviews } from "@/components/GoogleReviews";
 import { VideoTestimonials } from "@/components/VideoTestimonials";
+import { BrandShowcase } from "@/components/BrandShowcase";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,7 +26,9 @@ function Index() {
   return (
     <>
       <HeroCarousel />
+      <TrustStrip />
       <LeadCapture />
+      <BrandShowcase />
       <FeaturedProducts />
       <InstagramFeed />
       <GoogleReviews />

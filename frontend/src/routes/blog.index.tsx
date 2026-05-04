@@ -29,7 +29,7 @@ function BlogIndex() {
   const [featured, ...rest] = blogPosts;
 
   return (
-    <div className="pt-32 pb-24">
+    <div className="py-24">
       <div className="container-luxe">
         <div className="text-center mb-16 animate-fade-up">
           <p className="divider-gold mb-5">Journal</p>

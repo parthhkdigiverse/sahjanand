@@ -20,7 +20,9 @@ import {
   Settings as SettingsIcon,
   ChevronRight,
   ExternalLink,
-  Bell
+  Bell,
+  Trophy,
+  Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -69,6 +71,8 @@ function AdminLayout() {
     { label: "Policies", icon: FolderTree, href: "/admin/policies" },
     { label: "Products", icon: Package, href: "/admin/products" },
     { label: "About Page", icon: FileText, href: "/admin/about" },
+    { label: "NRI Services", icon: Globe, href: "/admin/nri" },
+    { label: "Achievements", icon: Trophy, href: "/admin/achievements" },
     { label: "Contact Page", icon: Phone, href: "/admin/contact-page" },
     { label: "Blogs", icon: FileText, href: "/admin/blogs" },
     { label: "Inquiries", icon: MessageSquare, href: "/admin/contacts" },

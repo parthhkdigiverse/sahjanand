@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, Any
 from bson import ObjectId
 from pydantic_core import core_schema
+from datetime import datetime
 
 class PyObjectId(ObjectId):
     @classmethod
@@ -28,30 +29,23 @@ class PyObjectId(ObjectId):
             raise ValueError("Invalid objectid")
         return ObjectId(v)
 
-class HeroSlideBase(BaseModel):
-    image: str
-    eyebrow: str
-    title: str
-    subtitle: str
-    link_text: str = "Shop Now"
-    link_url: str = "/shop"
-    link_type: str = "BUTTON"  # NONE, BUTTON, LINK
-    order: int = 0
+class NRILeadBase(BaseModel):
+    name: str
+    email: str
+    phone: str
+    country: str
+    message: str
+    is_read: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-class HeroSlideCreate(HeroSlideBase):
-    pass
+class NRILeadCreate(BaseModel):
+    name: str
+    email: str
+    phone: str
+    country: str
+    message: str
 
-class HeroSlideUpdate(BaseModel):
-    image: Optional[str] = None
-    eyebrow: Optional[str] = None
-    title: Optional[str] = None
-    subtitle: Optional[str] = None
-    link_text: Optional[str] = None
-    link_url: Optional[str] = None
-    link_type: Optional[str] = None
-    order: Optional[int] = None
-
-class HeroSlide(HeroSlideBase):
+class NRILead(NRILeadBase):
     mongo_id: Optional[PyObjectId] = Field(None, alias="_id")
     
     model_config = ConfigDict(

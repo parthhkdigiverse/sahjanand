@@ -1,15 +1,10 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useInView } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
-import { Play, X, ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTestimonials, getImageUrl, fetchSettings } from "@/lib/api";
-
-declare global {
-  interface Window {
-    onYouTubeIframeAPIReady: () => void;
-    YT: any;
-  }
-}
+import Autoplay from "embla-carousel-autoplay";
 
 export function VideoTestimonials() {
   const { data: testimonials = [], isLoading } = useQuery({
@@ -22,78 +17,36 @@ export function VideoTestimonials() {
     queryFn: fetchSettings,
   });
 
+  const autoplayPlugin = useRef(
+    Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: false })
+  );
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     loop: true, 
     align: "center",
     duration: 60,
     skipSnaps: false
-  });
+  }, [autoplayPlugin.current]);
   
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { amount: 0.1 });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
-  const players = useRef<Map<string, any>>(new Map());
+  const [isMuted, setIsMuted] = useState(true);
+  
+  // Refs for non-render state to avoid infinite loops
+  const iframeRefs = useRef<Map<number, HTMLIFrameElement>>(new Map());
+  const readyIframes = useRef<Set<number>>(new Set());
 
-  // Load YouTube API
+  // Handle autoplay based on visibility
   useEffect(() => {
-    if (!window.YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
+    if (!emblaApi) return;
+    const autoplay = emblaApi.plugins().autoplay;
+    if (isInView) {
+      autoplay?.play();
+    } else {
+      autoplay?.stop();
     }
-  }, []);
-
-  const onPlayerStateChange = (event: any) => {
-    // YT.PlayerState.ENDED = 0
-    if (event.data === 0) {
-      emblaApi?.scrollNext();
-    }
-  };
-
-  const toggleMute = () => {
-    const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-    players.current.forEach(player => {
-      try {
-        if (nextMuted) player.mute();
-        else player.unMute();
-      } catch (e) {
-        // Player might not be ready or destroyed
-      }
-    });
-  };
-
-  const initPlayer = (elementId: string, videoId: string) => {
-    if (!window.YT || !window.YT.Player || !document.getElementById(elementId)) return;
-    
-    // If player exists for this element, destroy it first to be clean
-    if (players.current.has(elementId)) {
-      try {
-        players.current.get(elementId).destroy();
-      } catch (e) {}
-    }
-
-    const player = new window.YT.Player(elementId, {
-      videoId: videoId,
-      playerVars: {
-        autoplay: 1,
-        controls: 1,
-        rel: 0,
-        modestbranding: 1,
-        iv_load_policy: 3,
-        enablejsapi: 1,
-        mute: isMuted ? 1 : 0
-      },
-      events: {
-        onStateChange: onPlayerStateChange,
-        onReady: (e: any) => {
-          if (isMuted) e.target.mute();
-          else e.target.unMute();
-          e.target.playVideo();
-        }
-      }
-    });
-    players.current.set(elementId, player);
-  };
+  }, [isInView, emblaApi]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -112,14 +65,113 @@ export function VideoTestimonials() {
 
   const getYoutubeId = (url: string) => {
     if (!url) return "";
-    if (url.includes("v=")) return url.split("v=")[1].split("&")[0];
-    return url.split("/").pop() || "";
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) return match[2];
+    return url.length === 11 ? url : null;
   };
 
   const displayTestimonials = useMemo(() => {
     if (testimonials.length === 0) return [];
     return testimonials.length <= 5 ? [...testimonials, ...testimonials] : testimonials;
   }, [testimonials]);
+
+  const sendCommand = useCallback((index: number, command: string, args?: any[]) => {
+    const iframe = iframeRefs.current.get(index);
+    if (!iframe?.contentWindow || !readyIframes.current.has(index)) return;
+    
+    try {
+      iframe.contentWindow.postMessage(JSON.stringify({
+        event: "command",
+        func: command,
+        args: args || [],
+      }), "https://www.youtube.com");
+    } catch (e) {}
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    setIsMuted(prev => {
+      const nextMuted = !prev;
+      if (nextMuted) {
+        sendCommand(selectedIndex, "mute");
+      } else {
+        sendCommand(selectedIndex, "unMute");
+        sendCommand(selectedIndex, "setVolume", [100]);
+      }
+      return nextMuted;
+    });
+  }, [selectedIndex, sendCommand]);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "https://www.youtube.com") return;
+      try {
+        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        
+        let foundIndex = -1;
+        iframeRefs.current.forEach((iframe, index) => {
+          if (iframe.contentWindow === event.source) {
+            foundIndex = index;
+          }
+        });
+
+        if (foundIndex === -1) return;
+
+        if (data.event === "onReady") {
+          readyIframes.current.add(foundIndex);
+          // Trigger initial play/mute once ready
+          if (foundIndex === selectedIndex && isInView) {
+            sendCommand(foundIndex, "playVideo");
+            if (isMuted) sendCommand(foundIndex, "mute");
+            else sendCommand(foundIndex, "unMute");
+          }
+        }
+
+        if (data.event === "onStateChange") {
+          if (data.info === 1) {
+            emblaApi?.plugins().autoplay?.stop();
+          } else if (data.info === 2 || data.info === 0) {
+            if (isInView) {
+              emblaApi?.plugins().autoplay?.play();
+            }
+            if (data.info === 0 && emblaApi) {
+              emblaApi.scrollNext();
+            }
+          }
+        }
+      } catch (e) {}
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [emblaApi, isInView, selectedIndex, isMuted, sendCommand]);
+
+  // Handle slide changes and visibility
+  useEffect(() => {
+    iframeRefs.current.forEach((_, index) => {
+      if (index !== selectedIndex) {
+        sendCommand(index, "pauseVideo");
+        sendCommand(index, "mute");
+      }
+    });
+
+    if (isInView) {
+      sendCommand(selectedIndex, "playVideo");
+      if (isMuted) {
+        sendCommand(selectedIndex, "mute");
+      } else {
+        sendCommand(selectedIndex, "unMute");
+      }
+    }
+  }, [selectedIndex, isInView, sendCommand, isMuted]);
+
+  useEffect(() => {
+    if (!isInView) {
+      iframeRefs.current.forEach((_, index) => {
+        sendCommand(index, "pauseVideo");
+      });
+    }
+  }, [isInView, sendCommand]);
 
   if (isLoading) {
     return (
@@ -138,7 +190,7 @@ export function VideoTestimonials() {
   }
 
   return (
-    <section className="container-luxe py-24 md:py-32 overflow-hidden">
+    <section className="container-luxe py-24 md:py-32 overflow-hidden" ref={containerRef}>
       <div className="text-center mb-14">
         <p className="divider-gold mb-5">{settings?.testimonials_subheading || "Our Customers"}</p>
         <h2 className="font-serif text-4xl md:text-5xl">{settings?.testimonials_heading || "Voices of Trust"}</h2>
@@ -149,13 +201,7 @@ export function VideoTestimonials() {
           <div className="flex">
             {displayTestimonials.map((t, i) => {
               const isCentered = selectedIndex === i;
-              const videoId = getYoutubeId(t.video_url);
-              const elementId = `yt-player-${i}`;
-              
-              // Initialize player when centered
-              if (isCentered && videoId && window.YT?.Player) {
-                setTimeout(() => initPlayer(elementId, videoId), 100);
-              }
+              const videoId = getYoutubeId(t.video_url || "");
 
               return (
                 <div
@@ -172,12 +218,27 @@ export function VideoTestimonials() {
                       src={getImageUrl(t.image)}
                       alt={t.name}
                       loading="lazy"
-                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${isCentered ? "opacity-0" : "opacity-100"}`}
+                      className="absolute inset-0 h-full w-full object-cover"
                     />
 
-                    {isCentered && t.video_url && (
-                      <div className="absolute inset-0">
-                        <div id={elementId} className="absolute -inset-x-[15%] -inset-y-[15%] w-[130%] h-[130%] pointer-events-none object-cover" />
+                    {t.video_url && videoId && isCentered && (
+                      <div className="absolute inset-0 z-[5]">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-full">
+                          <iframe
+                            ref={(el) => {
+                              if (el) iframeRefs.current.set(i, el);
+                              else {
+                                iframeRefs.current.delete(i);
+                                readyIframes.current.delete(i);
+                              }
+                            }}
+                            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&playsinline=1&showinfo=0&loop=1&playlist=${videoId}&origin=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
+                            className="w-full h-full border-0"
+                            allow="autoplay; encrypted-media"
+                            allowFullScreen={false}
+                            title={`${t.name} testimonial video`}
+                          />
+                        </div>
                         
                         <button
                           onClick={(e) => {
@@ -188,44 +249,25 @@ export function VideoTestimonials() {
                         >
                           {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                         </button>
+                        
+                        <div className="absolute inset-0 z-10 pointer-events-none" />
                       </div>
                     )}
                     
-                    <div className="absolute inset-0 bg-gradient-to-t from-onyx/90 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-onyx/90 via-transparent to-transparent pointer-events-none z-[15]" />
                     
-                    <div className="absolute inset-x-0 bottom-0 p-8 text-ivory text-center pointer-events-none">
+                    <div className="absolute inset-x-0 bottom-0 p-8 text-ivory text-center pointer-events-none z-[16]">
                       <Quote size={24} className="text-gold/40 mx-auto mb-4" />
                       <p className="font-serif text-xl leading-snug mb-4 line-clamp-3 italic">"{t.quote}"</p>
                       <div className="h-px w-8 bg-gold/30 mx-auto mb-3" />
                       <p className="text-[10px] tracking-[0.3em] text-gold uppercase font-bold">{t.name}</p>
                     </div>
-
-                    {!isCentered && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="h-14 w-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-ivory">
-                          <Play size={20} className="ml-1 fill-current" />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-
-        <button
-          onClick={() => emblaApi?.scrollPrev()}
-          className="absolute left-4 lg:-left-12 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-ivory text-onyx shadow-xl hover:bg-gold hover:text-white transition-all flex items-center justify-center z-10"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <button
-          onClick={() => emblaApi?.scrollNext()}
-          className="absolute right-4 lg:-right-12 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-ivory text-onyx shadow-xl hover:bg-gold hover:text-white transition-all flex items-center justify-center z-10"
-        >
-          <ChevronRight size={20} />
-        </button>
       </div>
     </section>
   );

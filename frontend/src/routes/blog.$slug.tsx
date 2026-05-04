@@ -66,7 +66,7 @@ function BlogPost() {
   return (
     <article className="bg-[#F9F8F6]">
       {/* Editorial Header */}
-      <header className="relative pt-32 pb-16 md:pt-48 md:pb-24">
+      <header className="relative py-20">
         <div className="container-luxe max-w-4xl text-center">
           <Link
             to="/blog"

@@ -21,6 +21,10 @@ class SettingsBase(BaseModel):
     offer_button_text: str = "Get My Offer"
     offer_footer_text: str = "Limited time · One per customer"
 
+    # Announcement Strip
+    show_announcement: bool = True
+    announcement_text: str = "Discover our new Festive Collection — Handcrafted with Pure Gold and Timeless Elegance. | Complimentary shipping on all heirloom orders over ₹50,000. | Visit our Nadiad boutique for a personalized concierge experience."
+
     # Form Configuration
     form_fields: List[FormField] = [
         FormField(id="name", name="name", label="Name", type="text", required=True, is_constant=True),
@@ -58,6 +62,12 @@ class SettingsBase(BaseModel):
     # Atelier Promise Settings
     promise_title: str = "Atelier Promise"
     promise_text: str = "Every piece is hallmarked, certified and accompanied by a lifetime care service."
+
+    # Brand Showcase Settings
+    show_brand_showcase: bool = True
+    showcase_video_url: str = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    showcase_title: str = "The Art of Sahajanand"
+    showcase_description: str = "Discover the journey of a thousand diamonds, meticulously crafted into timeless heirlooms. Our atelier in Nadiad preserves centuries-old techniques while embracing modern elegance."
 
 class Settings(SettingsBase):
     pass

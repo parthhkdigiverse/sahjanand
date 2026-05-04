@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { submitContact, fetchContactPageData, getImageUrl } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle2, Calendar as CalendarIcon, MapPin as MapPinIcon } from "lucide-react";
+import { Loader2, Calendar, ChevronDown, CheckCircle2, MapPin, Phone, Mail, Clock, Calendar as CalendarIcon, MapPin as MapPinIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -22,18 +22,22 @@ export const Route = createFileRoute("/contact")({
   component: Contact,
 });
 
+type VisitType = "STORE_VISIT" | "VIRTUAL_CALL" | "HOME_VISIT";
+
 function Contact() {
   const { data: contactData, isLoading } = useQuery({
     queryKey: ["contact-page"],
     queryFn: fetchContactPageData,
   });
 
+  const [visitType, setVisitType] = useState<VisitType>("STORE_VISIT");
   const [activeTab, setActiveTab] = useState("store");
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
     phone: "",
-    date: "",
+    email: "",
+    store: "Nadiad Main Store",
+    dateTime: "",
     time: "",
     store: "",
     address: "",
@@ -46,6 +50,13 @@ function Contact() {
     e.preventDefault();
     try {
       setIsSubmitting(true);
+      
+      const typeLabels = {
+        STORE_VISIT: "Store Visit",
+        VIRTUAL_CALL: "Virtual Call",
+        HOME_VISIT: "Home Visit"
+      };
+
       
       let type: "STORE_VISIT" | "VIDEO_CALL" | "HOME_VISIT" | "GENERAL" = "GENERAL";
       let subject = "Appointment Request";
@@ -63,14 +74,12 @@ function Contact() {
 
       await submitContact({
         name: formData.name,
-        email: formData.email || "concierge@request.com", // Fallback if email is hidden in some tabs
+        email: formData.email || "no-email@provided.com" || "concierge@request.com", // Fallback if email is hidden in some tabs
         phone: formData.phone,
-        preferred_date: `${formData.date} ${formData.time}`,
-        subject: subject,
-        message: formData.message || `Requested a ${type.replace("_", " ").toLowerCase()} appointment.`,
-        type: type,
-        store_location: formData.store,
-        address: formData.address
+        preferred_date: formData.dateTime,
+        subject: `${typeLabels[visitType]} Request`,
+        message: `Visit Type: ${typeLabels[visitType]}\nStore: ${formData.store}\nDate/Time: ${formData.dateTime}\nAdditional Notes: ${formData.message}`,
+        type: visitType
       });
       
       setSent(true);
@@ -78,9 +87,10 @@ function Contact() {
         setSent(false);
         setFormData({
           name: "",
-          email: "",
           phone: "",
-          date: "",
+          email: "",
+          store: "Nadiad Main Store",
+          dateTime: "",
           time: "",
           store: "",
           address: "",
@@ -89,7 +99,7 @@ function Contact() {
       }, 5000);
     } catch (err) {
       console.error(err);
-      alert("Failed to send message. Please try again.");
+      alert("Failed to send request. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -97,15 +107,21 @@ function Contact() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-ivory/30 gap-6">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#FDFCFB] gap-6">
         <div className="relative">
-          <div className="w-16 h-16 rounded-full border-2 border-gold/10 border-t-gold animate-spin" />
-          <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gold animate-pulse" size={24} />
+          <div className="w-16 h-16 rounded-full border-2 border-[#2D6A6A]/10 border-t-[#2D6A6A] animate-spin" />
+          <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#2D6A6A] animate-pulse" size={24} />
         </div>
-        <p className="text-[10px] uppercase tracking-[0.4em] text-onyx/30 font-bold animate-pulse">Entering the Atelier</p>
+        <p className="text-[10px] uppercase tracking-[0.4em] text-onyx/30 font-bold animate-pulse">Loading Atelier</p>
       </div>
     );
   }
+
+  const tabs: { id: VisitType; label: string }[] = [
+    { id: "STORE_VISIT", label: "Schedule Store Visit" },
+    { id: "VIRTUAL_CALL", label: "Book A Virtual Call" },
+    { id: "HOME_VISIT", label: "Schedule Home Visit" },
+  ];
 
   const boutiqueDetails = [
     { 
@@ -136,49 +152,51 @@ function Contact() {
   ];
 
   return (
-    <div className="bg-ivory/30 min-h-screen">
-      <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden pt-20">
+    <div className="bg-[#FDFCFB] min-h-screen">
+      {/* Hero Section - Matching the Image Precise Styling */}
+      <section className="relative w-full overflow-hidden h-[70vh] min-h-[600px] flex items-center justify-center bg-onyx -mt-[var(--header-height)]">
         <div className="absolute inset-0">
           <img 
             src={getImageUrl(contactData?.hero_image || "/assets/hero-3.jpg")} 
             alt="Sahajanand Jewellers Atelier" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-80"
           />
-          <div className="absolute inset-0 bg-onyx/60" />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
         
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <p className="text-gold uppercase tracking-[0.3em] text-xs font-bold mb-6 flex items-center justify-center gap-4">
-            <span className="w-12 h-px bg-gold/50"></span>
-            {contactData?.hero_eyebrow || ""}
-            <span className="w-12 h-px bg-gold/50"></span>
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto w-full">
+          <p className="text-gold uppercase tracking-[0.4em] text-xs font-bold mb-8 flex items-center justify-center gap-6">
+            <span className="w-12 md:w-16 h-px bg-gold/40"></span>
+            PRIVATE VIEWING
+            <span className="w-12 md:w-16 h-px bg-gold/40"></span>
           </p>
-          <h1 className="font-serif text-5xl md:text-7xl text-ivory mb-6 leading-tight">
-            {contactData?.hero_heading ? (
-              <div dangerouslySetInnerHTML={{ __html: contactData.hero_heading.replace("Experience", '<span class="italic text-gold">Experience</span>') }} />
-            ) : null}
+          <h1 className="font-serif text-5xl md:text-8xl text-white mb-8 leading-tight tracking-tight">
+            <span className="italic text-gold font-normal">Experience</span> the Art of Craft
           </h1>
-          <p className="text-ivory/70 max-w-xl mx-auto font-light text-sm md:text-base">
-            {contactData?.hero_description || ""}
+          <p className="text-white/90 max-w-2xl mx-auto font-light text-base md:text-lg leading-relaxed tracking-wide">
+            Schedule a private consultation at our boutique. Discover our collections with dedicated assistance from our master jewelers.
           </p>
         </div>
       </section>
 
-      <section className="container-luxe py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
-          <div className="lg:col-span-5 space-y-12">
+      {/* Form Section - Two Column Layout with Details Beside Form */}
+      <section className="container-luxe max-w-7xl mx-auto px-4 md:px-8 py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+          
+          {/* Left Side: Contact Details */}
+          <div className="lg:col-span-5 space-y-12 animate-in fade-in slide-in-from-left duration-700">
             <div>
-              <h2 className="font-serif text-3xl md:text-4xl text-onyx mb-10">Our Atelier</h2>
-              <div className="space-y-8">
+              <h2 className="font-serif text-4xl text-onyx mb-10">Our Atelier</h2>
+              <div className="space-y-10">
                 {boutiqueDetails.map(({ icon: Icon, t, l }, idx) => (
                   <div key={idx} className="flex gap-6 group">
                     <div className="h-14 w-14 rounded-full border border-gold/30 bg-white shadow-sm flex items-center justify-center text-gold flex-none group-hover:scale-110 group-hover:border-gold transition-all duration-500">
                       <Icon strokeWidth={1.5} size={24} />
                     </div>
                     <div>
-                      <h3 className="text-xs tracking-[0.2em] uppercase font-bold text-onyx/40 mb-2 group-hover:text-gold transition-colors">{t}</h3>
+                      <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-onyx/40 mb-2 group-hover:text-gold transition-colors">{t}</h3>
                       {l.map((line, i) => (
-                        <p key={i} className="text-onyx/80 font-medium">{line}</p>
+                        <p key={i} className="text-onyx/80 font-medium text-lg">{line}</p>
                       ))}
                     </div>
                   </div>
@@ -186,169 +204,138 @@ function Contact() {
               </div>
             </div>
 
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-luxe bg-onyx/5">
-              <iframe
-                src={contactData?.map_embed_url || ""}
-                width="100%"
-                height="100%"
-                style={{ border: 0, filter: "grayscale(0.2) contrast(1.05)" }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Sahajanand Jewellers Nadiad Location"
-              ></iframe>
+            <div className="bg-ivory/30 p-8 rounded-2xl border border-gold/10 hidden lg:block">
+              <p className="text-onyx/60 leading-relaxed italic">
+                "We invite you to experience the Sahajanand legacy in person, where timeless elegance meets unparalleled personal service."
+              </p>
             </div>
           </div>
 
-          <div className="lg:col-span-7">
-            <div className="bg-white p-6 md:p-14 rounded-[2.5rem] shadow-luxe border border-gold/10 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-              
-              {sent ? (
-                <div className="text-center py-20 relative z-10">
-                  <div className="w-24 h-24 bg-gold/10 rounded-full mx-auto mb-8 flex items-center justify-center">
-                    <CheckCircle2 className="text-gold w-12 h-12" strokeWidth={1.5} />
-                  </div>
-                  <h3 className="font-serif text-4xl text-onyx mb-4">Request Received</h3>
-                  <p className="text-onyx/60 max-w-sm mx-auto mb-10 leading-relaxed">
-                    Thank you for reaching out. A dedicated concierge will contact you shortly to confirm your appointment.
-                  </p>
-                  <button 
-                    onClick={() => {
-                      setSent(false);
-                      setFormData({ name: "", email: "", phone: "", date: "", time: "", store: "", address: "", message: "" });
-                    }}
-                    className="text-xs uppercase tracking-widest font-bold text-gold hover:text-onyx transition-colors border-b border-gold hover:border-onyx pb-1"
-                  >
-                    Book Another
-                  </button>
-                </div>
-              ) : (
-                <div className="relative z-10">
-                  <div className="mb-10">
-                    <h2 className="font-serif text-4xl md:text-5xl text-onyx mb-2">Request An Appointment</h2>
-                    <p className="text-onyx/40 uppercase tracking-widest text-[10px] font-bold">Contact Us</p>
-                  </div>
-
-                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="bg-transparent h-auto p-0 mb-12 border-b border-onyx/5 w-full justify-start rounded-none gap-8">
-                      <TabsTrigger 
-                        value="store" 
-                        className="bg-transparent border-b-2 border-transparent data-[state=active]:border-teal-700 data-[state=active]:bg-transparent rounded-none px-0 py-4 text-xs md:text-sm font-medium text-onyx/40 data-[state=active]:text-teal-700 transition-all"
-                      >
-                        Schedule Store Visit
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="virtual" 
-                        className="bg-transparent border-b-2 border-transparent data-[state=active]:border-teal-700 data-[state=active]:bg-transparent rounded-none px-0 py-4 text-xs md:text-sm font-medium text-onyx/40 data-[state=active]:text-teal-700 transition-all"
-                      >
-                        Book A Virtual Call
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="home" 
-                        className="bg-transparent border-b-2 border-transparent data-[state=active]:border-teal-700 data-[state=active]:bg-transparent rounded-none px-0 py-4 text-xs md:text-sm font-medium text-onyx/40 data-[state=active]:text-teal-700 transition-all"
-                      >
-                        Schedule Home Visit
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div className="relative">
-                          <input
-                            required
-                            type="text"
-                            placeholder="Full name"
-                            value={formData.name}
-                            onChange={e => setFormData({...formData, name: e.target.value})}
-                            className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all placeholder:text-onyx/20 shadow-sm"
-                          />
-                        </div>
-                        <div className="relative">
-                          <input
-                            required
-                            type="tel"
-                            placeholder="+91 Mobile number"
-                            value={formData.phone}
-                            onChange={e => setFormData({...formData, phone: e.target.value})}
-                            className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all placeholder:text-onyx/20 shadow-sm"
-                          />
-                        </div>
-
-                        {activeTab === "store" && (
-                          <div className="relative col-span-1 md:col-span-1">
-                            <Select 
-                              value={formData.store} 
-                              onValueChange={(val) => setFormData({...formData, store: val})}
-                            >
-                              <SelectTrigger className="w-full h-14 px-8 rounded-full border-onyx/10 bg-white text-sm focus:ring-0 focus:ring-offset-0 focus:border-teal-700 transition-all shadow-sm">
-                                <SelectValue placeholder="Select Store" />
-                              </SelectTrigger>
-                              <SelectContent className="rounded-2xl border-onyx/10 shadow-luxe">
-                                <SelectItem value="Nadiad Main Store">Nadiad Main Store</SelectItem>
-                                <SelectItem value="Ahmedabad Boutique">Ahmedabad Boutique</SelectItem>
-                                <SelectItem value="Mumbai Experience Center">Mumbai Experience Center</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        )}
-
-                        {activeTab === "home" && (
-                          <div className="relative col-span-1 md:col-span-2">
-                            <input
-                              required
-                              type="text"
-                              placeholder="Your full address for home visit"
-                              value={formData.address}
-                              onChange={e => setFormData({...formData, address: e.target.value})}
-                              className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all placeholder:text-onyx/20 shadow-sm"
-                            />
-                          </div>
-                        )}
-
-                        <div className="relative flex gap-4 col-span-1 md:col-span-1">
-                          <div className="relative flex-1">
-                            <input
-                              required
-                              type="datetime-local"
-                              value={`${formData.date}T${formData.time}`}
-                              onChange={e => {
-                                const [date, time] = e.target.value.split("T");
-                                setFormData({...formData, date, time});
-                              }}
-                              className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all text-onyx/60 shadow-sm"
-                            />
-                          </div>
-                        </div>
-
-                        {activeTab !== "home" && (
-                           <div className="relative col-span-1 md:col-span-1">
-                             <input
-                               type="email"
-                               placeholder="Email Address (Optional)"
-                               value={formData.email}
-                               onChange={e => setFormData({...formData, email: e.target.value})}
-                               className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all placeholder:text-onyx/20 shadow-sm"
-                             />
-                           </div>
-                        )}
-                      </div>
-
-                      <div className="pt-4 flex justify-start">
-                        <button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className="px-12 h-14 rounded-full bg-[#2C6E63] text-white font-bold text-sm tracking-wide hover:bg-[#1E4D45] transition-all shadow-xl shadow-teal-900/10 flex items-center justify-center gap-2 group disabled:opacity-50"
-                        >
-                          {isSubmitting ? "Submitting..." : "Submit"}
-                          {!isSubmitting && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
-                        </button>
-                      </div>
-                    </form>
-                  </Tabs>
-                </div>
-              )}
+          {/* Right Side: Tabbed Form */}
+          <div className="lg:col-span-7 flex flex-col animate-in fade-in slide-in-from-right duration-700">
+            <div className="mb-12">
+              <h2 className="font-serif text-5xl text-[#1A2E35] mb-4">Request An Appointment</h2>
+              <p className="text-onyx/40 uppercase tracking-widest text-xs font-bold">Contact Us</p>
             </div>
+            
+            {sent ? (
+              <div className="py-24 text-center bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in zoom-in duration-500">
+                <div className="w-24 h-24 bg-[#2D6A6A]/10 rounded-full flex items-center justify-center mx-auto mb-8">
+                  <CheckCircle2 size={48} className="text-[#2D6A6A]" />
+                </div>
+                <h3 className="font-serif text-4xl text-onyx mb-6">Request Received</h3>
+                <p className="text-onyx/60 max-w-xs mx-auto mb-10 leading-relaxed text-lg text-center">Thank you for reaching out. Our concierge will contact you shortly.</p>
+                <button 
+                  onClick={() => setSent(false)}
+                  className="text-[#2D6A6A] font-bold text-sm tracking-widest uppercase border-b-2 border-[#2D6A6A] pb-2 hover:text-[#1A2E35] hover:border-[#1A2E35] transition-all mx-auto"
+                >
+                  Book Another Session
+                </button>
+              </div>
+            ) : (
+              <div className="bg-white p-2 rounded-[2rem]">
+                {/* Custom Tabs */}
+                <div className="flex flex-wrap gap-x-8 gap-y-4 mb-12 border-b border-gray-100 pb-px px-4">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setVisitType(tab.id)}
+                      className={`pb-6 text-sm font-semibold tracking-wide transition-all relative ${
+                        visitType === tab.id 
+                        ? "text-[#2D6A6A]" 
+                        : "text-gray-400 hover:text-gray-600"
+                      }`}
+                    >
+                      {tab.label}
+                      {visitType === tab.id && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2D6A6A] animate-in slide-in-from-left duration-500" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Pill Shaped Form */}
+                <form onSubmit={handleSubmit} className="space-y-6 px-4 pb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="relative group">
+                      <input
+                        required
+                        type="text"
+                        placeholder="Full name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-8 py-5 rounded-full border border-gray-200 focus:border-[#2D6A6A] focus:ring-1 focus:ring-[#2D6A6A]/20 outline-none bg-white text-gray-800 placeholder:text-gray-400 transition-all text-base"
+                      />
+                    </div>
+                    <div className="relative group">
+                      <input
+                        required
+                        type="tel"
+                        placeholder="+91 Mobile number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-8 py-5 rounded-full border border-gray-200 focus:border-[#2D6A6A] focus:ring-1 focus:ring-[#2D6A6A]/20 outline-none bg-white text-gray-800 placeholder:text-gray-400 transition-all text-base"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="relative group">
+                      <select
+                        required
+                        value={formData.store}
+                        onChange={(e) => setFormData({ ...formData, store: e.target.value })}
+                        className="w-full px-8 py-5 rounded-full border border-gray-200 focus:border-[#2D6A6A] outline-none bg-white text-gray-800 appearance-none transition-all text-base"
+                      >
+                        <option value="Nadiad Main Store">Select Store</option>
+                        <option value="Nadiad Main Store">Nadiad Main Store</option>
+                        <option value="Ahmedabad Boutique">Ahmedabad Boutique</option>
+                      </select>
+                      <ChevronDown size={20} className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-[#2D6A6A] transition-colors" />
+                    </div>
+                    <div className="relative group">
+                      <input
+                        required
+                        type="datetime-local"
+                        value={formData.dateTime}
+                        onChange={(e) => setFormData({ ...formData, dateTime: e.target.value })}
+                        className="w-full px-8 py-5 rounded-full border border-gray-200 focus:border-[#2D6A6A] outline-none bg-white text-gray-800 transition-all text-base"
+                      />
+                      <Calendar size={20} className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-[#2D6A6A] transition-colors" />
+                    </div>
+                  </div>
+
+                  <div className="pt-6 flex justify-start">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="px-16 py-5 bg-[#2D6A6A] text-white rounded-full font-bold text-base hover:bg-[#1A2E35] transition-all duration-500 shadow-xl shadow-[#2D6A6A]/20 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1 active:translate-y-0"
+                    >
+                      {isSubmitting ? "Sending..." : "Submit"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Map Section - Full Width or Contained */}
+      <section className="container-luxe py-24 border-t border-gray-100">
+        <div className="w-full">
+          <h2 className="font-serif text-3xl text-onyx mb-10 text-center">Locate Our Boutique</h2>
+          <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-luxe border border-gray-100 bg-onyx/5">
+            <iframe
+              src={contactData?.map_embed_url || ""}
+              width="100%"
+              height="100%"
+              style={{ border: 0, filter: "grayscale(0.2) contrast(1.05)" }}
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Sahajanand Jewellers Nadiad Location"
+            ></iframe>
           </div>
         </div>
       </section>

@@ -39,7 +39,7 @@ class ContactBase(BaseModel):
     preferred_date: Optional[str] = None
     subject: str
     message: str
-    type: Literal["GENERAL", "PRODUCT", "VIDEO_CALL", "VIRTUAL_CALL", "STORE_VISIT", "HOME_VISIT"] = "GENERAL"
+    type: Literal["GENERAL", "PRODUCT", "VIDEO_CALL", "STORE_VISIT", "VIRTUAL_CALL", "HOME_VISIT", "VIRTUAL_CALL", "STORE_VISIT", "HOME_VISIT"] = "GENERAL"
     product_id: Optional[str] = None
     product_name: Optional[str] = None
     store_location: Optional[str] = None
