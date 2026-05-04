@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { submitContact, fetchContactPageData, getImageUrl } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Loader2, MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle2, Calendar as CalendarIcon, MapPin as MapPinIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -26,11 +28,15 @@ function Contact() {
     queryFn: fetchContactPageData,
   });
 
+  const [activeTab, setActiveTab] = useState("store");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     date: "",
+    time: "",
+    store: "",
+    address: "",
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,17 +46,34 @@ function Contact() {
     e.preventDefault();
     try {
       setIsSubmitting(true);
+      
+      let type: "STORE_VISIT" | "VIDEO_CALL" | "HOME_VISIT" | "GENERAL" = "GENERAL";
+      let subject = "Appointment Request";
+      
+      if (activeTab === "store") {
+        type = "STORE_VISIT";
+        subject = `Store Visit Request: ${formData.store}`;
+      } else if (activeTab === "virtual") {
+        type = "VIDEO_CALL";
+        subject = "Virtual Call Request";
+      } else if (activeTab === "home") {
+        type = "HOME_VISIT";
+        subject = "Home Visit Request";
+      }
+
       await submitContact({
         name: formData.name,
-        email: formData.email,
+        email: formData.email || "concierge@request.com", // Fallback if email is hidden in some tabs
         phone: formData.phone,
-        preferred_date: formData.date,
-        subject: `Appointment Request: ${formData.date}`,
-        message: formData.message,
-        type: "GENERAL"
+        preferred_date: `${formData.date} ${formData.time}`,
+        subject: subject,
+        message: formData.message || `Requested a ${type.replace("_", " ").toLowerCase()} appointment.`,
+        type: type,
+        store_location: formData.store,
+        address: formData.address
       });
+      
       setSent(true);
-      // Automatically show the form again after 5 seconds
       setTimeout(() => {
         setSent(false);
         setFormData({
@@ -58,6 +81,9 @@ function Contact() {
           email: "",
           phone: "",
           date: "",
+          time: "",
+          store: "",
+          address: "",
           message: ""
         });
       }, 5000);
@@ -175,7 +201,7 @@ function Contact() {
           </div>
 
           <div className="lg:col-span-7">
-            <div className="bg-white p-10 md:p-14 rounded-3xl shadow-luxe border border-gold/10 relative overflow-hidden">
+            <div className="bg-white p-6 md:p-14 rounded-[2.5rem] shadow-luxe border border-gold/10 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
               
               {sent ? (
@@ -190,7 +216,7 @@ function Contact() {
                   <button 
                     onClick={() => {
                       setSent(false);
-                      setFormData({ name: "", email: "", phone: "", date: "", message: "" });
+                      setFormData({ name: "", email: "", phone: "", date: "", time: "", store: "", address: "", message: "" });
                     }}
                     className="text-xs uppercase tracking-widest font-bold text-gold hover:text-onyx transition-colors border-b border-gold hover:border-onyx pb-1"
                   >
@@ -200,80 +226,126 @@ function Contact() {
               ) : (
                 <div className="relative z-10">
                   <div className="mb-10">
-                    <p className="text-gold uppercase tracking-[0.2em] text-[10px] font-bold mb-3 flex items-center gap-3">
-                      <span className="w-8 h-px bg-gold/50"></span>
-                      RSVP
-                    </p>
-                    <h2 className="font-serif text-3xl md:text-4xl text-onyx">Request an Appointment</h2>
+                    <h2 className="font-serif text-4xl md:text-5xl text-onyx mb-2">Request An Appointment</h2>
+                    <p className="text-onyx/40 uppercase tracking-widest text-[10px] font-bold">Contact Us</p>
                   </div>
 
-                  <form className="space-y-8" onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-2 relative group">
-                        <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Full Name *</label>
-                        <input
-                          required
-                          type="text"
-                          value={formData.name}
-                          onChange={e => setFormData({...formData, name: e.target.value})}
-                          className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
-                          placeholder="Jane Doe"
-                        />
-                      </div>
-                      <div className="space-y-2 relative group">
-                        <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Email Address *</label>
-                        <input
-                          required
-                          type="email"
-                          value={formData.email}
-                          onChange={e => setFormData({...formData, email: e.target.value})}
-                          className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
-                          placeholder="jane@example.com"
-                        />
-                      </div>
-                      <div className="space-y-2 relative group">
-                        <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Phone Number *</label>
-                        <input
-                          required
-                          type="tel"
-                          value={formData.phone}
-                          onChange={e => setFormData({...formData, phone: e.target.value})}
-                          className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
-                          placeholder="+91 95123 06199"
-                        />
-                      </div>
-                      <div className="space-y-2 relative group">
-                        <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Preferred Date *</label>
-                        <input
-                          required
-                          type="date"
-                          value={formData.date}
-                          onChange={e => setFormData({...formData, date: e.target.value})}
-                          className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
-                        />
-                      </div>
-                    </div>
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="bg-transparent h-auto p-0 mb-12 border-b border-onyx/5 w-full justify-start rounded-none gap-8">
+                      <TabsTrigger 
+                        value="store" 
+                        className="bg-transparent border-b-2 border-transparent data-[state=active]:border-teal-700 data-[state=active]:bg-transparent rounded-none px-0 py-4 text-xs md:text-sm font-medium text-onyx/40 data-[state=active]:text-teal-700 transition-all"
+                      >
+                        Schedule Store Visit
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="virtual" 
+                        className="bg-transparent border-b-2 border-transparent data-[state=active]:border-teal-700 data-[state=active]:bg-transparent rounded-none px-0 py-4 text-xs md:text-sm font-medium text-onyx/40 data-[state=active]:text-teal-700 transition-all"
+                      >
+                        Book A Virtual Call
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="home" 
+                        className="bg-transparent border-b-2 border-transparent data-[state=active]:border-teal-700 data-[state=active]:bg-transparent rounded-none px-0 py-4 text-xs md:text-sm font-medium text-onyx/40 data-[state=active]:text-teal-700 transition-all"
+                      >
+                        Schedule Home Visit
+                      </TabsTrigger>
+                    </TabsList>
 
-                    <div className="space-y-2 relative group pt-2">
-                      <label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Specific Interests (Optional)</label>
-                      <textarea
-                        rows={3}
-                        value={formData.message}
-                        onChange={e => setFormData({...formData, message: e.target.value})}
-                        className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors resize-none text-onyx"
-                        placeholder="I am looking for a bridal set..."
-                      />
-                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <div className="relative">
+                          <input
+                            required
+                            type="text"
+                            placeholder="Full name"
+                            value={formData.name}
+                            onChange={e => setFormData({...formData, name: e.target.value})}
+                            className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all placeholder:text-onyx/20 shadow-sm"
+                          />
+                        </div>
+                        <div className="relative">
+                          <input
+                            required
+                            type="tel"
+                            placeholder="+91 Mobile number"
+                            value={formData.phone}
+                            onChange={e => setFormData({...formData, phone: e.target.value})}
+                            className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all placeholder:text-onyx/20 shadow-sm"
+                          />
+                        </div>
 
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full mt-4 py-5 bg-onyx text-ivory text-xs tracking-widest uppercase font-medium hover:bg-gold hover:text-white transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed group flex justify-center items-center gap-3"
-                    >
-                      {isSubmitting ? "Submitting Request..." : "Confirm Request"}
-                      {!isSubmitting && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
-                    </button>
-                  </form>
+                        {activeTab === "store" && (
+                          <div className="relative col-span-1 md:col-span-1">
+                            <Select 
+                              value={formData.store} 
+                              onValueChange={(val) => setFormData({...formData, store: val})}
+                            >
+                              <SelectTrigger className="w-full h-14 px-8 rounded-full border-onyx/10 bg-white text-sm focus:ring-0 focus:ring-offset-0 focus:border-teal-700 transition-all shadow-sm">
+                                <SelectValue placeholder="Select Store" />
+                              </SelectTrigger>
+                              <SelectContent className="rounded-2xl border-onyx/10 shadow-luxe">
+                                <SelectItem value="Nadiad Main Store">Nadiad Main Store</SelectItem>
+                                <SelectItem value="Ahmedabad Boutique">Ahmedabad Boutique</SelectItem>
+                                <SelectItem value="Mumbai Experience Center">Mumbai Experience Center</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                        {activeTab === "home" && (
+                          <div className="relative col-span-1 md:col-span-2">
+                            <input
+                              required
+                              type="text"
+                              placeholder="Your full address for home visit"
+                              value={formData.address}
+                              onChange={e => setFormData({...formData, address: e.target.value})}
+                              className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all placeholder:text-onyx/20 shadow-sm"
+                            />
+                          </div>
+                        )}
+
+                        <div className="relative flex gap-4 col-span-1 md:col-span-1">
+                          <div className="relative flex-1">
+                            <input
+                              required
+                              type="datetime-local"
+                              value={`${formData.date}T${formData.time}`}
+                              onChange={e => {
+                                const [date, time] = e.target.value.split("T");
+                                setFormData({...formData, date, time});
+                              }}
+                              className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all text-onyx/60 shadow-sm"
+                            />
+                          </div>
+                        </div>
+
+                        {activeTab !== "home" && (
+                           <div className="relative col-span-1 md:col-span-1">
+                             <input
+                               type="email"
+                               placeholder="Email Address (Optional)"
+                               value={formData.email}
+                               onChange={e => setFormData({...formData, email: e.target.value})}
+                               className="w-full h-14 px-8 rounded-full border border-onyx/10 bg-white text-sm outline-none focus:border-teal-700 transition-all placeholder:text-onyx/20 shadow-sm"
+                             />
+                           </div>
+                        )}
+                      </div>
+
+                      <div className="pt-4 flex justify-start">
+                        <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="px-12 h-14 rounded-full bg-[#2C6E63] text-white font-bold text-sm tracking-wide hover:bg-[#1E4D45] transition-all shadow-xl shadow-teal-900/10 flex items-center justify-center gap-2 group disabled:opacity-50"
+                        >
+                          {isSubmitting ? "Submitting..." : "Submit"}
+                          {!isSubmitting && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+                        </button>
+                      </div>
+                    </form>
+                  </Tabs>
                 </div>
               )}
             </div>
