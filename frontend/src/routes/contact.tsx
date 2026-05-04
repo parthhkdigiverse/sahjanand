@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { submitContact, fetchContactPageData, getImageUrl } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Calendar, ChevronDown, CheckCircle2, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { Loader2, Calendar, ChevronDown, CheckCircle2, MapPin, Phone, Mail, Clock, Calendar as CalendarIcon, MapPin as MapPinIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -29,12 +31,16 @@ function Contact() {
   });
 
   const [visitType, setVisitType] = useState<VisitType>("STORE_VISIT");
+  const [activeTab, setActiveTab] = useState("store");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
     store: "Nadiad Main Store",
     dateTime: "",
+    time: "",
+    store: "",
+    address: "",
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,9 +57,24 @@ function Contact() {
         HOME_VISIT: "Home Visit"
       };
 
+      
+      let type: "STORE_VISIT" | "VIDEO_CALL" | "HOME_VISIT" | "GENERAL" = "GENERAL";
+      let subject = "Appointment Request";
+      
+      if (activeTab === "store") {
+        type = "STORE_VISIT";
+        subject = `Store Visit Request: ${formData.store}`;
+      } else if (activeTab === "virtual") {
+        type = "VIDEO_CALL";
+        subject = "Virtual Call Request";
+      } else if (activeTab === "home") {
+        type = "HOME_VISIT";
+        subject = "Home Visit Request";
+      }
+
       await submitContact({
         name: formData.name,
-        email: formData.email || "no-email@provided.com",
+        email: formData.email || "no-email@provided.com" || "concierge@request.com", // Fallback if email is hidden in some tabs
         phone: formData.phone,
         preferred_date: formData.dateTime,
         subject: `${typeLabels[visitType]} Request`,
@@ -70,6 +91,9 @@ function Contact() {
           email: "",
           store: "Nadiad Main Store",
           dateTime: "",
+          time: "",
+          store: "",
+          address: "",
           message: ""
         });
       }, 5000);

@@ -212,9 +212,11 @@ export type ContactInquiry = {
   preferred_date?: string;
   subject: string;
   message: string;
-  type: "GENERAL" | "PRODUCT" | "VIDEO_CALL" | "STORE_VISIT" | "VIRTUAL_CALL" | "HOME_VISIT";
+  type: "GENERAL" | "PRODUCT" | "VIDEO_CALL" | "STORE_VISIT" | "VIRTUAL_CALL" | "HOME_VISIT" | "VIDEO_CALL" | "VIRTUAL_CALL" | "STORE_VISIT" | "HOME_VISIT";
   product_id?: string;
   product_name?: string;
+  store_location?: string;
+  address?: string;
 };
 
 export async function submitContact(data: ContactInquiry) {

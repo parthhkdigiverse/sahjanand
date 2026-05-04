@@ -35,9 +35,12 @@ type Inquiry = {
   preferred_date?: string;
   subject: string;
   message: string;
-  type: "GENERAL" | "PRODUCT";
+  type: "GENERAL" | "PRODUCT" | "VIDEO_CALL" | "STORE_VISIT" | "HOME_VISIT";
   product_id?: string;
   product_name?: string;
+  store_location?: string;
+  address?: string;
+  is_read: boolean;
   created_at: string;
 };
 
@@ -102,8 +105,10 @@ function AdminContacts() {
     },
   });
 
-  const videoCalls = inquiries?.filter(i => i.type === "VIDEO_CALL");
-  const standardInquiries = inquiries?.filter(i => i.type !== "VIDEO_CALL");
+  const videoCalls = inquiries?.filter(i => ["VIDEO_CALL", "VIRTUAL_CALL"].includes(i.type));
+  const storeVisits = inquiries?.filter(i => i.type === "STORE_VISIT");
+  const homeVisits = inquiries?.filter(i => i.type === "HOME_VISIT");
+  const standardInquiries = inquiries?.filter(i => !["VIDEO_CALL", "VIRTUAL_CALL", "STORE_VISIT", "HOME_VISIT"].includes(i.type));
 
   const filteredInquiries = standardInquiries?.filter(i => {
     const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -118,6 +123,20 @@ function AdminContacts() {
     const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       i.phone?.includes(searchTerm) ||
       i.preferred_date?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
+  const filteredStoreVisits = storeVisits?.filter(i => {
+    const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      i.phone?.includes(searchTerm) ||
+      i.store_location?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
+  const filteredHomeVisits = homeVisits?.filter(i => {
+    const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      i.phone?.includes(searchTerm) ||
+      i.address?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -160,15 +179,23 @@ function AdminContacts() {
       <Tabs defaultValue="inquiries" className="space-y-6">
         <div className="flex items-center justify-between">
           <TabsList className="bg-onyx/[0.03] p-1 h-12 rounded-xl border border-onyx/5">
-            <TabsTrigger value="inquiries" className="px-8 text-[10px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all">
+            <TabsTrigger value="inquiries" className="px-6 text-[9px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all">
               Standard Inquiries ({standardInquiries?.length || 0})
             </TabsTrigger>
-            <TabsTrigger value="videocalls" className="px-8 text-[10px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
-              Video Consultations ({videoCalls?.length || 0})
+            <TabsTrigger value="storevisits" className="px-6 text-[9px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
+              Store Visits ({storeVisits?.length || 0})
+              {storeVisits?.some(v => !v.is_read) && <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />}
+            </TabsTrigger>
+            <TabsTrigger value="videocalls" className="px-6 text-[9px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
+              Video Calls ({videoCalls?.length || 0})
               {videoCalls?.some(v => !v.is_read) && <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />}
             </TabsTrigger>
-            <TabsTrigger value="leads" className="px-8 text-[10px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
-              Promotional Leads ({leads?.length || 0})
+            <TabsTrigger value="homevisits" className="px-6 text-[9px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
+              Home Visits ({homeVisits?.length || 0})
+              {homeVisits?.some(v => !v.is_read) && <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />}
+            </TabsTrigger>
+            <TabsTrigger value="leads" className="px-6 text-[9px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
+              Promo Leads ({leads?.length || 0})
               {leads?.some(l => !l.is_read) && <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />}
             </TabsTrigger>
           </TabsList>
@@ -208,8 +235,14 @@ function AdminContacts() {
                         className="hover:bg-ivory/20 transition-colors group"
                       >
                         <td className="py-5 px-6 align-top">
-                          <span className={`text-[8px] px-2 py-0.5 rounded-full uppercase tracking-widest font-black ${inquiry.type === "PRODUCT" ? "bg-gold/10 text-gold" : "bg-onyx/5 text-onyx/40"}`}>
-                            {inquiry.type === "PRODUCT" ? "Product" : "General"}
+                          <span className={`text-[8px] px-2 py-0.5 rounded-full uppercase tracking-widest font-black ${
+                            inquiry.type === "PRODUCT" ? "bg-gold/10 text-gold" : 
+                            (inquiry.type === "VIDEO_CALL" || inquiry.type === "VIRTUAL_CALL") ? "bg-blue-500/10 text-blue-500" :
+                            inquiry.type === "STORE_VISIT" ? "bg-teal-500/10 text-teal-500" :
+                            inquiry.type === "HOME_VISIT" ? "bg-purple-500/10 text-purple-500" :
+                            "bg-onyx/5 text-onyx/40"
+                          }`}>
+                            {inquiry.type.replace("_", " ")}
                           </span>
                         </td>
                         <td className="py-5 px-6 align-top">
@@ -224,6 +257,16 @@ function AdminContacts() {
                             <h4 className="text-sm font-serif text-onyx font-bold mb-1">
                               {inquiry.subject.replace("Product Inquiry: ", "")}
                             </h4>
+                            {inquiry.type === "STORE_VISIT" && inquiry.store_location && (
+                              <span className="text-[10px] text-teal-600 font-bold uppercase tracking-tight block mb-1">
+                                Store: {inquiry.store_location}
+                              </span>
+                            )}
+                            {inquiry.type === "HOME_VISIT" && inquiry.address && (
+                              <span className="text-[10px] text-purple-600 font-bold uppercase tracking-tight block mb-1">
+                                Address: {inquiry.address}
+                              </span>
+                            )}
                             <p className="text-xs text-onyx/50 line-clamp-2 leading-relaxed italic">
                               "{inquiry.message}"
                             </p>
@@ -330,6 +373,7 @@ function AdminContacts() {
                           <div className="flex flex-col">
                             <span className="text-sm font-bold text-onyx">{call.name}</span>
                             <span className="text-[10px] text-onyx/40 font-medium">{call.phone}</span>
+                            {call.email && <span className="text-[10px] text-onyx/30">{call.email}</span>}
                           </div>
                         </td>
                         <td className="py-5 px-6 align-top">
@@ -365,6 +409,208 @@ function AdminContacts() {
                               size="icon"
                               className="h-9 w-9 text-red-500/30 hover:text-red-500 hover:bg-red-500/5"
                               onClick={() => confirm("Remove this consultation request?") && deleteInquiryMutation.mutate(call._id)}
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="storevisits" className="space-y-6 outline-none">
+          {!filteredStoreVisits || filteredStoreVisits.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-onyx/5 p-20 flex flex-col items-center gap-4 text-center shadow-sm">
+              <InboxIcon className="h-12 w-12 text-onyx/5" />
+              <p className="font-serif text-onyx/30 italic">No store visit requests found.</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-onyx/5 shadow-sm overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-onyx/[0.02] border-b border-onyx/5">
+                  <tr>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Status</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Date & Time</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Customer</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Store Location</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-onyx/5">
+                  <AnimatePresence mode="popLayout">
+                    {filteredStoreVisits.map((visit) => (
+                      <motion.tr
+                        key={visit._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className={`hover:bg-ivory/20 transition-colors group ${!visit.is_read ? 'bg-gold/[0.02]' : ''}`}
+                      >
+                        <td className="py-5 px-6 align-top">
+                          {!visit.is_read ? (
+                            <span className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-gold">
+                              <Circle size={8} className="fill-gold" /> New Request
+                            </span>
+                          ) : (
+                            <span className="text-[8px] font-black uppercase tracking-widest text-onyx/20">
+                              Reviewed
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-onyx font-serif">{visit.preferred_date}</span>
+                            <span className="text-[10px] text-onyx/40 font-bold uppercase tracking-widest mt-1">
+                              Received: {new Date(visit.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-onyx">{visit.name}</span>
+                            <span className="text-[10px] text-onyx/40 font-medium">{visit.phone}</span>
+                            {visit.email && <span className="text-[10px] text-onyx/30">{visit.email}</span>}
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                           <span className="text-xs font-bold text-onyx bg-onyx/5 px-3 py-1 rounded-full uppercase tracking-widest">
+                            {visit.store_location || "N/A"}
+                           </span>
+                        </td>
+                        <td className="py-5 px-6 align-top text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {visit.phone && (
+                              <a
+                                href={`https://wa.me/${visit.phone.replace(/\D/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#25D366] text-white hover:bg-[#128C7E] transition-all shadow-md group/wa"
+                                title="Chat on WhatsApp"
+                              >
+                                <svg viewBox="0 0 448 512" width="22" height="22">
+                                  <path fill="currentColor" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.1 0-65.6-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.4 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.7-30.6-38.1-3.2-5.5-.3-8.4 2.4-11.2 2.5-2.5 5.5-6.4 8.3-9.7 2.8-3.3 3.7-5.7 5.5-9.4 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.4-29.9-17-41.1-4.5-10.9-9.1-9.4-12.4-9.6-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.7 23.5 9.2 31.6 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.5 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+                                </svg>
+                              </a>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={`h-9 w-9 rounded-lg ${visit.is_read ? 'text-onyx/20' : 'text-gold bg-gold/5 hover:bg-gold/10'}`}
+                              onClick={() => toggleInquiryReadMutation.mutate({ id: visit._id, isRead: !visit.is_read })}
+                            >
+                              <CheckCircle2 size={14} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-9 w-9 text-red-500/30 hover:text-red-500 hover:bg-red-500/5"
+                              onClick={() => confirm("Remove this visit request?") && deleteInquiryMutation.mutate(visit._id)}
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="homevisits" className="space-y-6 outline-none">
+          {!filteredHomeVisits || filteredHomeVisits.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-onyx/5 p-20 flex flex-col items-center gap-4 text-center shadow-sm">
+              <InboxIcon className="h-12 w-12 text-onyx/5" />
+              <p className="font-serif text-onyx/30 italic">No home visit requests found.</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-onyx/5 shadow-sm overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-onyx/[0.02] border-b border-onyx/5">
+                  <tr>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Status</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Date & Time</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Customer</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold">Address</th>
+                    <th className="py-4 px-6 text-[9px] uppercase tracking-widest text-onyx/40 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-onyx/5">
+                  <AnimatePresence mode="popLayout">
+                    {filteredHomeVisits.map((visit) => (
+                      <motion.tr
+                        key={visit._id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className={`hover:bg-ivory/20 transition-colors group ${!visit.is_read ? 'bg-gold/[0.02]' : ''}`}
+                      >
+                        <td className="py-5 px-6 align-top">
+                          {!visit.is_read ? (
+                            <span className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-gold">
+                              <Circle size={8} className="fill-gold" /> New Request
+                            </span>
+                          ) : (
+                            <span className="text-[8px] font-black uppercase tracking-widest text-onyx/20">
+                              Reviewed
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-onyx font-serif">{visit.preferred_date}</span>
+                            <span className="text-[10px] text-onyx/40 font-bold uppercase tracking-widest mt-1">
+                              Received: {new Date(visit.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-onyx">{visit.name}</span>
+                            <span className="text-[10px] text-onyx/40 font-medium">{visit.phone}</span>
+                            {visit.email && <span className="text-[10px] text-onyx/30">{visit.email}</span>}
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 align-top">
+                           <p className="text-xs text-onyx/60 max-w-xs leading-relaxed">
+                            {visit.address || "N/A"}
+                           </p>
+                        </td>
+                        <td className="py-5 px-6 align-top text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {visit.phone && (
+                              <a
+                                href={`https://wa.me/${visit.phone.replace(/\D/g, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#25D366] text-white hover:bg-[#128C7E] transition-all shadow-md group/wa"
+                                title="Chat on WhatsApp"
+                              >
+                                <svg viewBox="0 0 448 512" width="22" height="22">
+                                  <path fill="currentColor" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.1 0-65.6-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.4 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.7-30.6-38.1-3.2-5.5-.3-8.4 2.4-11.2 2.5-2.5 5.5-6.4 8.3-9.7 2.8-3.3 3.7-5.7 5.5-9.4 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.4-29.9-17-41.1-4.5-10.9-9.1-9.4-12.4-9.6-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.7 23.5 9.2 31.6 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.5 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+                                </svg>
+                              </a>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={`h-9 w-9 rounded-lg ${visit.is_read ? 'text-onyx/20' : 'text-gold bg-gold/5 hover:bg-gold/10'}`}
+                              onClick={() => toggleInquiryReadMutation.mutate({ id: visit._id, isRead: !visit.is_read })}
+                            >
+                              <CheckCircle2 size={14} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-9 w-9 text-red-500/30 hover:text-red-500 hover:bg-red-500/5"
+                              onClick={() => confirm("Remove this visit request?") && deleteInquiryMutation.mutate(visit._id)}
                             >
                               <Trash2 size={14} />
                             </Button>
