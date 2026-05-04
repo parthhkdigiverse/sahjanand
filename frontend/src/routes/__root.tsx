@@ -93,12 +93,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   );
 }
 
+import { Toaster } from "sonner";
+
 function RootComponent() {
   const { pathname } = useLocation();
   const isAdmin = pathname.startsWith('/admin');
 
   return (
     <>
+      <Toaster position="bottom-right" expand={true} richColors />
       {!isAdmin && <Navbar />}
       <main className={!isAdmin ? "pt-[var(--header-height)]" : ""}>
         <Outlet />

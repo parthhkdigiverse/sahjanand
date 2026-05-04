@@ -138,7 +138,7 @@ export function Footer() {
               </li>
             </ul>
 
-            <h5 className="text-[10px] tracking-widest text-ivory/40 mb-3 uppercase">Preserve our Heritage</h5>
+            <h5 className="text-[10px] tracking-widest text-ivory/40 mb-3 uppercase">Stay Connected</h5>
             <form
               className="flex border-b border-ivory/10 focus-within:border-gold transition-colors py-1"
               onSubmit={handleSubmit}

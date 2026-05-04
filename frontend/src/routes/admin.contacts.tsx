@@ -108,7 +108,7 @@ function AdminContacts() {
   const videoCalls = inquiries?.filter(i => ["VIDEO_CALL", "VIRTUAL_CALL"].includes(i.type));
   const storeVisits = inquiries?.filter(i => i.type === "STORE_VISIT");
   const homeVisits = inquiries?.filter(i => i.type === "HOME_VISIT");
-  const standardInquiries = inquiries; // Show all in the main tab
+  const standardInquiries = inquiries?.filter(i => !["VIDEO_CALL", "VIRTUAL_CALL", "STORE_VISIT", "HOME_VISIT"].includes(i.type));
 
   const filteredInquiries = standardInquiries?.filter(i => {
     const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -180,7 +180,7 @@ function AdminContacts() {
         <div className="flex items-center justify-between">
           <TabsList className="bg-onyx/[0.03] p-1 h-12 rounded-xl border border-onyx/5">
             <TabsTrigger value="inquiries" className="px-6 text-[9px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all">
-              All Inquiries ({standardInquiries?.length || 0})
+              Standard Inquiries ({standardInquiries?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="storevisits" className="px-6 text-[9px] uppercase tracking-widest font-black data-[state=active]:bg-onyx data-[state=active]:text-gold rounded-lg transition-all flex items-center gap-2">
               Store Visits ({storeVisits?.length || 0})
