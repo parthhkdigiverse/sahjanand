@@ -218,7 +218,7 @@ export function VideoTestimonials() {
                       src={getImageUrl(t.image)}
                       alt={t.name}
                       loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
                     />
 
                     {t.video_url && videoId && isCentered && (

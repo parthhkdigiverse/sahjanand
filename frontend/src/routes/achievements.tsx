@@ -23,7 +23,7 @@ function Achievements() {
   return (
     <div className="bg-ivory/20">
       {/* Hero Section */}
-      <section className="relative w-full h-[50vh] min-h-[400px] overflow-hidden bg-onyx -mt-[var(--header-height)]">
+      <section className="relative w-full h-[50vh] min-h-[400px] overflow-hidden bg-onyx">
         <img 
           src={heroFallback} 
           alt="Our Achievements" 

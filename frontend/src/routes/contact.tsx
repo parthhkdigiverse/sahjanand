@@ -154,7 +154,7 @@ function Contact() {
   return (
     <div className="bg-[#FDFCFB] min-h-screen">
       {/* Hero Section - Matching the Image Precise Styling */}
-      <section className="relative w-full overflow-hidden h-[70vh] min-h-[600px] flex items-center justify-center bg-onyx -mt-[var(--header-height)]">
+      <section className="relative w-full overflow-hidden h-[70vh] min-h-[600px] flex items-center justify-center bg-onyx">
         <div className="absolute inset-0">
           <img 
             src={getImageUrl(contactData?.hero_image || "/assets/hero-3.jpg")} 

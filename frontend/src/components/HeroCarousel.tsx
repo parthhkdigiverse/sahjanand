@@ -58,24 +58,24 @@ export function HeroCarousel() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-onyx md:h-screen md:min-h-[640px] -mt-[var(--header-height)]"
+      className="relative w-full overflow-hidden bg-onyx h-[90svh] md:h-screen md:min-h-[640px]"
       style={{ backgroundColor: "var(--onyx)" }}
     >
-      <div className="md:h-full" ref={emblaRef}>
-        <div className="flex md:h-full items-stretch">
+      <div className="h-full" ref={emblaRef}>
+        <div className="flex h-full items-stretch">
           {activeSlides.map((s, i) => {
             const isTextLink = s.link_type === "LINK";
             const Content = (
-              <div key={i} className={`relative w-full md:h-full flex-[0_0_100%] ${isTextLink ? "cursor-pointer" : ""}`}>
+              <div key={i} className={`relative w-full h-full flex-[0_0_100%] ${isTextLink ? "cursor-pointer" : ""}`}>
                 <img
                   src={getImageUrl(s.image)}
                   alt={s.title}
-                  className="w-full h-auto block md:absolute md:inset-0 md:h-full md:object-cover"
+                  className="absolute inset-0 w-full h-full object-cover object-top md:object-center"
                   loading={i === 0 ? "eager" : "lazy"}
                 />
                 <div className="absolute inset-0 gradient-overlay" />
                 
-                <div className="absolute inset-0 z-10 flex items-center md:items-end justify-center md:justify-start pb-0 md:pb-40 text-center md:text-left">
+                <div className="absolute inset-0 z-10 flex items-end justify-center md:justify-start pb-20 md:pb-40 text-center md:text-left">
                   <div className="container-luxe px-4 w-full">
                     <div
                       className="max-w-2xl text-ivory mx-auto md:mx-0"
