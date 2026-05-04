@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSettings } from "@/lib/api";
+import { fetchSettings, getImageUrl } from "@/lib/api";
 
 export function BrandShowcase() {
   const { data: settings } = useQuery({
@@ -27,6 +27,7 @@ export function BrandShowcase() {
 
   const [isMuted, setIsMuted] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -52,6 +53,14 @@ export function BrandShowcase() {
         if (data.event === "onReady") {
           setIsReady(true);
         }
+        if (data.event === "onStateChange") {
+          if (data.info === 1) { // PLAYING
+            // Hide thumbnail after 1s delay to clear YouTube UI
+            setTimeout(() => setIsPlaying(true), 1000);
+          } else if (data.info === 2 || data.info === 0) { // PAUSED or ENDED
+            setIsPlaying(false);
+          }
+        }
       } catch (e) {}
     };
 
@@ -64,6 +73,7 @@ export function BrandShowcase() {
       sendCommand("playVideo");
     } else {
       sendCommand("pauseVideo");
+      setIsPlaying(false); // Show thumbnail again when paused/out of view
     }
   }, [isInView, sendCommand, isReady]);
 
@@ -137,11 +147,23 @@ export function BrandShowcase() {
                   <iframe
                     ref={iframeRef}
                     src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&playsinline=1&showinfo=0&loop=1&playlist=${videoId}&origin=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] scale-110 border-0"
+                    className="w-full h-full border-0 pointer-events-none"
                     allow="autoplay; encrypted-media"
                     title="Brand Showcase Video"
                   />
                 )}
+              </div>
+
+              {/* Smart Thumbnail Overlay */}
+              <div 
+                className="absolute inset-0 z-[5] transition-opacity duration-1000 ease-in-out pointer-events-none"
+                style={{ opacity: isPlaying ? 0 : 1 }}
+              >
+                <img 
+                  src={getImageUrl(settings?.showcase_image || "/assets/hero-1.jpg")} 
+                  alt="Sahajanand Heritage"
+                  className="w-full h-full object-cover"
+                />
               </div>
               
               <button

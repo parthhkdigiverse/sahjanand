@@ -63,6 +63,8 @@ export function VideoTestimonials() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   
+  const [playingIndices, setPlayingIndices] = useState<Set<number>>(new Set());
+  
   // Refs for non-render state to avoid infinite loops
   const iframeRefs = useRef<Map<number, HTMLIFrameElement>>(new Map());
   const readyIframes = useRef<Set<number>>(new Set());
@@ -158,9 +160,19 @@ export function VideoTestimonials() {
         }
 
         if (data.event === "onStateChange") {
-          if (data.info === 1) {
+          if (data.info === 1) { // PLAYING
+            // Delay hiding the thumbnail by 1s to allow YouTube UI to fade
+            setTimeout(() => {
+              setPlayingIndices(prev => new Set(prev).add(foundIndex));
+            }, 1000);
             emblaApi?.plugins().autoplay?.stop();
-          } else if (data.info === 2 || data.info === 0) {
+          } else if (data.info === 2 || data.info === 0) { // PAUSED or ENDED
+            setPlayingIndices(prev => {
+              const next = new Set(prev);
+              next.delete(foundIndex);
+              return next;
+            });
+            
             if (isInView) {
               emblaApi?.plugins().autoplay?.play();
             }
@@ -253,7 +265,7 @@ export function VideoTestimonials() {
 
                     {t.video_url && videoId && isCentered && (
                       <div className="absolute inset-0 z-[5]">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-full">
+                        <div className="absolute inset-0">
                           <iframe
                             ref={(el) => {
                               if (el) iframeRefs.current.set(i, el);
@@ -263,10 +275,22 @@ export function VideoTestimonials() {
                               }
                             }}
                             src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&playsinline=1&showinfo=0&loop=1&playlist=${videoId}&origin=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
-                            className="w-full h-full border-0"
+                            className="w-full h-full border-0 pointer-events-none"
                             allow="autoplay; encrypted-media"
                             allowFullScreen={false}
                             title={`${t.name} testimonial video`}
+                          />
+                        </div>
+
+                        {/* Thumbnail overlay that fades out once video is playing and UI is hidden */}
+                        <div 
+                          className="absolute inset-0 z-[6] transition-opacity duration-1000 ease-in-out pointer-events-none"
+                          style={{ opacity: playingIndices.has(i) ? 0 : 1 }}
+                        >
+                          <img
+                            src={getImageUrl(t.image)}
+                            alt=""
+                            className="w-full h-full object-cover object-[center_25%]"
                           />
                         </div>
                         
