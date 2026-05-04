@@ -63,7 +63,7 @@ export function Navbar() {
               <span>Sahajanand <span className="text-gold italic">Jewellers</span></span>
             </div>
             <div className="text-[0.6rem] tracking-luxe text-muted-foreground mt-2 hidden sm:block font-bold">
-              EST. 1970 · NADIAD
+              EST. 1992 · NADIAD
             </div>
           </Link>
 
