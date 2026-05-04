@@ -118,7 +118,7 @@ function RootComponent() {
       </AnimatePresence>
       <Toaster position="bottom-right" expand={true} richColors />
       {!isAdmin && <Navbar />}
-      <main className={!isAdmin ? "pt-[var(--header-height)]" : ""}>
+      <main>
         <Outlet />
       </main>
       {!isAdmin && <Footer />}
