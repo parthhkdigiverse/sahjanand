@@ -69,7 +69,7 @@ export function Footer() {
               Sahajanand <span className="text-gold italic">Jewellers</span>
             </div>
             <p className="text-sm text-ivory/60 leading-relaxed mb-6">
-              Fine jewellery, made by hand. Designed to be loved for a lifetime.
+              Crafting Trust, Purity & Elegance in Every Gold Jewellery Piece, Where Tradition Meets Trust – Premium Gold Jewellery in Nadiad
             </p>
             <div className="flex gap-4 text-ivory/70">
               <a href={socialLinks.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-gold transition-colors"><Instagram size={18} /></a>
