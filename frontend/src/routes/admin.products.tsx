@@ -244,6 +244,9 @@ function AdminProducts() {
               if (res.ok) {
                 const result = await res.json();
                 mainImageUrl = result.urls[0];
+              } else {
+                toast.error("Failed to upload main image. File might be too large.");
+                return;
               }
             }
 
@@ -259,6 +262,9 @@ function AdminProducts() {
                 if (res.ok) {
                   const result = await res.json();
                   additionalUrls[i] = result.urls[0];
+                } else {
+                  toast.error(`Failed to upload additional image ${i+1}. File might be too large.`);
+                  return;
                 }
               }
             }

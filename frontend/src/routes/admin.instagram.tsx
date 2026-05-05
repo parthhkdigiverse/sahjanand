@@ -152,7 +152,7 @@ function AdminInstagram() {
         setImagePreview(getImageUrl(imageUrl));
         toast.success("Design uploaded");
       } else {
-        toast.error("Upload failed");
+        toast.error("Upload failed: File might be too large");
       }
     } catch (err) {
       toast.error("Upload failed");
