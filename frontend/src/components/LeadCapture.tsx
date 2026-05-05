@@ -113,7 +113,7 @@ export function LeadCapture() {
         </div>
 
         {/* RIGHT — image */}
-        <div className="relative aspect-[4/5] lg:aspect-auto overflow-hidden bg-secondary">
+        <div className="flex items-center justify-center p-6 md:p-12 lg:p-16 bg-ivory">
           <img
             src={settings?.offer_image ? getImageUrl(settings.offer_image) : offerImg}
             alt="Offer"
@@ -122,7 +122,7 @@ export function LeadCapture() {
               const target = e.target as HTMLImageElement;
               if (target.src !== offerImg) target.src = offerImg;
             }}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="w-full h-auto shadow-2xl rounded-sm"
           />
         </div>
       </div>
