@@ -51,21 +51,18 @@ export const getImageUrl = (path: string | undefined | null) => {
   let cleanPath = path;
   if (path.includes('/uploads/')) {
     cleanPath = path.substring(path.indexOf('/uploads/'));
-  } else if (!path.startsWith('/')) {
+  } else if (path.includes('/assets/')) {
+    cleanPath = path.substring(path.indexOf('/assets/'));
+  } else if (!path.startsWith('/') && !path.startsWith('http')) {
+    // If it's a plain filename or relative path without slash, prepend slash
     cleanPath = `/${path}`;
   }
   
-  // Return the relative path for uploaded files
-  // This works better for development (Vite serves public folder) 
+  // Return the relative path
+  // This works for development (Vite serves public folder) 
   // and production (Nginx/Proxy handles routing)
-  if (cleanPath.startsWith('/uploads')) {
+  if (cleanPath.startsWith('/uploads') || cleanPath.startsWith('/assets') || cleanPath.startsWith('/')) {
     return cleanPath;
-  }
-  
-  // If it's a relative path that doesn't start with /uploads, it's likely a broken legacy path
-  // Return undefined so the UI can show a fallback or placeholder
-  if (!cleanPath.startsWith('http')) {
-    return undefined;
   }
   
   return cleanPath;

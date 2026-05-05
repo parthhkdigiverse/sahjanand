@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { fetchProduct, fetchProducts, fetchSettings, type Product } from "@/lib/api";
+import { fetchProduct, fetchProducts, fetchSettings, type Product, getImageUrl } from "@/lib/api";
 import { ProductCard } from "@/components/FeaturedProducts";
 import { InquiryModal } from "@/components/InquiryModal";
 import { Check, MessageCircle, ArrowLeft, X } from "lucide-react";
@@ -104,7 +104,7 @@ function ProductPage() {
                 onClick={() => setIsLightboxOpen(true)}
               >
                 <img
-                  src={galleryImages[activeImage]}
+                  src={getImageUrl(galleryImages[activeImage])}
                   alt={product.name}
                   className="h-full w-full object-cover transition-transform duration-200 ease-out"
                   style={{
@@ -127,7 +127,7 @@ function ProductPage() {
                         }`}
                     >
                       <img
-                        src={img}
+                        src={getImageUrl(img)}
                         alt=""
                         className="h-full w-full object-cover"
                       />
@@ -237,7 +237,7 @@ function ProductPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={galleryImages[activeImage]}
+              src={getImageUrl(galleryImages[activeImage])}
               alt={product.name}
               className="max-w-full max-h-[85vh] md:max-h-[90vh] object-contain border border-white/5"
             />
