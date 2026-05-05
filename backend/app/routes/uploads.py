@@ -9,9 +9,8 @@ from ..config import settings
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-UPLOAD_DIR = os.path.join(ROOT_DIR, "frontend", "public", "uploads")
+UPLOAD_DIR = os.path.join(ROOT_DIR, "uploads")
 
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/")
 async def upload_files(files: List[UploadFile] = File(...), admin: str = Depends(get_current_admin)):
@@ -29,9 +28,8 @@ async def upload_files(files: List[UploadFile] = File(...), admin: str = Depends
             with open(file_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
             
-            # Since frontend serves this via api prefix currently, 
-            # We'll serve files at /uploads
-            uploaded_urls.append(f"/uploads/{new_filename}")
+            # Use /api/uploads for better proxy compatibility in production
+            uploaded_urls.append(f"/api/uploads/{new_filename}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload {file.filename}: {str(e)}")
             

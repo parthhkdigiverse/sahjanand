@@ -51,6 +51,10 @@ export const getImageUrl = (path: string | undefined | null) => {
   let cleanPath = path;
   if (path.includes('/uploads/')) {
     cleanPath = path.substring(path.indexOf('/uploads/'));
+    // In production, ensure we use /api/uploads to hit the backend through the proxy
+    if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !cleanPath.startsWith('/api')) {
+      cleanPath = '/api' + cleanPath;
+    }
   } else if (path.includes('/assets/')) {
     cleanPath = path.substring(path.indexOf('/assets/'));
   } else if (!path.startsWith('/') && !path.startsWith('http')) {
@@ -70,6 +74,9 @@ export const getImageUrl = (path: string | undefined | null) => {
 
 export const cleanImageUrl = (url: string | undefined | null) => {
   if (!url) return "";
+  if (url.includes('/api/uploads/')) {
+    return url.substring(url.indexOf('/api/uploads/'));
+  }
   if (url.includes('/uploads/')) {
     return url.substring(url.indexOf('/uploads/'));
   }

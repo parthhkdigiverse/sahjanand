@@ -79,11 +79,12 @@ app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newslette
 app.include_router(achievements.router, prefix="/api")
 app.include_router(nri.router, prefix="/api/nri", tags=["NRI"])
 
-# Mount uploads directory from frontend to serve static files
+# Mount uploads directory from project root to serve static files
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-UPLOAD_DIR = os.path.join(ROOT_DIR, "frontend", "public", "uploads")
+UPLOAD_DIR = os.path.join(ROOT_DIR, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+app.mount("/api/uploads", StaticFiles(directory=UPLOAD_DIR), name="api_uploads")
 @app.get("/")
 async def root():
     return {"message": "Welcome to Sahajanand API", "status": "online"}
