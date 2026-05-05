@@ -80,7 +80,25 @@ def run_app():
     )
 
     # Start Frontend
-    frontend_cmd = [frontend_runner, "run", "dev", "--", "--port", frontend_port]
+    # Build frontend first
+    print(f"Building frontend...")
+    subprocess.run(
+        [frontend_runner, "run", "build"],
+        cwd=str(Path(__file__).parent / "frontend"),
+        env=os.environ.copy(),
+        shell=is_windows
+    )
+
+    # Fix for TanStack Start preview mode (expects server.js)
+    dist_server = Path(__file__).parent / "frontend" / "dist" / "server"
+    if dist_server.exists():
+        index_js = dist_server / "index.js"
+        server_js = dist_server / "server.js"
+        if index_js.exists() and not server_js.exists():
+            print("Creating server.js for preview mode...")
+            shutil.copy(index_js, server_js)
+
+    frontend_cmd = [frontend_runner, "run", "preview", "--", "--port", frontend_port]
     # On server, also pass --host to bind to all interfaces
     if app_host == "0.0.0.0":
         frontend_cmd.extend(["--host", app_host])
