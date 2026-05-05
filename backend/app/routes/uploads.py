@@ -9,7 +9,8 @@ from ..config import settings
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-UPLOAD_DIR = os.path.join(ROOT_DIR, "uploads")
+UPLOAD_DIR = os.environ.get("UPLOAD_DIR", os.path.join(ROOT_DIR, "uploads"))
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 @router.post("/")

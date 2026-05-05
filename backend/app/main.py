@@ -79,10 +79,12 @@ app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newslette
 app.include_router(achievements.router, prefix="/api")
 app.include_router(nri.router, prefix="/api/nri", tags=["NRI"])
 
-# Mount uploads directory from project root to serve static files
+# Mount uploads directory to serve static files
+# Use UPLOAD_DIR env var if set (for persistent storage on server), otherwise project root
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-UPLOAD_DIR = os.path.join(ROOT_DIR, "uploads")
+UPLOAD_DIR = os.environ.get("UPLOAD_DIR", os.path.join(ROOT_DIR, "uploads"))
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+print(f"Serving uploads from: {UPLOAD_DIR}")
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/api/uploads", StaticFiles(directory=UPLOAD_DIR), name="api_uploads")
 @app.get("/")
@@ -92,3 +94,21 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
+@app.get("/debug/uploads")
+async def debug_uploads():
+    """Temporary debug endpoint to diagnose upload issues"""
+    import glob
+    files = []
+    if os.path.exists(UPLOAD_DIR):
+        files = os.listdir(UPLOAD_DIR)
+    return {
+        "upload_dir": UPLOAD_DIR,
+        "upload_dir_exists": os.path.exists(UPLOAD_DIR),
+        "upload_dir_is_dir": os.path.isdir(UPLOAD_DIR) if os.path.exists(UPLOAD_DIR) else False,
+        "file_count": len(files),
+        "files": files[:50],  # Show first 50
+        "cwd": os.getcwd(),
+        "main_py_file": os.path.abspath(__file__),
+        "root_dir": ROOT_DIR,
+    }
