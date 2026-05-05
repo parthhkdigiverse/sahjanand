@@ -58,19 +58,19 @@ export function HeroCarousel() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-onyx h-[60vh] md:h-screen md:min-h-[640px]"
+      className="relative w-full overflow-hidden bg-onyx h-fit md:h-screen md:min-h-[640px]"
       style={{ backgroundColor: "var(--onyx)" }}
     >
-      <div className="h-full md:h-full" ref={emblaRef}>
-        <div className="flex h-full md:h-full items-stretch">
+      <div className="h-auto md:h-full" ref={emblaRef}>
+        <div className="flex h-auto md:h-full items-stretch">
           {activeSlides.map((s, i) => {
             const isTextLink = s.link_type === "LINK";
             const Content = (
-              <div key={i} className={`relative w-full h-full md:h-full flex-[0_0_100%] ${isTextLink ? "cursor-pointer" : ""}`}>
+              <div key={i} className={`relative w-full h-auto md:h-full flex-[0_0_100%] ${isTextLink ? "cursor-pointer" : ""}`}>
                 <img
                   src={getImageUrl(s.image)}
                   alt={s.title}
-                  className="w-full h-full object-cover object-center md:absolute md:inset-0 md:h-full md:object-cover md:object-top"
+                  className="w-full h-auto block md:absolute md:inset-0 md:h-full md:object-cover md:object-top"
                   loading={i === 0 ? "eager" : "lazy"}
                 />
                 <div className="absolute inset-0 gradient-overlay" />
