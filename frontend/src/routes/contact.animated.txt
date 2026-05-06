@@ -9,14 +9,14 @@ import mapFallback from "@/assets/insta-5.jpg";
 export const Route = createFileRoute("/contact/animated")({
   head: () => ({
     meta: [
-      { title: "Contact Us — Sahajanand Jewellers Mumbai" },
+      { title: "Contact Us — Sahajanand Jewellers Nadiad" },
       {
         name: "description",
         content:
-          "Visit our store in Mumbai or book a private appointment with our team. We'd love to hear from you.",
+          "Visit our store in Nadiad or book a private appointment with our team. We'd love to hear from you.",
       },
       { property: "og:title", content: "Contact Us — Sahajanand Jewellers" },
-      { property: "og:description", content: "Visit our Mumbai store or book an appointment." },
+      { property: "og:description", content: "Visit our Nadiad store or book an appointment." },
     ],
   }),
   component: Contact,
@@ -103,7 +103,7 @@ function Contact() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="text-ivory/70 max-w-xl mx-auto font-light text-sm md:text-base"
           >
-            Schedule a private consultation at our Mumbai boutique. Discover our collections with dedicated assistance from our master jewelers.
+            Schedule a private consultation at our Nadiad boutique. Discover our collections with dedicated assistance from our master jewelers.
           </motion.p>
         </div>
       </section>
@@ -124,7 +124,7 @@ function Contact() {
               <motion.h2 variants={FADE_UP} className="font-serif text-3xl md:text-4xl text-onyx mb-10">Our Atelier</motion.h2>
               <div className="space-y-8">
                 {[
-                  { icon: MapPin, t: "The Boutique", l: ["14 Marine Drive", "Colaba, Mumbai 400001"] },
+                  { icon: MapPin, t: "The Boutique", l: ["14 Marine Drive", "Colaba, Nadiad 400001"] },
                   { icon: Phone, t: "Concierge", l: ["+91 22 4000 0000"] },
                   { icon: Mail, t: "Inquiries", l: ["hello@sahajanandjewellers.com"] },
                   { icon: Clock, t: "Opening Hours", l: ["Tue – Sat · 11:00 – 19:00", "Sun & Mon · Private Appointments Only"] },

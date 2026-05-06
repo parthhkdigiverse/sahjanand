@@ -33,7 +33,7 @@ class SettingsBase(BaseModel):
     ]
 
     # Contact & Footer Settings
-    contact_address: str = "14 Marine Drive, Mumbai · 400001, India"
+    contact_address: str = "Main Road, Nadiad · 387001, India"
     contact_phone: str = "+91 22 4000 0000"
     contact_email: str = "hello@sahajanandjewellers.com"
     instagram_url: str = "#"

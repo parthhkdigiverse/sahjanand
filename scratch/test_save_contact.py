@@ -11,7 +11,7 @@ data = {
     "hero_heading": "Updated Heading",
     "hero_description": "Updated Description",
     "boutique_address_line1": "14 Marine Drive",
-    "boutique_address_line2": "Colaba, Mumbai 400001",
+    "boutique_address_line2": "Nadiad 387001",
     "concierge_phone": "+91 22 4000 0000",
     "inquiries_email": "hello@sahajanandjewellers.com",
     "opening_hours_line1": "Tue – Sat · 11:00 – 19:00",

@@ -18,7 +18,7 @@ def test_update():
         "hero_heading": "UPDATED HEADING",
         "hero_description": "UPDATED DESCRIPTION",
         "boutique_address_line1": "123 UPDATED ST",
-        "boutique_address_line2": "MUMBAI 400001",
+        "boutique_address_line2": "NADIAD 387001",
         "concierge_phone": "+91 99999 99999",
         "inquiries_email": "updated@test.com",
         "opening_hours_line1": "OPEN ALL DAY",

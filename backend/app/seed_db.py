@@ -461,7 +461,7 @@ policies_data = [
             {
                 "heading": "Governing Law",
                 "body": [
-                    "These terms are governed by the laws of India and subject to the jurisdiction of Mumbai courts."
+                    "These terms are governed by the laws of India and subject to the jurisdiction of Nadiad courts."
                 ]
             }
         ]
