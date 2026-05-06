@@ -14,35 +14,39 @@ import { useEffect } from "react";
 import * as React from "react";
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
+  const imageUrl = getImageUrl(product.image);
+  
   return (
     <Link
       to="/product/$id"
       params={{ id: product.id }}
-      className="group block animate-fade-up bg-white"
+      className="group block animate-fade-up bg-white h-full"
       style={{ animationDelay: `${index * 0.06}s` }}
     >
-      <div className="relative aspect-square overflow-hidden bg-[#F9F8F6]">
-        <img
-          src={getImageUrl(product.image)}
-          alt={product.name}
-          loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
-        />
+      <div className="relative aspect-[4/5] overflow-hidden bg-[#F9F8F6]">
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt={product.name}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+          />
+        )}
         {/* Category Tag overlay */}
-        <div className="absolute top-4 left-4 bg-white/95 px-3 py-1.5 shadow-sm">
-          <p className="text-[9px] tracking-[0.2em] font-bold text-gray-800 uppercase">
+        <div className="absolute top-3 left-3 md:top-4 md:left-4 bg-white/90 backdrop-blur-sm px-2.5 py-1 md:px-3 md:py-1.5 shadow-sm border border-gray-100">
+          <p className="text-[8px] md:text-[9px] tracking-[0.2em] font-bold text-gray-800 uppercase">
             {product.category}
           </p>
         </div>
       </div>
       
-      <div className="text-center py-8 px-4">
-        <h3 className="font-serif text-lg md:text-xl mb-3 text-gray-900">
+      <div className="text-center py-6 md:py-8 px-4">
+        <h3 className="font-serif text-base md:text-xl mb-2 md:mb-3 text-gray-900 line-clamp-1">
           {product.name}
         </h3>
         {/* Price hidden at user request */}
-        <div className="flex items-center justify-center text-[11px] tracking-[0.2em] font-medium text-gray-500 uppercase">
-          View Details <span className="ml-2 text-xs">→</span>
+        <div className="flex items-center justify-center text-[10px] md:text-[11px] tracking-[0.2em] font-medium text-gray-500 uppercase">
+          View Details <span className="ml-1.5 md:ml-2 text-xs">→</span>
         </div>
       </div>
     </Link>
