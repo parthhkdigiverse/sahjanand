@@ -1,0 +1,30 @@
+name: Deploy sahjanand (Python)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-to-main:
+    runs-on: ubuntu-latest
+    name: Deploy Python Backend
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 31.97.206.171 >> ~/.ssh/known_hosts
+
+    - name: Test SSH Connection
+      run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@31.97.206.171 "echo 'SSH connection successful!'"
+
+    - name: Deploy Python Backend via SSH
+      run: |
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@31.97.206.171 \
+        "cd /home/ubuntu/sahjanand/live && git pull origin main && cd backend && pip install -r requirements.txt && pm2 restart sahjanand-python"
