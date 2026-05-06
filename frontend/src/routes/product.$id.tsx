@@ -147,10 +147,14 @@ function ProductPage() {
               </h1>
 
               <div className="flex items-center gap-6 mb-8 text-[11px] tracking-[0.2em] font-bold uppercase">
-                <p className="text-gold">
-                  Weight: <span className="text-gray-900 ml-1">{product.weight}</span>
-                </p>
-                <div className="h-3 w-[1px] bg-gray-200" />
+                {product.weight && (
+                  <>
+                    <p className="text-gold">
+                      Weight: <span className="text-gray-900 ml-1">{product.weight}</span>
+                    </p>
+                    <div className="h-3 w-[1px] bg-gray-200" />
+                  </>
+                )}
                 <p className="text-gray-400">Certified Hallmarked</p>
               </div>
 

@@ -36,7 +36,7 @@ class ProductBase(BaseModel):
     metal: str
     image: str
     images: List[str] = []
-    weight: str
+    weight: Optional[str] = None
     material: Optional[str] = None
     description: str
     features: List[str] = []

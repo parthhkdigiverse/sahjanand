@@ -335,8 +335,8 @@ function AdminProducts() {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Weight</Label>
-                <Input name="weight" defaultValue={editingProduct?.weight} required className="h-12 rounded-xl" />
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Weight (Optional)</Label>
+                <Input name="weight" defaultValue={editingProduct?.weight} className="h-12 rounded-xl" />
               </div>
             </div>
 
