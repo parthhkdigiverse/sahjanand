@@ -3,20 +3,13 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProduct, fetchProducts, fetchCategories, type Product, type Category } from "@/lib/api";
 import { ProductCard } from "@/components/FeaturedProducts";
-import { ChevronDown, Filter, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Filter as FilterIcon, X, SlidersHorizontal, Check } from "lucide-react";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/shop")({
@@ -58,6 +51,7 @@ function Shop() {
   const [cat, setCat] = useState<string>("All");
   const [metal, setMetal] = useState<(typeof metals)[number]>("All");
   const [sort, setSort] = useState<(typeof sortOptions)[number]["v"]>("featured");
+  const [showMobileOptions, setShowMobileOptions] = useState(false);
 
   const filtered = useMemo(() => {
     let list = products.filter(
@@ -71,68 +65,6 @@ function Shop() {
     }
     return list;
   }, [products, cat, metal, sort]);
-
-  const MobileFilters = () => (
-    <Accordion type="multiple" defaultValue={["category", "material"]} className="w-full">
-      <AccordionItem value="category" className="border-none mb-6">
-        <AccordionTrigger className="hover:no-underline py-2">
-          <div className="flex items-center justify-between w-full pr-4">
-            <h3 className="text-[10px] tracking-widest text-gold uppercase font-bold">Category</h3>
-            <span className="h-px bg-gold/20 flex-1 ml-4"></span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="pt-4">
-          <div className="flex flex-wrap gap-2">
-            {catsLoading ? (
-              <div className="flex gap-2 animate-pulse">
-                {[1, 2, 3, 4].map(i => <div key={i} className="h-8 bg-gray-100 rounded-full w-20" />)}
-              </div>
-            ) : (
-              categories.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setCat(c)}
-                  className={`text-xs py-2 px-4 transition-all duration-300 flex items-center rounded-full border ${cat === c
-                      ? "bg-gold text-white border-gold"
-                      : "text-muted-foreground border-gray-200 hover:border-gold hover:text-gold"
-                    }`}
-                >
-                  {c}
-                  {cat === c && <span className="ml-1.5 text-white">·</span>}
-                </button>
-              ))
-            )}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="material" className="border-none">
-        <AccordionTrigger className="hover:no-underline py-2">
-          <div className="flex items-center justify-between w-full pr-4">
-            <h3 className="text-[10px] tracking-widest text-gold uppercase font-bold">Material</h3>
-            <span className="h-px bg-gold/20 flex-1 ml-4"></span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="pt-4">
-          <div className="flex flex-wrap gap-2">
-            {metals.map((m) => (
-              <button
-                key={m}
-                onClick={() => setMetal(m)}
-                className={`text-xs py-2 px-4 transition-all duration-300 flex items-center rounded-full border ${metal === m
-                    ? "bg-gold text-white border-gold"
-                    : "text-muted-foreground border-gray-200 hover:border-gold hover:text-gold"
-                  }`}
-              >
-                {m}
-                {metal === m && <span className="ml-1.5 text-white">·</span>}
-              </button>
-            ))}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
 
   return (
     <>
@@ -148,23 +80,66 @@ function Shop() {
 
       <section className="container-luxe py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-12 lg:gap-16">
-          {/* Mobile Filter Bar */}
-          <div className="lg:hidden flex items-center justify-between gap-4 mb-4 pb-4 border-b border-gray-100">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" className="text-[10px] tracking-[0.2em] uppercase font-bold text-gold hover:text-gold hover:bg-gold/5 gap-2 px-0">
-                  <Filter className="h-4 w-4" />
-                  Filters
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] border-r-gold/10">
-                <SheetHeader className="mb-8 border-b pb-4">
-                  <SheetTitle className="font-serif text-2xl text-left">Filters</SheetTitle>
-                </SheetHeader>
-                <MobileFilters />
-              </SheetContent>
-            </Sheet>
-            <p className="text-[10px] tracking-widest text-muted-foreground uppercase font-medium">{filtered.length} pieces</p>
+          
+          {/* Mobile Filter Interaction */}
+          <div className="lg:hidden mb-8">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+              <Button 
+                variant="ghost" 
+                onClick={() => setShowMobileOptions(!showMobileOptions)}
+                className={`text-[10px] tracking-[0.2em] uppercase font-bold transition-colors gap-2 px-0 ${showMobileOptions ? 'text-gold' : 'text-gray-900'}`}
+              >
+                {showMobileOptions ? <X className="h-4 w-4" /> : <FilterIcon className="h-4 w-4" />}
+                {showMobileOptions ? "Close Filters" : "Filter"}
+              </Button>
+              <p className="text-[10px] tracking-widest text-muted-foreground uppercase font-medium">{filtered.length} pieces</p>
+            </div>
+
+            {showMobileOptions && (
+              <div className="flex gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="flex-1 text-[10px] tracking-widest uppercase font-bold border-gold/20 text-gold h-11 rounded-none bg-white">
+                      {cat === "All" ? "Category" : cat}
+                      <ChevronDown className="ml-2 h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-[calc(100vw-3rem)] rounded-none border-gold/10">
+                    {categories.map((c) => (
+                      <DropdownMenuItem 
+                        key={c} 
+                        onClick={() => setCat(c)}
+                        className="py-3 px-4 text-xs tracking-wide uppercase font-medium flex items-center justify-between"
+                      >
+                        {c}
+                        {cat === c && <Check className="h-3 w-3 text-gold" />}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="flex-1 text-[10px] tracking-widest uppercase font-bold border-gold/20 text-gold h-11 rounded-none bg-white">
+                      {metal === "All" ? "Material" : metal}
+                      <ChevronDown className="ml-2 h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-[calc(100vw-3rem)] rounded-none border-gold/10">
+                    {metals.map((m) => (
+                      <DropdownMenuItem 
+                        key={m} 
+                        onClick={() => setMetal(m)}
+                        className="py-3 px-4 text-xs tracking-wide uppercase font-medium flex items-center justify-between"
+                      >
+                        {m}
+                        {metal === m && <Check className="h-3 w-3 text-gold" />}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
           </div>
 
           {/* Desktop Sidebar - Fixed "Old Web" Style */}
