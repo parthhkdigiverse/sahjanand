@@ -24,11 +24,10 @@ export function Navbar() {
       <AnnouncementStrip />
       {/* Main bar */}
       <div
-        className={`transition-all duration-500 border-b ${
-          scrolled
+        className={`transition-all duration-500 border-b ${scrolled
             ? "bg-background/95 backdrop-blur-xl border-border/60 py-3 shadow-card"
             : "bg-background/85 backdrop-blur-md border-transparent py-5"
-        }`}
+          }`}
       >
         <div className="container-luxe grid grid-cols-[auto_1fr_auto] md:grid-cols-3 items-center gap-4">
           {/* Left: mobile menu / desktop nav */}
@@ -59,7 +58,7 @@ export function Navbar() {
           {/* Center: logo */}
           <Link to="/" className="text-center justify-self-center">
             <div className="font-serif text-2xl md:text-3xl tracking-wide leading-none text-foreground flex flex-col items-center">
-              <span className="text-[0.6em] text-gold/60 mb-1 opacity-80">SHREE</span>
+              <span className="text-[0.8em] text-gold mb-1">SHREE</span>
               <span>Sahajanand <span className="text-gold italic">Jewellers</span></span>
             </div>
             <div className="text-[0.6rem] tracking-luxe text-muted-foreground mt-2 hidden sm:block font-bold">
