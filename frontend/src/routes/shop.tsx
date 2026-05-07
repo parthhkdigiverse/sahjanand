@@ -73,7 +73,7 @@ function Shop() {
           <p className="divider-gold mb-5">Our Collection</p>
           <h1 className="font-serif text-5xl md:text-6xl mb-3">Shop All Jewellery</h1>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            {filtered.length} pieces · Each one made by hand in our Studio.
+            Each one made by hand in our Studio.
           </p>
         </div>
       </section>
