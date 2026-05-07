@@ -27,10 +27,105 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Product, fetchCategories, Category, API_BASE, getImageUrl, cleanImageUrl } from "@/lib/api";
 import { motion } from "framer-motion";
+import { 
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { GripVertical } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
 });
+
+function SortableRow({ product, onEdit, onDelete, disabled }: { product: Product, onEdit: (p: Product) => void, onDelete: (id: string) => void, disabled?: boolean }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: product.id, disabled });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : 0,
+    position: 'relative' as const,
+    backgroundColor: isDragging ? 'white' : undefined,
+    boxShadow: isDragging ? '0 10px 30px -10px rgba(0,0,0,0.1)' : undefined,
+  };
+
+  return (
+    <TableRow 
+      ref={setNodeRef} 
+      style={style}
+      className={`hover:bg-ivory/20 transition-colors border-onyx/5 group ${isDragging ? 'opacity-50' : ''}`}
+    >
+      <TableCell className="py-6 px-8 w-12">
+        {!disabled && (
+          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-onyx/20 hover:text-gold transition-colors">
+            <GripVertical size={20} />
+          </div>
+        )}
+      </TableCell>
+      <TableCell className="py-6 px-4">
+        <div className="h-16 w-16 rounded-lg overflow-hidden border border-onyx/5 shadow-sm">
+          <img src={getImageUrl(product.image)} alt={product.name} className="h-full w-full object-cover" />
+        </div>
+      </TableCell>
+      <TableCell className="py-6 px-8">
+        <div className="font-serif text-lg text-onyx">{product.name}</div>
+        <div className="text-[10px] text-onyx/30 uppercase tracking-widest mt-0.5">ID: {product.id}</div>
+      </TableCell>
+      <TableCell className="py-6 px-8 italic font-serif text-onyx/60">{product.category}</TableCell>
+      <TableCell className="py-6 px-8">
+        {product.featured ? (
+          <div className="flex items-center gap-1.5 text-gold bg-gold/5 px-2.5 py-1 rounded-full w-fit border border-gold/10">
+            <Star size={10} className="fill-gold" />
+            <span className="text-[8px] uppercase tracking-widest font-black">Featured</span>
+          </div>
+        ) : (
+          <span className="text-[8px] uppercase tracking-widest text-onyx/20 font-bold">Standard</span>
+        )}
+      </TableCell>
+      <TableCell className="py-6 px-8 text-right">
+        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => onEdit(product)}
+            className="h-10 w-10 rounded-lg hover:bg-gold/10 hover:text-gold"
+          >
+            <Edit size={16} />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-10 w-10 rounded-lg text-red-500/40 hover:text-red-500 hover:bg-red-500/5"
+            onClick={() => onDelete(product.id)}
+          >
+            <Trash2 size={16} />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
 
 function AdminProducts() {
   const queryClient = useQueryClient();
@@ -49,6 +144,50 @@ function AdminProducts() {
     queryKey: ["categories"],
     queryFn: fetchCategories,
   });
+
+  const reorderMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const res = await authenticatedFetch(`${API_BASE}/products/reorder`, {
+        method: "POST",
+        body: JSON.stringify(ids),
+      });
+      if (!res.ok) throw new Error("Failed to reorder");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Order updated");
+    },
+    onError: () => {
+      toast.error("Failed to update order");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    }
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = products?.findIndex((p) => p.id === active.id);
+      const newIndex = products?.findIndex((p) => p.id === over.id);
+
+      if (oldIndex !== undefined && newIndex !== undefined && products) {
+        const newOrder = arrayMove(products, oldIndex, newIndex);
+        queryClient.setQueryData(["products"], newOrder);
+        reorderMutation.mutate(newOrder.map(p => p.id));
+      }
+    }
+  };
 
   const upsertMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -137,82 +276,62 @@ function AdminProducts() {
       </div>
 
       <div className="bg-white rounded-3xl border border-onyx/5 shadow-xl overflow-hidden">
-        <Table>
-          <TableHeader className="bg-onyx/[0.02]">
-            <TableRow className="hover:bg-transparent border-onyx/5">
-              <TableHead className="w-[100px] py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Image</TableHead>
-              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Name</TableHead>
-              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Category</TableHead>
-              <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Featured</TableHead>
-              <TableHead className="text-right py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-24">
-                  <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="animate-spin h-8 w-8 text-gold/40" />
-                    <span className="text-[10px] uppercase tracking-widest text-onyx/20 font-bold">Loading...</span>
-                  </div>
-                </TableCell>
+        <DndContext 
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          modifiers={[restrictToVerticalAxis]}
+        >
+          <Table>
+            <TableHeader className="bg-onyx/[0.02]">
+              <TableRow className="hover:bg-transparent border-onyx/5">
+                <TableHead className="w-[50px] py-6 px-8"></TableHead>
+                <TableHead className="w-[100px] py-6 px-4 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Image</TableHead>
+                <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Name</TableHead>
+                <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Category</TableHead>
+                <TableHead className="py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Featured</TableHead>
+                <TableHead className="text-right py-6 px-8 text-onyx/40 uppercase tracking-widest text-[9px] font-bold">Actions</TableHead>
               </TableRow>
-            ) : filteredProducts?.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-24 text-onyx/30 font-serif text-xl italic">
-                  No products found.
-                </TableCell>
-              </TableRow>
-            ) : filteredProducts?.map((product) => (
-              <TableRow key={product.id} className="hover:bg-ivory/20 transition-colors border-onyx/5 group">
-                <TableCell className="py-6 px-8">
-                  <div className="h-16 w-16 rounded-lg overflow-hidden border border-onyx/5 shadow-sm">
-                    <img src={getImageUrl(product.image)} alt={product.name} className="h-full w-full object-cover" />
-                  </div>
-                </TableCell>
-                <TableCell className="py-6 px-8">
-                  <div className="font-serif text-lg text-onyx">{product.name}</div>
-                  <div className="text-[10px] text-onyx/30 uppercase tracking-widest mt-0.5">ID: {product.id}</div>
-                </TableCell>
-                <TableCell className="py-6 px-8 italic font-serif text-onyx/60">{product.category}</TableCell>
-                <TableCell className="py-6 px-8">
-                  {product.featured ? (
-                    <div className="flex items-center gap-1.5 text-gold bg-gold/5 px-2.5 py-1 rounded-full w-fit border border-gold/10">
-                      <Star size={10} className="fill-gold" />
-                      <span className="text-[8px] uppercase tracking-widest font-black">Featured</span>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-24">
+                    <div className="flex flex-col items-center gap-4">
+                      <Loader2 className="animate-spin h-8 w-8 text-gold/40" />
+                      <span className="text-[10px] uppercase tracking-widest text-onyx/20 font-bold">Loading...</span>
                     </div>
-                  ) : (
-                    <span className="text-[8px] uppercase tracking-widest text-onyx/20 font-bold">Standard</span>
-                  )}
-                </TableCell>
-                <TableCell className="py-6 px-8 text-right">
-                  <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => handleOpenDialog(product)}
-                      className="h-10 w-10 rounded-lg hover:bg-gold/10 hover:text-gold"
-                    >
-                      <Edit size={16} />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-10 w-10 rounded-lg text-red-500/40 hover:text-red-500 hover:bg-red-500/5"
-                      onClick={() => {
+                  </TableCell>
+                </TableRow>
+              ) : filteredProducts?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-24 text-onyx/30 font-serif text-xl italic">
+                    No products found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <SortableContext 
+                  items={filteredProducts?.map(p => p.id) || []} 
+                  strategy={verticalListSortingStrategy}
+                >
+                  {filteredProducts?.map((product) => (
+                    <SortableRow 
+                      key={product.id} 
+                      product={product} 
+                      onEdit={handleOpenDialog}
+                      disabled={!!searchTerm}
+                      onDelete={(id) => {
                         if(confirm("Are you sure you want to delete this product?")) {
-                          deleteMutation.mutate(product.id);
+                          deleteMutation.mutate(id);
                         }
                       }}
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                    />
+                  ))}
+                </SortableContext>
+              )}
+            </TableBody>
+          </Table>
+        </DndContext>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
