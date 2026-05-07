@@ -41,6 +41,7 @@ class ProductBase(BaseModel):
     description: str
     features: List[str] = []
     featured: bool = False
+    order: int = 0
 
 class ProductCreate(ProductBase):
     pass
