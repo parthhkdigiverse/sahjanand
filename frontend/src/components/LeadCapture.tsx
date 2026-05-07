@@ -175,7 +175,12 @@ export function LeadCapture() {
                         value={formData[field.id] || ""}
                         onChange={e => handleInputChange(field.id, e.target.value)}
                         className="w-full mt-1 bg-transparent border-b border-input py-2 outline-none focus:border-gold transition-colors text-sm"
-                        placeholder={`Enter your ${field.label.toLowerCase()}`}
+                        placeholder={
+                          field.label.toLowerCase().includes('name') ? "ABC" :
+                          field.label.toLowerCase().includes('email') ? "abc@gmail.com" :
+                          field.label.toLowerCase().includes('city') ? "NADIAD" :
+                          `Enter your ${field.label.toLowerCase()}`
+                        }
                       />
                     </div>
                   ))}

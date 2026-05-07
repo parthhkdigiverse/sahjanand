@@ -194,7 +194,6 @@ export function Footer() {
             >
               <input
                 type="email"
-                placeholder="Join the newsletter"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

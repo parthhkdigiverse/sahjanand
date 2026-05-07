@@ -218,7 +218,7 @@ function Contact() {
                             value={formData.name}
                             onChange={e => setFormData({...formData, name: e.target.value})}
                             className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
-                            placeholder="Jane Doe"
+                            placeholder="ABC"
                           />
                         </div>
                         <div className="space-y-2 relative group">
@@ -229,7 +229,7 @@ function Contact() {
                             value={formData.email}
                             onChange={e => setFormData({...formData, email: e.target.value})}
                             className="w-full bg-transparent border-b border-onyx/10 py-3 outline-none focus:border-gold transition-colors text-onyx"
-                            placeholder="jane@example.com"
+                            placeholder="abc@gmail.com"
                           />
                         </div>
                         <div className="space-y-2 relative group">

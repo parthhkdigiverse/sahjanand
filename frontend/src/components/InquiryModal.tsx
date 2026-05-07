@@ -90,7 +90,7 @@ export function InquiryModal({ product, isOpen, onClose }: InquiryModalProps) {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full bg-white border border-gray-200 px-4 py-3 text-sm focus:border-gold outline-none transition-colors duration-300"
-                      placeholder="E.g. Alexander Smith"
+                      placeholder="ABC"
                     />
                   </div>
                   <div className="space-y-2">
@@ -101,7 +101,7 @@ export function InquiryModal({ product, isOpen, onClose }: InquiryModalProps) {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full bg-white border border-gray-200 px-4 py-3 text-sm focus:border-gold outline-none transition-colors duration-300"
-                      placeholder="alex@example.com"
+                      placeholder="abc@gmail.com"
                     />
                   </div>
                 </div>

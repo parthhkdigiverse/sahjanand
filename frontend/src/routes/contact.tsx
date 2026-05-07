@@ -261,7 +261,7 @@ function Contact() {
                       <input
                         required
                         type="text"
-                        placeholder="Full name"
+                        placeholder="ABC"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full px-8 py-5 rounded-full border border-gray-200 focus:border-[#2D6A6A] focus:ring-1 focus:ring-[#2D6A6A]/20 outline-none bg-white text-gray-800 placeholder:text-gray-400 transition-all text-base"

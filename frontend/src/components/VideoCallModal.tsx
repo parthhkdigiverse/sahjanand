@@ -112,7 +112,6 @@ export function VideoCallModal({ isOpen, onClose }: VideoCallModalProps) {
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="w-full text-base outline-none bg-transparent text-ivory placeholder:text-ivory/60"
-                    placeholder="First Name"
                   />
                 </fieldset>
 
@@ -125,7 +124,6 @@ export function VideoCallModal({ isOpen, onClose }: VideoCallModalProps) {
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="w-full text-base outline-none bg-transparent text-ivory placeholder:text-ivory/60"
-                    placeholder="Last Name"
                   />
                 </fieldset>
 

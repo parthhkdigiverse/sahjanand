@@ -142,7 +142,7 @@ export function InteractionContactPopup() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-white border border-gray-200 px-4 py-3 text-sm focus:border-gold outline-none transition-colors duration-300"
-                    placeholder="Jane Doe"
+                    placeholder="ABC"
                   />
                 </div>
                 
@@ -154,7 +154,7 @@ export function InteractionContactPopup() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full bg-white border border-gray-200 px-4 py-3 text-sm focus:border-gold outline-none transition-colors duration-300"
-                      placeholder="jane@example.com"
+                      placeholder="abc@gmail.com"
                     />
                   </div>
                   <div className="space-y-1 flex flex-col justify-end">

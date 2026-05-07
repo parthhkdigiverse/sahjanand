@@ -279,7 +279,7 @@ function NRIInquiryForm() {
             <Label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Full Name</Label>
             <Input 
               {...register("name", { required: "Name is required" })} 
-              placeholder="John Doe"
+              placeholder="ABC"
               className={`bg-ivory/30 border-onyx/5 focus:border-gold h-14 rounded-xl px-6 ${errors.name ? 'border-red-400' : ''}`}
             />
             {errors.name && <p className="text-[10px] text-red-500 font-semibold ml-1">{errors.name.message as string}</p>}
@@ -295,7 +295,7 @@ function NRIInquiryForm() {
                 }
               })} 
               type="email"
-              placeholder="john@example.com"
+              placeholder="abc@gmail.com"
               className={`bg-ivory/30 border-onyx/5 focus:border-gold h-14 rounded-xl px-6 ${errors.email ? 'border-red-400' : ''}`}
             />
             {errors.email && <p className="text-[10px] text-red-500 font-semibold ml-1">{errors.email.message as string}</p>}
