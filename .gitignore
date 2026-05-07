@@ -40,3 +40,7 @@ bun.lockb
 fix_images.py
 backend_test.log
 backend_output.log
+
+# Wrangler
+.wrangler/
+**/ .wrangler/
