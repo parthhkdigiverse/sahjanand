@@ -86,7 +86,7 @@ export function HeroCarousel() {
                         className="text-[10px] md:text-xs tracking-luxe text-gold mb-2 md:mb-5 animate-fade-up uppercase font-bold"
                         style={{ animationDelay: "0.1s" }}
                       >
-                        — {s.eyebrow}
+                        {s.eyebrow}
                       </p>
                       <h1
                         key={`t-${selected}-${i}`}
@@ -106,8 +106,6 @@ export function HeroCarousel() {
                       {(s.link_type || "BUTTON") === "BUTTON" && (
                         <a
                           href={s.link_url || "/shop"}
-                          target="_blank"
-                          rel="noopener noreferrer"
                           className="sheen inline-flex items-center gap-2 md:gap-3 px-6 py-2.5 md:px-9 md:py-4 bg-gold text-onyx text-[9px] md:text-xs tracking-luxe hover:bg-ivory transition-colors animate-fade-up"
                           style={{ animationDelay: "0.5s", color: "var(--onyx)" }}
                         >
@@ -119,8 +117,6 @@ export function HeroCarousel() {
                         <>
                           <a 
                             href={s.link_url || "/shop"} 
-                            target="_blank"
-                            rel="noopener noreferrer"
                             className="absolute inset-0 z-20"
                             aria-label={`Learn more about ${s.title}`}
                           />
