@@ -86,7 +86,7 @@ export function HeroCarousel() {
                         className="text-[10px] md:text-xs tracking-luxe text-gold mb-2 md:mb-5 animate-fade-up uppercase font-bold"
                         style={{ animationDelay: "0.1s" }}
                       >
-                        — {s.eyebrow}
+                        {s.eyebrow}
                       </p>
                       <h1
                         key={`t-${selected}-${i}`}
