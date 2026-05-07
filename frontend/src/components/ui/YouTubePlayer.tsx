@@ -158,8 +158,22 @@ export function YouTubePlayer({
   }, [videoId, isPlayerReady]);
 
   return (
-    <div className={className} style={{ ...style, position: "relative", overflow: "hidden" }}>
+    <div 
+      className={className} 
+      style={{ ...style, position: "relative", overflow: "hidden" }}
+      tabIndex={-1}
+    >
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+      {/* Invisible shield to block all interaction with the YouTube iframe */}
+      <div 
+        style={{ 
+          position: "absolute", 
+          inset: 0, 
+          zIndex: 10,
+          background: "transparent",
+          pointerEvents: "auto" // This div captures all clicks
+        }} 
+      />
     </div>
   );
 }

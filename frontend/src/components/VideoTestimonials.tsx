@@ -160,7 +160,6 @@ export function VideoTestimonials() {
                           <YouTubePlayer
                             videoId={videoId}
                             isMuted={isMuted}
-                            isPlaying={isInView && isCentered}
                             onStateChange={(event) => {
                               if (event.data === window.YT.PlayerState.PLAYING) {
                                 setTimeout(() => {
