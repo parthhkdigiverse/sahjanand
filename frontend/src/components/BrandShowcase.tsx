@@ -4,6 +4,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSettings, getImageUrl } from "@/lib/api";
 
+import { useVideoSettings } from "@/context/VideoContext";
+import { YouTubePlayer } from "@/components/ui/YouTubePlayer";
+
 export function BrandShowcase() {
   const { data: settings } = useQuery({
     queryKey: ["settings"],
@@ -25,67 +28,13 @@ export function BrandShowcase() {
     }
   }, [settings]);
 
-  const [isMuted, setIsMuted] = useState(true);
-  const [isReady, setIsReady] = useState(false);
+  const { isMuted, toggleMute } = useVideoSettings();
   const [isPlaying, setIsPlaying] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const videoId = settings?.showcase_video_url ? getYoutubeId(settings.showcase_video_url) : "dQw4w9WgXcQ";
   const isInView = useInView(containerRef, { amount: 0.3 });
   
-  const sendCommand = useCallback((command: string, args?: any[]) => {
-    if (!iframeRef.current?.contentWindow || !isReady) return;
-    try {
-      iframeRef.current.contentWindow.postMessage(JSON.stringify({
-        event: "command",
-        func: command,
-        args: args || [],
-      }), "https://www.youtube.com");
-    } catch (e) {}
-  }, [isReady]);
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== "https://www.youtube.com") return;
-      try {
-        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        if (data.event === "onReady") {
-          setIsReady(true);
-        }
-        if (data.event === "onStateChange") {
-          if (data.info === 1) { // PLAYING
-            // Hide thumbnail after 1s delay to clear YouTube UI
-            setTimeout(() => setIsPlaying(true), 1000);
-          } else if (data.info === 2 || data.info === 0) { // PAUSED or ENDED
-            setIsPlaying(false);
-          }
-        }
-      } catch (e) {}
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, []);
-
-  useEffect(() => {
-    if (isInView) {
-      sendCommand("playVideo");
-    } else {
-      sendCommand("pauseVideo");
-      setIsPlaying(false); // Show thumbnail again when paused/out of view
-    }
-  }, [isInView, sendCommand, isReady]);
-
-  useEffect(() => {
-    if (isMuted) {
-      sendCommand("mute");
-    } else {
-      sendCommand("unMute");
-      sendCommand("setVolume", [100]);
-    }
-  }, [isMuted, sendCommand, isReady]);
-
   function getYoutubeId(url: string) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
@@ -93,10 +42,6 @@ export function BrandShowcase() {
     if (match && match[2].length === 11) return match[2];
     return url.length === 11 ? url : null;
   }
-
-  const toggleMute = () => {
-    setIsMuted(prev => !prev);
-  };
 
   if (settings?.show_brand_showcase === false) return null;
 
@@ -144,12 +89,18 @@ export function BrandShowcase() {
             >
               <div className="absolute inset-0 w-full h-full pointer-events-none">
                 {videoId && (
-                  <iframe
-                    ref={iframeRef}
-                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&playsinline=1&showinfo=0&loop=1&playlist=${videoId}&origin=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
-                    className="w-full h-full border-0 pointer-events-none"
-                    allow="autoplay; encrypted-media"
-                    title="Brand Showcase Video"
+                  <YouTubePlayer
+                    videoId={videoId}
+                    isMuted={isMuted}
+                    isPlaying={isInView}
+                    onStateChange={(event) => {
+                      if (event.data === window.YT.PlayerState.PLAYING) {
+                        setTimeout(() => setIsPlaying(true), 1000);
+                      } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+                        setIsPlaying(false);
+                      }
+                    }}
+                    className="w-full h-full"
                   />
                 )}
               </div>

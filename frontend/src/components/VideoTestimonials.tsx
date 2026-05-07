@@ -6,6 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTestimonials, getImageUrl, fetchSettings } from "@/lib/api";
 import Autoplay from "embla-carousel-autoplay";
 
+import { useVideoSettings } from "@/context/VideoContext";
+import { YouTubePlayer } from "@/components/ui/YouTubePlayer";
+
 export function VideoTestimonials() {
   const { data: testimonials = [], isLoading } = useQuery({
     queryKey: ["testimonials"],
@@ -61,13 +64,8 @@ export function VideoTestimonials() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { amount: 0.1 });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isMuted, setIsMuted] = useState(true);
-  
+  const { isMuted, toggleMute } = useVideoSettings();
   const [playingIndices, setPlayingIndices] = useState<Set<number>>(new Set());
-  
-  // Refs for non-render state to avoid infinite loops
-  const iframeRefs = useRef<Map<number, HTMLIFrameElement>>(new Map());
-  const readyIframes = useRef<Set<number>>(new Set());
 
   // Handle autoplay based on visibility
   useEffect(() => {
@@ -107,113 +105,6 @@ export function VideoTestimonials() {
     if (testimonials.length === 0) return [];
     return testimonials.length <= 5 ? [...testimonials, ...testimonials] : testimonials;
   }, [testimonials]);
-
-  const sendCommand = useCallback((index: number, command: string, args?: any[]) => {
-    const iframe = iframeRefs.current.get(index);
-    if (!iframe?.contentWindow || !readyIframes.current.has(index)) return;
-    
-    try {
-      iframe.contentWindow.postMessage(JSON.stringify({
-        event: "command",
-        func: command,
-        args: args || [],
-      }), "https://www.youtube.com");
-    } catch (e) {}
-  }, []);
-
-  const toggleMute = useCallback(() => {
-    setIsMuted(prev => {
-      const nextMuted = !prev;
-      if (nextMuted) {
-        sendCommand(selectedIndex, "mute");
-      } else {
-        sendCommand(selectedIndex, "unMute");
-        sendCommand(selectedIndex, "setVolume", [100]);
-      }
-      return nextMuted;
-    });
-  }, [selectedIndex, sendCommand]);
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== "https://www.youtube.com") return;
-      try {
-        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        
-        let foundIndex = -1;
-        iframeRefs.current.forEach((iframe, index) => {
-          if (iframe.contentWindow === event.source) {
-            foundIndex = index;
-          }
-        });
-
-        if (foundIndex === -1) return;
-
-        if (data.event === "onReady") {
-          readyIframes.current.add(foundIndex);
-          // Trigger initial play/mute once ready
-          if (foundIndex === selectedIndex && isInView) {
-            sendCommand(foundIndex, "playVideo");
-            if (isMuted) sendCommand(foundIndex, "mute");
-            else sendCommand(foundIndex, "unMute");
-          }
-        }
-
-        if (data.event === "onStateChange") {
-          if (data.info === 1) { // PLAYING
-            // Delay hiding the thumbnail by 1s to allow YouTube UI to fade
-            setTimeout(() => {
-              setPlayingIndices(prev => new Set(prev).add(foundIndex));
-            }, 1000);
-            emblaApi?.plugins().autoplay?.stop();
-          } else if (data.info === 2 || data.info === 0) { // PAUSED or ENDED
-            setPlayingIndices(prev => {
-              const next = new Set(prev);
-              next.delete(foundIndex);
-              return next;
-            });
-            
-            if (isInView) {
-              emblaApi?.plugins().autoplay?.play();
-            }
-            if (data.info === 0 && emblaApi) {
-              emblaApi.scrollNext();
-            }
-          }
-        }
-      } catch (e) {}
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [emblaApi, isInView, selectedIndex, isMuted, sendCommand]);
-
-  // Handle slide changes and visibility
-  useEffect(() => {
-    iframeRefs.current.forEach((_, index) => {
-      if (index !== selectedIndex) {
-        sendCommand(index, "pauseVideo");
-        sendCommand(index, "mute");
-      }
-    });
-
-    if (isInView) {
-      sendCommand(selectedIndex, "playVideo");
-      if (isMuted) {
-        sendCommand(selectedIndex, "mute");
-      } else {
-        sendCommand(selectedIndex, "unMute");
-      }
-    }
-  }, [selectedIndex, isInView, sendCommand, isMuted]);
-
-  useEffect(() => {
-    if (!isInView) {
-      iframeRefs.current.forEach((_, index) => {
-        sendCommand(index, "pauseVideo");
-      });
-    }
-  }, [isInView, sendCommand]);
 
   if (isLoading) {
     return (
@@ -266,19 +157,27 @@ export function VideoTestimonials() {
                     {t.video_url && videoId && isCentered && (
                       <div className="absolute inset-0 z-[5]">
                         <div className="absolute inset-0">
-                          <iframe
-                            ref={(el) => {
-                              if (el) iframeRefs.current.set(i, el);
-                              else {
-                                iframeRefs.current.delete(i);
-                                readyIframes.current.delete(i);
+                          <YouTubePlayer
+                            videoId={videoId}
+                            isMuted={isMuted}
+                            isPlaying={isInView && isCentered}
+                            onStateChange={(event) => {
+                              if (event.data === window.YT.PlayerState.PLAYING) {
+                                setTimeout(() => {
+                                  setPlayingIndices(prev => new Set(prev).add(i));
+                                }, 1000);
+                                emblaApi?.plugins().autoplay?.stop();
+                              } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+                                setPlayingIndices(prev => {
+                                  const next = new Set(prev);
+                                  next.delete(i);
+                                  return next;
+                                });
+                                if (isInView) emblaApi?.plugins().autoplay?.play();
+                                if (event.data === window.YT.PlayerState.ENDED && emblaApi) emblaApi.scrollNext();
                               }
                             }}
-                            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&playsinline=1&showinfo=0&loop=1&playlist=${videoId}&origin=${typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : ''}`}
-                            className="w-full h-full border-0 pointer-events-none"
-                            allow="autoplay; encrypted-media"
-                            allowFullScreen={false}
-                            title={`${t.name} testimonial video`}
+                            className="w-full h-full"
                           />
                         </div>
 
@@ -320,9 +219,9 @@ export function VideoTestimonials() {
                 </div>
               );
             })}
-          </div>
         </div>
       </div>
+    </div>
     </section>
   );
 }

@@ -63,6 +63,8 @@ export const Route = createRootRoute({
   notFoundComponent: NotFoundComponent,
 });
 
+import { VideoSettingsProvider } from "@/context/VideoContext";
+
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -88,7 +90,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </noscript>
         {/* End Google Tag Manager (noscript) */}
         <QueryClientProvider client={queryClient}>
-          {children}
+          <VideoSettingsProvider>
+            {children}
+          </VideoSettingsProvider>
         </QueryClientProvider>
         <Scripts />
       </body>
