@@ -27,4 +27,4 @@ jobs:
     - name: Deploy Python Backend via SSH
       run: |
         ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no root@31.97.206.171 \
-        "cd /root/sahjanand/live && git config --global --add safe.directory /root/sahjanand/live && git pull origin main && pm2 restart sahajanand-python"
+        "cd /root/sahjanand/live && git config --global --add safe.directory /root/sahjanand/live && rm -f frontend/.wrangler/deploy/config.json && git pull origin main && pm2 restart sahajanand-python"
