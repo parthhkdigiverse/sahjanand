@@ -39,7 +39,6 @@ function Contact() {
     store: "Nadiad Main Store",
     dateTime: "",
     time: "",
-    store: "",
     address: "",
     message: ""
   });
@@ -92,7 +91,6 @@ function Contact() {
           store: "Nadiad Main Store",
           dateTime: "",
           time: "",
-          store: "",
           address: "",
           message: ""
         });
