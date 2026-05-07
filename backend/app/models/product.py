@@ -33,7 +33,7 @@ class ProductBase(BaseModel):
     id: str = Field(..., description="The unique slug/identifier used in frontend routes")
     name: str
     category: str
-    metal: str
+    metal: List[str] = []
     image: str
     images: List[str] = []
     weight: Optional[str] = None
