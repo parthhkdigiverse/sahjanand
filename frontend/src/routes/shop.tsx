@@ -92,7 +92,7 @@ function Shop() {
                 {showMobileOptions ? <X className="h-4 w-4" /> : <FilterIcon className="h-4 w-4" />}
                 {showMobileOptions ? "Close Filters" : "Filter"}
               </Button>
-              <p className="text-[10px] tracking-widest text-muted-foreground uppercase font-medium">{filtered.length} pieces</p>
+              <p className="text-[10px] tracking-[0.32em] text-gold uppercase font-bold animate-shimmer">Artistry in Every Detail</p>
             </div>
 
             {showMobileOptions && (
@@ -196,7 +196,7 @@ function Shop() {
           {/* Product Grid */}
           <div>
             <div className="hidden lg:flex items-center justify-between mb-10 pb-6 border-b border-gray-100">
-              <p className="text-xs text-gray-500 font-medium tracking-wide uppercase">Showing {filtered.length} pieces</p>
+              <p className="text-[10px] tracking-[0.32em] text-gold uppercase font-bold animate-shimmer">Artistry in Every Detail</p>
             </div>
 
             {isLoading ? (
