@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit, Trash2, Search, Loader2, Star, Filter, Download } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Loader2, Star, Filter, Download, Check } from "lucide-react";
 import { authenticatedFetch } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -271,8 +271,11 @@ function AdminProducts() {
             
             additionalUrls = additionalUrls.filter(Boolean);
 
+            const selectedMetals = formData.getAll('metal') as string[];
+
             const payload = {
               ...data,
+              metal: selectedMetals,
               image: cleanImageUrl(mainImageUrl),
               images: additionalUrls.map(url => cleanImageUrl(url)).filter(Boolean),
               featured: data.featured === 'on',
@@ -321,18 +324,25 @@ function AdminProducts() {
                   ))}
                 </select>
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Metal</Label>
-                <select 
-                  name="metal" 
-                  defaultValue={editingProduct?.metal || "Gold"} 
-                  required
-                  className="w-full h-12 rounded-xl border border-onyx/10 bg-white px-4 py-2 text-sm outline-none focus:border-gold/30"
-                >
-                  <option value="Gold">Gold</option>
-                  <option value="Diamond">Diamond</option>
-                  <option value="Silver">Silver</option>
-                </select>
+              <div className="space-y-3">
+                <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Metal (Select Multiple)</Label>
+                <div className="flex items-center gap-6 p-4 rounded-xl border border-onyx/10 bg-white/50">
+                  {["Gold", "Diamond", "Silver"].map(m => (
+                    <label key={m} className="flex items-center gap-2.5 cursor-pointer group">
+                      <div className="relative flex items-center">
+                        <input 
+                          type="checkbox" 
+                          name="metal" 
+                          value={m} 
+                          defaultChecked={Array.isArray(editingProduct?.metal) ? editingProduct.metal.includes(m) : editingProduct?.metal === m}
+                          className="peer w-5 h-5 rounded-md border-2 border-onyx/10 text-gold checked:border-gold transition-all cursor-pointer appearance-none"
+                        />
+                        <Check className="absolute w-3.5 h-3.5 text-gold opacity-0 peer-checked:opacity-100 transition-opacity left-0.5 pointer-events-none" strokeWidth={4} />
+                      </div>
+                      <span className="text-xs uppercase tracking-widest font-bold text-onyx/40 group-hover:text-gold transition-colors">{m}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Weight (Optional)</Label>

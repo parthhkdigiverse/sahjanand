@@ -57,7 +57,7 @@ function Shop() {
     let list = products.filter(
       (p: any) =>
         (cat === "All" || p.category === cat) &&
-        (metal === "All" || p.metal === metal)
+        (metal === "All" || (Array.isArray(p.metal) ? p.metal.includes(metal) : p.metal === metal))
     );
 
     if (sort === "newest") {
