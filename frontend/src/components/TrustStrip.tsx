@@ -5,7 +5,7 @@ const HallmarkIcon = () => (
     <path d="M50 15L85 75H15L50 15Z" />
     <path d="M50 35L65 60H35L50 35Z" />
     <path d="M45 45L50 55L55 45" />
-    <text x="50" y="88" textAnchor="middle" fontSize="12" fontWeight="bold" fill="currentColor" stroke="none">BIS 916</text>
+    <text x="50" y="88" textAnchor="middle" fontSize="11" fontWeight="bold" fill="currentColor" stroke="none">100% HUID</text>
   </svg>
 );
 
@@ -89,7 +89,7 @@ const promises = [
   },
   {
     icon: HallmarkIcon,
-    title: "BIS 916 Hallmarked",
+    title: "100% HUID Hallmarked",
   },
   {
     icon: MaintenanceIcon,
