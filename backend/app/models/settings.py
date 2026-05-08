@@ -9,6 +9,10 @@ class FormField(BaseModel):
     required: bool = False
     is_constant: bool = False
 
+class MaterialOption(BaseModel):
+    name: str
+    is_active: bool = True
+
 class SettingsBase(BaseModel):
     offer_heading: str = "Handcrafted with Soul"
     offer_subheading: str = "Pure Gold • Timeless Beauty"
@@ -68,6 +72,13 @@ class SettingsBase(BaseModel):
     showcase_video_url: str = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     showcase_title: str = "The Art of Sahajanand"
     showcase_description: str = "Discover the journey of a thousand diamonds, meticulously crafted into timeless heirlooms. Our atelier in Nadiad preserves centuries-old techniques while embracing modern elegance."
+
+    # Materials Settings
+    materials: List[MaterialOption] = [
+        MaterialOption(name="Gold", is_active=True),
+        MaterialOption(name="Diamond", is_active=True),
+        MaterialOption(name="Silver", is_active=True),
+    ]
 
 class Settings(SettingsBase):
     pass

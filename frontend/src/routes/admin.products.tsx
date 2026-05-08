@@ -25,7 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Product, fetchCategories, Category, API_BASE, getImageUrl, cleanImageUrl } from "@/lib/api";
+import { Product, fetchCategories, fetchSettings, Category, API_BASE, getImageUrl, cleanImageUrl } from "@/lib/api";
 import { motion } from "framer-motion";
 import { 
   DndContext, 
@@ -144,6 +144,15 @@ function AdminProducts() {
     queryKey: ["categories"],
     queryFn: fetchCategories,
   });
+
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
+
+  const availableMetals = settings?.materials 
+    ? settings.materials.map(m => m.name) 
+    : ["Gold", "Diamond", "Silver"];
 
   const reorderMutation = useMutation({
     mutationFn: async (ids: string[]) => {
@@ -445,8 +454,8 @@ function AdminProducts() {
               </div>
               <div className="space-y-3">
                 <Label className="text-[10px] uppercase tracking-widest text-onyx/40">Metal (Select Multiple)</Label>
-                <div className="flex items-center gap-6 p-4 rounded-xl border border-onyx/10 bg-white/50">
-                  {["Gold", "Diamond", "Silver"].map(m => (
+                <div className="flex flex-wrap items-center gap-6 p-4 rounded-xl border border-onyx/10 bg-white/50">
+                  {availableMetals.map(m => (
                     <label key={m} className="flex items-center gap-2.5 cursor-pointer group">
                       <div className="relative flex items-center">
                         <input 

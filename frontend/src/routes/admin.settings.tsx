@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { authService } from "@/services/auth";
-import { Loader2, Save, Coins, Share2, MessageCircle, Instagram, Facebook, Twitter, Youtube, Megaphone } from "lucide-react";
+import { Loader2, Save, Coins, Share2, MessageCircle, Instagram, Facebook, Twitter, Youtube, Megaphone, Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 export const Route = createFileRoute("/admin/settings")({
@@ -247,6 +247,88 @@ function AdminSettings() {
                   />
                 </div>
               ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-onyx/5 shadow-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2">
+                <Coins className="h-4 w-4 text-gold" />
+                <CardTitle className="text-sm font-bold uppercase tracking-wider">Materials Filter</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                {formData.materials?.map((material, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 border border-onyx/10 rounded-lg bg-onyx/[0.01]">
+                    <span className="text-sm font-medium">{material.name}</span>
+                    <div className="flex items-center gap-3">
+                      <Switch 
+                        checked={material.is_active}
+                        onCheckedChange={(checked) => {
+                          const newMaterials = [...(formData.materials || [])];
+                          newMaterials[idx].is_active = checked;
+                          setFormData({ ...formData, materials: newMaterials });
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                        onClick={() => {
+                          if (confirm(`Are you sure you want to delete the material "${material.name}"?`)) {
+                            const newMaterials = [...(formData.materials || [])];
+                            newMaterials.splice(idx, 1);
+                            setFormData({ ...formData, materials: newMaterials });
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2 mt-4">
+                <Input
+                  placeholder="Add new material..."
+                  className="h-10 text-sm bg-onyx/[0.02] border-onyx/10 focus:border-gold/50"
+                  id="new-material-input"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const val = e.currentTarget.value.trim();
+                      if (val) {
+                        setFormData({
+                          ...formData,
+                          materials: [...(formData.materials || []), { name: val, is_active: true }]
+                        });
+                        e.currentTarget.value = '';
+                      }
+                    }
+                  }}
+                />
+                <Button 
+                  type="button"
+                  variant="outline"
+                  className="h-10 border-gold/20 text-gold hover:bg-gold/5"
+                  onClick={() => {
+                    const input = document.getElementById('new-material-input') as HTMLInputElement;
+                    const val = input?.value.trim();
+                    if (val) {
+                      setFormData({
+                        ...formData,
+                        materials: [...(formData.materials || []), { name: val, is_active: true }]
+                      });
+                      input.value = '';
+                    }
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
+              <p className="text-[10px] text-onyx/40 leading-relaxed italic">Toggle which materials appear in the shop filters.</p>
             </CardContent>
           </Card>
         </div>

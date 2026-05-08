@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, fetchProducts, fetchCategories, type Product, type Category } from "@/lib/api";
+import { fetchProduct, fetchProducts, fetchCategories, fetchSettings, type Product, type Category } from "@/lib/api";
 import { ProductCard } from "@/components/FeaturedProducts";
 import { ChevronDown, Filter as FilterIcon, X, SlidersHorizontal, Check } from "lucide-react";
 import {
@@ -27,7 +27,6 @@ export const Route = createFileRoute("/shop")({
   component: Shop,
 });
 
-const metals = ["All", "Gold", "Diamond", "Silver"] as const;
 const sortOptions = [
   { v: "featured", label: "Featured" },
   { v: "newest", label: "Newest" },
@@ -44,12 +43,23 @@ function Shop() {
     queryFn: fetchCategories,
   });
 
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+  });
+
   const categories = useMemo(() => {
     return ["All", ...dbCategories.map(c => c.name)];
   }, [dbCategories]);
 
+  const metals = useMemo(() => {
+    if (!settings?.materials) return ["All", "Gold", "Diamond", "Silver"];
+    const activeMaterials = settings.materials.filter(m => m.is_active).map(m => m.name);
+    return ["All", ...activeMaterials];
+  }, [settings]);
+
   const [cat, setCat] = useState<string>("All");
-  const [metal, setMetal] = useState<(typeof metals)[number]>("All");
+  const [metal, setMetal] = useState<string>("All");
   const [sort, setSort] = useState<(typeof sortOptions)[number]["v"]>("featured");
   const [showMobileOptions, setShowMobileOptions] = useState(false);
 

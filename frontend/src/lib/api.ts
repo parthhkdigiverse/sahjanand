@@ -305,6 +305,11 @@ export type FormField = {
   is_constant: boolean;
 };
 
+export type MaterialOption = {
+  name: string;
+  is_active: boolean;
+};
+
 export type SiteSettings = {
   offer_heading: string;
   offer_subheading: string;
@@ -343,6 +348,7 @@ export type SiteSettings = {
   showcase_video_url: string;
   showcase_title: string;
   showcase_description: string;
+  materials: MaterialOption[];
 };
 
 export async function fetchSettings(): Promise<SiteSettings> {
