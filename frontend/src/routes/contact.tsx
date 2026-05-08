@@ -217,7 +217,7 @@ function Contact() {
             </div>
             
             {sent ? (
-              <div className="py-24 text-center bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in zoom-in duration-500">
+              <div id="contact-form-success" className="py-24 text-center bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in zoom-in duration-500">
                 <div className="w-24 h-24 bg-[#2D6A6A]/10 rounded-full flex items-center justify-center mx-auto mb-8">
                   <CheckCircle2 size={48} className="text-[#2D6A6A]" />
                 </div>

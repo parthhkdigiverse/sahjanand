@@ -238,6 +238,7 @@ function NRIPageContent({ nriData }: { nriData: any }) {
 
 function NRIInquiryForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: {
       name: "",
@@ -252,6 +253,7 @@ function NRIInquiryForm() {
     setIsSubmitting(true);
     try {
       await submitNRILead(data);
+      setSubmitted(true);
       toast.success("Thank you! Your inquiry has been submitted successfully.");
       reset();
     } catch (error) {
@@ -268,12 +270,29 @@ function NRIInquiryForm() {
       viewport={{ once: true }}
       className="bg-white p-8 md:p-14 rounded-[2.5rem] border border-onyx/5 shadow-2xl shadow-onyx/10 relative z-10"
     >
-      <div className="text-center mb-12">
-        <h3 className="text-2xl md:text-3xl font-serif text-onyx mb-4">Inquire Privately</h3>
-        <p className="text-onyx/60 font-light">Your global journey to heritage begins here.</p>
-      </div>
+      {submitted ? (
+        <div id="nri-inquiry-success" className="text-center py-12 animate-in fade-in zoom-in duration-500">
+          <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-8">
+            <CheckCircle2 size={40} className="text-gold" />
+          </div>
+          <h3 className="font-serif text-3xl mb-4 text-onyx">Inquiry Received</h3>
+          <p className="text-onyx/60 text-lg mb-10">Thank you for reaching out. Our NRI desk will contact you shortly.</p>
+          <Button 
+            onClick={() => setSubmitted(false)}
+            variant="outline"
+            className="rounded-full border-gold text-gold hover:bg-gold hover:text-onyx transition-all"
+          >
+            Send Another Inquiry
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div className="text-center mb-12">
+            <h3 className="text-2xl md:text-3xl font-serif text-onyx mb-4">Inquire Privately</h3>
+            <p className="text-onyx/60 font-light">Your global journey to heritage begins here.</p>
+          </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-3">
             <Label className="text-[10px] uppercase tracking-widest text-onyx/40 font-bold ml-1">Full Name</Label>
@@ -345,8 +364,9 @@ function NRIInquiryForm() {
         <p className="text-[9px] text-center text-onyx/30 uppercase tracking-widest">
            Your data is encrypted and handled with the utmost discretion.
         </p>
-      </form>
+        </form>
+        </>
+      )}
     </motion.div>
   );
 }
-

@@ -81,7 +81,7 @@ export function VideoCallModal({ isOpen, onClose }: VideoCallModalProps) {
         </button>
 
         {submitted ? (
-          <div className="p-20 text-center">
+          <div id="video-call-success" className="p-20 text-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}

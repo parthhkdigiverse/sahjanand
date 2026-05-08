@@ -115,7 +115,7 @@ export function InteractionContactPopup() {
         {/* Form Section */}
         <div className="w-full md:w-1/2 p-8 md:p-12 bg-ivory relative">
           {submitted ? (
-            <div className="h-full flex flex-col items-center justify-center py-12 animate-in fade-in slide-in-from-bottom-4 duration-700 text-center">
+            <div id="contact-popup-success" className="h-full flex flex-col items-center justify-center py-12 animate-in fade-in slide-in-from-bottom-4 duration-700 text-center">
               <div className="h-20 w-20 rounded-full bg-gold/10 flex items-center justify-center mb-8">
                 <CheckCircle2 size={40} className="text-gold" />
               </div>

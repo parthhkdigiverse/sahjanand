@@ -16,6 +16,7 @@ const exploreLinks = [
 
 export function Footer() {
   const [email, setEmail] = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
   
   const { data: policies } = useQuery({
     queryKey: ["policies"],
@@ -74,8 +75,10 @@ export function Footer() {
   const mutation = useMutation({
     mutationFn: subscribeNewsletter,
     onSuccess: (data) => {
+      setIsSubscribed(true);
       toast.success(data.message || "Thank you for subscribing!");
       setEmail("");
+      setTimeout(() => setIsSubscribed(false), 5000);
     },
     onError: () => {
       toast.error("Subscription failed. Please try again.");
@@ -188,25 +191,32 @@ export function Footer() {
             </ul>
 
             <h5 className="text-[10px] tracking-widest text-ivory/40 mb-3 uppercase">Stay Connected</h5>
-            <form
-              className="flex border-b border-ivory/10 focus-within:border-gold transition-colors py-1"
-              onSubmit={handleSubmit}
-            >
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="flex-1 bg-transparent py-1 text-sm placeholder:text-ivory/20 outline-none"
-              />
-              <button
-                type="submit"
-                disabled={mutation.isPending}
-                className="text-[10px] tracking-widest text-gold hover:text-ivory transition-colors px-2 uppercase disabled:opacity-50"
+            {isSubscribed ? (
+              <div id="newsletter-success" className="text-gold text-xs font-bold py-2 animate-in fade-in slide-in-from-left duration-500">
+                ✓ Thank you for subscribing!
+              </div>
+            ) : (
+              <form
+                className="flex border-b border-ivory/10 focus-within:border-gold transition-colors py-1"
+                onSubmit={handleSubmit}
               >
-                {mutation.isPending ? "..." : "Join →"}
-              </button>
-            </form>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="Your Email"
+                  className="flex-1 bg-transparent py-1 text-sm placeholder:text-ivory/20 outline-none"
+                />
+                <button
+                  type="submit"
+                  disabled={mutation.isPending}
+                  className="text-[10px] tracking-widest text-gold hover:text-ivory transition-colors px-2 uppercase disabled:opacity-50"
+                >
+                  {mutation.isPending ? "..." : "Join →"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
 

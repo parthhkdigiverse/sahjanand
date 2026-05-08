@@ -147,7 +147,7 @@ export function LeadCapture() {
             </button>
 
             {submitted ? (
-              <div className="text-center py-8">
+              <div id="lead-capture-success" className="text-center py-8">
                 <div className="text-gold mx-auto mb-4 w-12 h-12 rounded-full border border-gold flex items-center justify-center">
                   ✓
                 </div>

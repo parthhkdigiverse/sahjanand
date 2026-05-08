@@ -65,7 +65,7 @@ export function InquiryModal({ product, isOpen, onClose }: InquiryModalProps) {
 
         <div className="p-8 md:p-12">
           {submitted ? (
-            <div className="py-12 text-center flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div id="inquiry-success" className="py-12 text-center flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="h-20 w-20 rounded-full bg-gold/10 flex items-center justify-center mb-8">
                 <CheckCircle2 size={40} className="text-gold" />
               </div>
