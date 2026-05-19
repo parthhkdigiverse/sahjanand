@@ -10,6 +10,7 @@ env/
 **/venv/
 **/env/
 **/.env
+.env.server
 
 # Node
 node_modules/
@@ -34,7 +35,7 @@ bun.lockb
 
 # Local Uploads
 # backend/uploads/
-# uploads/
+uploads/
 
 # Temp scripts
 fix_images.py
